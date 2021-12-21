@@ -1,9 +1,19 @@
+name: Generate Readme
 on:
   push:
     branches:
       - master
     paths-ignore:
       - '**/README.md'
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'     
+        required: true
+        default: 'warning'
+      tags:
+        description: 'Manual start'  
+
 jobs:
   update-readme:
     runs-on: ubuntu-latest
