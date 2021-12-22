@@ -9,6 +9,7 @@ apt install -y git wget curl nano net-tools iotop htop unzip sudo mtr sshpass au
 # Security Tools - Debian/Ubuntu/PopOS
 ```bash
 apt install -y rkhunter lynis chkrootkit clamav clamav-daemon 
+```
 
 # Docker
 ```bash
