@@ -45,6 +45,7 @@ apt-get install -y zsh git && chsh -s $(which zsh) && sh -c "$(curl -fsSL https:
 Python 3.x
 ```bash
 apt install -y python python3-pip && pip3 install --user pipenv && pip3 install virtualenv && curl https://pyenv.run | bash
+```
 
 # NVM
 With curl:
