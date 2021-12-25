@@ -12,7 +12,8 @@ on:
         required: true
         default: 'warning'
       tags:
-        description: 'Add tags  
+        description: 'Add tags'
+        required: false
 
 jobs:
   update-readme:
@@ -22,4 +23,3 @@ jobs:
       - run: touch test.txt
       - name: action-push
         uses: ludeeus/action-push@0.0.1
-
