@@ -88,6 +88,10 @@ apt install -y make sudo; cd $(mktemp -d) && _version=$(curl --silent "https://a
 ```bash
 sudo mkdir -p /dev/cdrom && sudo mount /dev/cdrom /mnt && sudo apt update -y && sudo apt upgrade -y && apt install dkms linux-headers-$(uname -r) build-essential && sudo sh /mnt/VBoxLinuxAdditions.run && reboot
 ```
+# Jabba
+```
+curl -sL https://github.com/shyiko/jabba/raw/master/install.sh | bash && . ~/.jabba/jabba.sh
+```
 
 # Simple Python web server
 Python 2.x
