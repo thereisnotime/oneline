@@ -348,14 +348,6 @@ dnf check-update
 sudo dnf install -y code
 ```
 
-## Bitwarden
-
-```bash
-wget https://github.com/bitwarden/clients/releases/download/desktop-v2022.9.1/Bitwarden-2022.9.1-x86_64.AppImage
-chmod u+x Bitwarden-2022.9.1-x86_64.AppImage
-./Bitwarden-2022.9.1-x86_64.AppImage
-```
-
 ## Bitwarden CLI
 
 ```bash
