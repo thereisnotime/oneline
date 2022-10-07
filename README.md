@@ -90,14 +90,6 @@ Latest kubeseal binary:
 cd $(mktemp -d) && _owner="bitnami-labs" && _repo="sealed-secrets" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); _version_no_v=$(echo $_version | sed 's/v//g'); wget "https://github.com/$_owner/$_repo/releases/download/$_version/kubeseal-$_version_no_v-linux-amd64.tar.gz" && tar -xvzf "kubeseal-$_version_no_v-linux-amd64.tar.gz" kubeseal && sudo install -m 755 kubeseal /usr/local/bin/kubeseal
 ```
 
-## Rustdesk
-
-Fedora, RHEL, CentOS, SUSE:
-
-```bash
-cd $(mktemp -d) && _owner="rustdesk" && _repo="rustdesk" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); _version_no_v=$(echo $_version | sed 's/v//g'); wget "https://github.com/$_owner/$_repo/releases/download/$_version/rustdesk-$_version_no_v-fedora28-centos8.rpm" && sudo rpm -i --force "rustdesk-$_version_no_v-fedora28-centos8.rpm"
-```
-
 ## NVM
 
 With curl:
@@ -231,7 +223,10 @@ cd $(mktemp -d) && _owner="rustdesk" && _repo="rustdesk" && _version=$(curl --si
 Ubuntu, Debian, PopOS:
 
 ```bash
-curl -fsSL https://keys.anydesk.com/repos/DEB-GPG-KEY|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/anydesk.gpg
+wget -qO - https://keys.anydesk.com/repos/DEB-GPG-KEY | apt-key add -
+echo "deb http://deb.anydesk.com/ all main" > /etc/apt/sources.list.d/anydesk-stable.list
+apt update -y
+apt install anydesk -y
 ```
 
 Fedora, CentOS, RHEL:
@@ -356,8 +351,9 @@ sudo dnf install -y code
 ## Bitwarden
 
 ```bash
-curl -Lso bitwarden.sh https://go.btwrdn.co/bw-sh && chmod 700 bitwarden.sh
-./bitwarden.sh install
+wget https://github.com/bitwarden/clients/releases/download/desktop-v2022.9.1/Bitwarden-2022.9.1-x86_64.AppImage
+chmod u+x Bitwarden-2022.9.1-x86_64.AppImage
+./Bitwarden-2022.9.1-x86_64.AppImage
 ```
 
 ## 1Password
@@ -475,8 +471,8 @@ sudo dnf install skypeforlinux -y
 Debian, Ubuntu, PopOS:
 
 ```bash
-wget https://zoom.us/client/latest/zoom_x86_64.deb
-sudo dnf install -y zoom_x86_64.deb
+wget https://zoom.us/client/latest/zoom_amd64.deb
+sudo apt install -y ./zoom_amd64.deb
 ```
 
 Fedora, CentOS, RHEL:
@@ -489,5 +485,5 @@ sudo dnf install -y zoom_x86_64.rpm
 ## Joplin
 
 ```bash
-brew install --cask joplin
+sudo wget -O - https://raw.githubusercontent.com/laurent22/joplin/dev/Joplin_install_and_update.sh | bash
 ```
