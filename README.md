@@ -504,5 +504,7 @@ sudo wget -O - https://raw.githubusercontent.com/laurent22/joplin/dev/Joplin_ins
 sudo snap remove $(snap list | awk '{print $1}' | tail -n +2)
 sudo apt remove --purge --assume-yes snapd gnome-software-plugin-snap
 rm -rf ~/snap/
-sudo rm -rf /var/cache/snapd/ 
+sudo rm -rf /var/cache/snapd/
+sudo rm -rf /etc/apt/sources.list.d/snapd.list
+
 ```
