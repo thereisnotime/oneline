@@ -364,7 +364,8 @@ cd $(mktemp -d) && _repo="clients" && _owner="bitwarden" && _tag=$(curl -s https
 
 Fedora, CentOS, RHEL:
 
-cd $(mktemp -d) && _repo="clients" && _owner="bitwarden" && _tag=$(curl -s https://github.com/$_owner/$_repo/tags | grep -oP 'href="\K[^"]*' | grep -oP 'desktop-v\d+\.\d+\.\d+' | head -n 1); _version=$(echo $_tag | cut -d'-' -f2 | grep -oP '\d+\.\d+\.\d+') && curl -L "https://github.com/$_owner/$_repo/releases/download/$_tag/Bitwarden-$_version-amd64.rpm" -o "Bitwarden.deb" && sudo dpkg -i Bitwarden.rpm
+```cd $(mktemp -d) && _repo="clients" && _owner="bitwarden" && _tag=$(curl -s https://github.com/$_owner/$_repo/tags | grep -oP 'href="\K[^"]*' | grep -oP 'desktop-v\d+\.\d+\.\d+' | head -n 1); _version=$(echo $_tag | cut -d'-' -f2 | grep -oP '\d+\.\d+\.\d+') && curl -L "https://github.com/$_owner/$_repo/releases/download/$_tag/Bitwarden-$_version-amd64.rpm" -o "Bitwarden.deb" && sudo dpkg -i Bitwarden.rpm
+```
 
 ## 1Password
 
