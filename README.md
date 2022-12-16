@@ -42,6 +42,15 @@ apt install -y sudo curl; cd $(mktemp -d) && _version=$(curl --silent "https://a
 apt install -y sudo curl; cd $(mktemp -d) && _version=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); curl -L "https://github.com/docker/compose/releases/download/$_version/docker-compose-armv7" -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/
 ```
 
+## Kompose
+
+### Debian/Ubuntu
+
+```bash
+wget https://github.com/kubernetes/kompose/releases/download/v1.27.0/kompose_1.27.0_amd64.deb # Replace 1.27.0 with latest tag
+sudo apt install ./kompose_1.27.0_amd64.deb
+```
+
 ## Oh-my-bash
 
 With curl:
@@ -473,7 +482,7 @@ sudo apt install -y ./skypeforlinux-64.deb
 Fedora, CentOS, RHEL:
 
 ```bash
-sudo curl -o /etc/yum.repos.d/skype-stable.repo https://repo.skype.com/rpm/stable/skype-stable.repo
+sudo curl -s -o /etc/yum.repos.d/skype-stable.repo https://repo.skype.com/rpm/stable/skype-stable.repo
 sudo dnf install skypeforlinux -y
 ```
 
