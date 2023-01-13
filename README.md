@@ -325,6 +325,12 @@ brew install asdf
 
 ## Lens
 
+OpenLens:
+
+```bash
+cd $(mktemp -d) && _owner="MuhammedKalkan" && _repo="OpenLens" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); _version_no_v=$(echo $_version | sed 's/v//g'); wget "https://github.com/$_owner/$_repo/releases/download/$_version/OpenLens-$_version_no_v.amd64.deb" && sudo apt install "./OpenLens-$_version_no_v.amd64.deb"
+```
+
 ```bash
 brew cask install lens
 ```
