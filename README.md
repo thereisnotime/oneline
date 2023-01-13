@@ -65,6 +65,16 @@ With wget:
 bash -c "$(wget https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh -O -)"
 ```
 
+Tweaks:
+
+```bash
+# Change theme (zork, modern-t, 90210)
+sed -i 's/font/90210/g' "$HOME/.bashrc"
+# Disable update prompt (enable auto updates)
+echo "DISABLE_UPDATE_PROMPT=true" >> "$HOME/.bashrc"
+```
+
+
 ## Oh-my-zsh
 
 ```bash
@@ -338,9 +348,7 @@ brew cask install lens
 ## Helm
 
 ```bash
- curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
- chmod 700 get_helm.sh
- ./get_helm.sh
+cd $(mktemp -d) && curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && chmod 700 get_helm.sh && ./get_helm.sh
 ```
 
 ## VSCode
@@ -348,11 +356,11 @@ brew cask install lens
 Debian, Ubuntu, PopOS:
 
 ```bash
+cd $(mktemp -d)
 sudo apt-get install -y wget gpg
 wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
 sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
 sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
-rm -f packages.microsoft.gpg
 sudo apt install -y apt-transport-https
 sudo apt update -y
 sudo apt install -y code
@@ -378,7 +386,7 @@ cd $(mktemp -d) && _repo="cli" && _owner="bitwarden" && _version=$(curl --silent
 Debian, Ubuntu, PopOS:
 
 ```bash
-cd $(mktemp -d) && _repo="clients" && _owner="bitwarden" && _tag=$(curl -s https://github.com/$_owner/$_repo/tags | grep -oP 'href="\K[^"]*' | grep -oP 'desktop-v\d+\.\d+\.\d+' | head -n 1); _version=$(echo $_tag | cut -d'-' -f2 | grep -oP '\d+\.\d+\.\d+') && curl -L "https://github.com/$_owner/$_repo/releases/download/$_tag/Bitwarden-$_version-amd64.deb" -o "Bitwarden.deb" && sudo dpkg -i Bitwarden.deb
+cd $(mktemp -d) && _repo="clients" && _owner="bitwarden" && _tag=$(curl -s https://github.com/$_owner/$_repo/tags | grep -oP 'href="\K[^"]*' | grep -oP 'desktop-v\d+\.\d+\.\d+' | head -n 1); _version=$(echo $_tag | cut -d'-' -f2 | grep -oP '\d+\.\d+\.\d+') && curl --silent -L "https://github.com/$_owner/$_repo/releases/download/$_tag/Bitwarden-$_version-amd64.deb" -o "Bitwarden.deb" && sudo dpkg -i Bitwarden.deb
 ```
 
 Fedora, CentOS, RHEL:
@@ -428,6 +436,11 @@ sudo dnf install keepassxc -y
 Debian, Ubuntu, PopOS:
 
 ```bash
+sudo add-apt-repository ppa:mozillateam/ppa
+apt install firefox
+```
+
+```bash
 sudo apt install firefox -y
 ```
 
@@ -442,8 +455,10 @@ sudo dnf install firefox -y
 Debian, Ubuntu, PopOS:
 
 ```bash
+cd $(mktemp -d)
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo dpkg -i google-chrome-stable_current_amd64.deb
+rm -rf google-chrome-stable_current_amd64.deb
 ```
 
 Fedora, CentOS, RHEL:
@@ -521,10 +536,16 @@ sudo wget -O - https://raw.githubusercontent.com/laurent22/joplin/dev/Joplin_ins
 ## Remove Snap and all its packages Debian, Ubuntu, PopOS:
 
 ```bash
-sudo snap remove $(snap list | awk '{print $1}' | tail -n +2)
+sudo snap remove gtk-common-themes
 sudo apt remove --purge --assume-yes snapd gnome-software-plugin-snap
-rm -rf ~/snap/
+sudo snap remove $(snap list | awk '{print $1}' | tail -n +2)
+rm -rf $HOME/snap/
 sudo rm -rf /var/cache/snapd/
 sudo rm -rf /etc/apt/sources.list.d/snapd.list
+sudo apt autoremove --purge snapd
+echo 
 
+
+/etc/apt/preferences.d/nosnap.pref
+apt update
 ```
