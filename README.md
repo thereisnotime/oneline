@@ -74,11 +74,16 @@ sed -i 's/font/90210/g' "$HOME/.bashrc"
 echo "DISABLE_UPDATE_PROMPT=true" >> "$HOME/.bashrc"
 ```
 
-
 ## Oh-my-zsh
 
 ```bash
 apt-get install -y zsh git && chsh -s $(which zsh) && sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+```
+
+## RC: Nano
+
+```bash
+curl https://raw.githubusercontent.com/scopatz/nanorc/master/install.sh | sh
 ```
 
 ## Tmate
@@ -107,6 +112,14 @@ Latest kubeseal binary:
 
 ```bash
 cd $(mktemp -d) && _owner="bitnami-labs" && _repo="sealed-secrets" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); _version_no_v=$(echo $_version | sed 's/v//g'); wget "https://github.com/$_owner/$_repo/releases/download/$_version/kubeseal-$_version_no_v-linux-amd64.tar.gz" && tar -xvzf "kubeseal-$_version_no_v-linux-amd64.tar.gz" kubeseal && sudo install -m 755 kubeseal /usr/local/bin/kubeseal
+```
+
+## Flatpak
+
+```bash
+sudo apt install flatpak -y
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+flatpak install -y com.github.tchx84.Flatseal ca.desrt.dconf-editor
 ```
 
 ## NVM
