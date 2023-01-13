@@ -210,6 +210,23 @@ brew install kubectl
 
 ## K9s
 
+Debian, Ubuntu:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl
+sudo curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo apt-get update
+sudo apt-get install -y kubectl
+sudo apt-get update
+sudo apt-get install -y kubectl
+```
+
+```bash
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+```
 
 ```bash
 curl -sS https://webinstall.dev/k9s | bash
@@ -224,7 +241,14 @@ curl -s https://raw.githubusercontent.com/dty1er/kubecolor/master/scripts/instal
 ## GCloud CLI
 
 ```bash
-curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-405.0.0-linux-x86_64.tar.gz
+curl https://sdk.cloud.google.com | bash
+```
+
+```bash
+sudo apt-get install -y apt-transport-https ca-certificates gnupg
+echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+sudo apt-get update && sudo apt-get install google-cloud-cli
 ```
 
 ## AWS CLI
