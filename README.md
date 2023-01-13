@@ -122,7 +122,7 @@ wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 ## Upterm
 
 ```bash
-_owner="owenthereal" && _repo="upterm" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); sudo curl -L "https://github.com/$_owner/$_repo/releases/download/$_version/upterm_linux_amd64.tar.gz" -o /tmp/upterm.tar.gz && tar -xf /tmp/upterm.tar.gz && sudo install /tmp/upterm /usr/bin/upterm 
+_owner="owenthereal" && _repo="upterm" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); sudo curl -L --silent "https://github.com/$_owner/$_repo/releases/download/$_version/upterm_linux_amd64.tar.gz" -o /tmp/upterm.tar.gz && tar -xf /tmp/upterm.tar.gz && sudo install /tmp/upterm /usr/bin/upterm 
 ```
 
 ## Btop
@@ -217,8 +217,7 @@ sudo ./aws/install
 Debian, Ubuntu, popOS:
 
 ```bash
-wget https://github.com/rustdesk/rustdesk/releases/download/1.1.8/rustdesk-1.1.8.deb
-sudo apt install ./rustdesk-1.1.8.deb -y 
+_owner="rustdesk" && _repo="rustdesk" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); cd /tmp; sudo curl -L --silent "https://github.com/$_owner/$_repo/releases/download/$_version/rustdesk-$_version.deb" -o /tmp/rustdesk.deb && dpkg -i /tmp/rustdesk.deb; apt-get -f install
 ```
 
 Fedora, CentOS, RHEL:
