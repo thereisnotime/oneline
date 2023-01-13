@@ -233,8 +233,7 @@ Ubuntu, Debian, PopOS:
 ```bash
 wget -qO - https://keys.anydesk.com/repos/DEB-GPG-KEY | apt-key add -
 echo "deb http://deb.anydesk.com/ all main" > /etc/apt/sources.list.d/anydesk-stable.list
-apt update -y
-apt install anydesk -y
+apt update -y && apt install anydesk -y
 ```
 
 Fedora, CentOS, RHEL:
@@ -264,8 +263,7 @@ sudo dnf install -y anydesk
 Debian, Ubuntu, PopOS:
 
 ```bash
-wget https://download.teamviewer.com/download/linux/teamviewer_amd64.deb
-sudo apt install -y ./teamviewer_amd64.deb
+wget https://download.teamviewer.com/download/linux/teamviewer_amd64.deb -O /tmp/teamviewer_amd64.deb && sudo dpkg -i /tmp/teamviewer_amd64.deb
 ```
 
 Fedora, CentOS, RHEL:
@@ -313,6 +311,13 @@ sudo dnf install -y VirtualBox
 ```
 
 ## asdf
+
+With autocomplete:
+
+```bash
+if [ "$EUID" -eq 0 ]; then echo "Please do not run as root or sudo"; exit; fi; if [ ! -d "$HOME/.asdf" ]; then mkdir "$HOME/.asdf"; fi; git clone https://github.com/asdf-vm/asdf.git "$HOME/.asdf"; _shellrc="$HOME/."$(ps -p $$ | tail -1 | awk '{print $NF}')"rc"; if ! grep -q ".asdf/asdf.sh" "$_shellrc"; then echo ". $HOME/.asdf/asdf.sh; . $HOME/.asdf/completions/asdf.bash" >> "$_shellrc"; fi
+
+```
 
 ```bash
 brew install asdf
