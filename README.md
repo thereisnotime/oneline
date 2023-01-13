@@ -256,6 +256,10 @@ unzip awscliv2.zip
 sudo ./aws/install
 ```
 
+```bash
+apt-get install -y awscli
+```
+
 ## RustDesk
 
 Debian, Ubuntu, popOS:
