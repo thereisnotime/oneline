@@ -659,6 +659,12 @@ wget https://zoom.us/client/latest/zoom_x86_64.rpm
 sudo dnf install -y zoom_x86_64.rpm
 ```
 
+## 7Zip
+
+```bash
+apt-get install -y 7zip p7zip-full p7zip-rar
+``
+
 ## Joplin
 
 ```bash
