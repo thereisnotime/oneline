@@ -563,6 +563,22 @@ Fedora, CentOS, RHEL:
 sudo dnf install keepassxc -y
 ```
 
+## Azure Storage Explorer
+
+Fedora, CentOS, RHEL:
+
+```bash
+sudo dnf install dotnet-runtime-6.0
+mkdir -p $HOME/Software/azure-storage-explorer
+cd $HOME/Software
+wget https://download.microsoft.com/download/A/E/3/AE32C485-B62B-4437-92F7-8B6B2C48CB40/StorageExplorer-linux-x64.tar.gz
+tar xvf StorageExplorer-linux-x64.tar.gz -C ./azure-storage-explorer
+rm -rf ./StorageExplorer-linux-x64.tar.gz
+cd ./azure-storage-explorer
+echo "You can now run it with $HOME/Software/azure-storage-explore/StorageExplorer"
+```
+
+
 ## Firefox
 
 Debian, Ubuntu, PopOS:
