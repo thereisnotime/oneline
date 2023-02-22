@@ -471,6 +471,14 @@ Tilt:
 curl -fsSL https://raw.githubusercontent.com/tilt-dev/tilt/master/scripts/install.sh | bash
 ```
 
+## Mongo Compass
+
+Fedora, CentOS, RHEL:
+
+```bash
+cd $(mktemp -d) && _owner="mongodb-js" && _repo="compass" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); _version_no_v=$(echo $_version | sed 's/v//g'); wget "https://github.com/$_owner/$_repo/releases/download/$_version/mongodb-compass-isolated-${_version_no_v}.x86_64.rpm" -O mongo.rpm && sudo dnf install mongo.rpm && rm -rf ./mongo.rpm 
+```
+
 ## Golang
 
 ```bash
