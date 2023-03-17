@@ -24,10 +24,27 @@ apt install -y rkhunter lynis chkrootkit clamav clamav-daemon
 curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh && rm get-docker.sh
 ```
 
+## Docker arm64/aarch64
+
+```bash
+curl -fsSL test.docker.com -o get-docker.sh && sh get-docker.sh
+sudo usermod -aG docker "$USER"
+systemctl enable docker
+systemctl start docker
+```
+
 ## Apt Cleanup
 
 ```bash
 du -sch /var/cache/apt/archives/ && sudo apt-get clean; du -sch /var/cache/apt/archives/
+```
+
+## Minikube arm64/aarch64
+
+```bash
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-arm64
+sudo install minikube-linux-arm64 /usr/local/bin/minikube
+rm minikube-linux-arm64
 ```
 
 ## Minikonda
@@ -48,6 +65,12 @@ apt install -y sudo curl; cd $(mktemp -d) && _version=$(curl --silent "https://a
 
 ```bash
 apt install -y sudo curl; cd $(mktemp -d) && _version=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); curl -L "https://github.com/docker/compose/releases/download/$_version/docker-compose-armv7" -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/
+```
+
+## Docker-Compose arm64/aarch64
+
+```bash
+apt install -y sudo curl; cd "$(mktemp -d)" && _version=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); curl -L "https://github.com/docker/compose/releases/download/$_version/docker-compose-linux-aarch64" -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/
 ```
 
 ## Kompose
@@ -166,6 +189,12 @@ _owner="owenthereal" && _repo="upterm" && _version=$(curl --silent "https://api.
 apt install -y make sudo; cd $(mktemp -d) && _version=$(curl --silent "https://api.github.com/repos/aristocratos/btop/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); wget "https://github.com/aristocratos/btop/releases/download/$_version/btop-x86_64-linux-musl.tbz" -O btop.tbz && tar -xvjf btop.tbz && cd btop && sudo sh install.sh && sudo sh setuid.sh
 ```
 
+## Btop arm64
+
+```bash
+apt install -y make sudo; cd "$(mktemp -d)" && _version=$(curl --silent "https://api.github.com/repos/aristocratos/btop/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); wget "https://github.com/aristocratos/btop/releases/download/$_version/btop-x86_64-linux-musl.tbz" -O btop.tbz && tar -xvjf btop.tbz && cd btop && sudo sh install.sh && sudo sh setuid.sh
+```
+
 ## Google Cloud SQL Proxy
 
 ```bash
@@ -213,6 +242,14 @@ python -m http.server 8000
 brew install kubectl
 ```
 
+## Kubectl arm64/aarch64
+
+```bash
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/arm64/kubectl"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+rm -rf ./kubectl
+```
+
 ## K9s
 
 Debian, Ubuntu:
@@ -235,6 +272,12 @@ sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
 ```bash
 curl -sS https://webinstall.dev/k9s | bash
+```
+
+## K9s arm64/aarch64
+
+```bash
+cd "$(mktemp -d)" && _owner="derailed" && _repo="k9s" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); _version_no_v=$(echo $_version | sed 's/v//g'); wget "https://github.com/$_owner/$_repo/releases/download/$_version/k9s_Linux_arm64.tar.gz" && find . -maxdepth 1 -type f -name '*.tar.gz' -execdir tar -xvzf {} \; && sudo install -m 755 k9s /usr/local/bin/k9s
 ```
 
 ## Kubecolor
