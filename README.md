@@ -383,6 +383,14 @@ curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo 
 && sudo apt install gh -y
 ```
 
+## GitLab CLI
+
+Debian, Ubuntu - x64 amd:
+
+```bash
+API_ENDPOINT="https://gitlab.com/api/v4/projects" && PROJECT_ID="gitlab-org%2Fcli" && LATEST_RELEASE=$(curl --silent "${API_ENDPOINT}/${PROJECT_ID}/releases" | jq -r '.[0].tag_name') && LATEST_RELEASE_NO_V=$(echo "$LATEST_RELEASE" | sed 's/v//') && wget "https://gitlab.com/gitlab-org/cli/-/releases/${LATEST_RELEASE}/downloads/glab_${LATEST_RELEASE_NO_V}_Linux_x86_64.deb" -O glab.deb && sudo dpkg -i glab.deb
+```
+
 ## AzureCLI
 
 Debian, Ubuntu, PopOS:
