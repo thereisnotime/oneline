@@ -542,6 +542,12 @@ apt-get install -y golang
 go install github.com/aquasecurity/tfsec/cmd/tfsec@latest
 ```
 
+## ArgoCD CLI - amd64
+
+```bash
+cd $(mktemp -d) && _repo="argo-cd" && _owner="argoproj" && _version=$(curl --silent https://api.github.com/repos/$_owner/$_repo/releases/latest | grep -Po '"tag_name": "\K.*?(?=")'); _version_no_v=$(echo "$_version" | sed 's/v//g'); curl -L --silent "https://github.com/$_owner/$_repo/releases/download/$_version/argocd-linux-amd64" -o "argocd" && sudo install argocd /usr/local/bin/ && argocd version
+```
+
 ## VSCode
 
 Debian, Ubuntu, PopOS:
