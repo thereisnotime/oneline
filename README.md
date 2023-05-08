@@ -237,6 +237,7 @@ vagrant up
 vagrant vbguest
 ```
 
+
 ## Jabba
 
 ```bash
@@ -526,6 +527,12 @@ Same keys as terraform, just do:
 
 ```bash
 apt-get install -y vagrant
+```
+
+Vagrant Plugins:
+
+```bash
+vagrant plugin install vagrant-vbguest vagrant-disksize
 ```
 
 ## Skaffold
