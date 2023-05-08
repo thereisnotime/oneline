@@ -21,7 +21,7 @@ apt install -y rkhunter lynis chkrootkit clamav clamav-daemon
 ## Docker
 
 ```bash
-curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh && rm get-docker.sh
+curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh && rm get-docker.sh && sudo usermod -aG docker $USER
 ```
 
 ## Docker arm64/aarch64
@@ -67,12 +67,21 @@ apt install -y sudo curl; cd $(mktemp -d) && _version=$(curl --silent "https://a
 apt install -y sudo curl; cd $(mktemp -d) && _version=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); curl -L "https://github.com/docker/compose/releases/download/$_version/docker-compose-armv7" -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/
 ```
 
+<<<<<<< HEAD
+## Docker-Compose Arm64/Aarch64
+
+```bash
+apt install -y sudo curl; cd $(mktemp -d) && _version=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); curl -L "https://github.com/docker/compose/releases/download/$_version/docker-compose-linux-aarch64" -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/
+```
+
+=======
 ## Docker-Compose arm64/aarch64
 
 ```bash
 apt install -y sudo curl; cd "$(mktemp -d)" && _version=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); curl -L "https://github.com/docker/compose/releases/download/$_version/docker-compose-linux-aarch64" -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/
 ```
 
+>>>>>>> a7ea34b60f288c9fd457256dfa6a8e7630464459
 ## Kompose
 
 ### Debian/Ubuntu
@@ -203,11 +212,23 @@ cd $(mktemp -d) && wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd
 
 ## VirtualBox Guest Additions
 
+### Option 1
+
 1. Insert the CD image
 2. Enter:
 
 ```bash
 sudo mkdir -p /dev/cdrom && sudo mount /dev/cdrom /mnt && sudo apt update -y && sudo apt upgrade -y && apt install dkms linux-headers-$(uname -r) build-essential && sudo sh /mnt/VBoxLinuxAdditions.run && reboot
+```
+
+### Option 2
+
+```bash
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian $(lsb_release -c -s) contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list
+wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install -y build-essential linux-headers-$(uname -r)
+sudo apt-get install -y virtualbox-ose-guest-x11
 ```
 
 ## Jabba
