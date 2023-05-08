@@ -125,11 +125,11 @@ apt-get install -y zsh git && chsh -s $(which zsh) && sh -c "$(curl -fsSL https:
 ```bash
 curl https://raw.githubusercontent.com/scopatz/nanorc/master/install.sh | sh
 ```
-
+me
 ## Tmate
 
 ```bash
-apt install -y sudo wget; cd $(mktemp -d) && _version=$(curl --silent "https://api.github.com/repos/tmate-io/tmate/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); wget "https://github.com/tmate-io/tmate/releases/download/$_version/tmate-$_version-static-linux-amd64.tar.xz" -O tmate.tar.xz && tar -xf tmate.tar.xz && install ./tmate-$_version-static-linux-amd64/tmate /usr/bin
+apt install -y curl; cd $(mktemp -d) && _version=$(curl --silent "https://api.github.com/repos/tmate-io/tmate/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); curl --silent -L "https://github.com/tmate-io/tmate/releases/download/$_version/tmate-$_version-static-linux-amd64.tar.xz" -o tmate.tar.xz && tar -xvf tmate.tar.xz && install ./tmate-$_version-static-linux-amd64/tmate /usr/bin
 ```
 
 ## Tmate ARM 32v7 (RPi 3)
