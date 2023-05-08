@@ -212,23 +212,29 @@ cd $(mktemp -d) && wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd
 
 ## VirtualBox Guest Additions
 
-### Option 1
+### Option 1 - Mounting
 
 1. Insert the CD image
 2. Enter:
 
 ```bash
-sudo mkdir -p /dev/cdrom && sudo mount /dev/cdrom /mnt && sudo apt update -y && sudo apt upgrade -y && apt install dkms linux-headers-$(uname -r) build-essential && sudo sh /mnt/VBoxLinuxAdditions.run && reboot
+sudo mkdir -p /dev/cdrom; sudo mount /dev/cdrom /mnt && sudo apt update -y && sudo apt upgrade -y && apt install dkms linux-headers-$(uname -r) build-essential && sudo sh /mnt/VBoxLinuxAdditions.run && reboot
 ```
 
-### Option 2
+### Option 2 - Script
 
 ```bash
-echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian $(lsb_release -c -s) contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list
-wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-key add -
-sudo apt-get update
-sudo apt-get install -y build-essential linux-headers-$(uname -r)
-sudo apt-get install -y virtualbox-ose-guest-x11
+sudo apt install virtualbox-guest-dkms virtualbox-guest-x11 virtualbox-guest-utils
+```
+
+### Option 3 - Vagrant
+
+If using Vagrant:
+
+```bash
+vagrant plugin install vagrant-vbguest
+vagrant up
+vagrant vbguest
 ```
 
 ## Jabba
