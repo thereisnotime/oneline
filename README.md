@@ -125,7 +125,7 @@ apt-get install -y zsh git && chsh -s $(which zsh) && sh -c "$(curl -fsSL https:
 ```bash
 curl https://raw.githubusercontent.com/scopatz/nanorc/master/install.sh | sh
 ```
-me
+
 ## Tmate
 
 ```bash
@@ -779,7 +779,7 @@ apt-get install -y 7zip p7zip-full p7zip-rar
 sudo wget -O - https://raw.githubusercontent.com/laurent22/joplin/dev/Joplin_install_and_update.sh | bash
 ```
 
-## Remove Snap and all its packages Debian, Ubuntu, PopOS:
+## Remove Snap and all its packages Debian, Ubuntu, PopOS
 
 ```bash
 sudo snap remove gtk-common-themes
@@ -794,4 +794,11 @@ echo
 
 /etc/apt/preferences.d/nosnap.pref
 apt update
+```
+
+## Switch from Wayland to X11 (Debian and GDM based)
+
+```bash
+sudo sed -i 's/#WaylandEnable=false/WaylandEnable=false/' /etc/gdm3/custom.conf
+sudo systemctl restart gdm
 ```
