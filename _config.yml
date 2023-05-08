@@ -3,6 +3,7 @@ plugins:
 relative_links:
   enabled: true
   collections: true
+  theme: time-machine
 include:
   - CONTRIBUTING.md
   - README.md
