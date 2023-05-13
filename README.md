@@ -308,6 +308,26 @@ curl -sS https://webinstall.dev/k9s | bash
 cd "$(mktemp -d)" && _owner="derailed" && _repo="k9s" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); _version_no_v=$(echo $_version | sed 's/v//g'); wget "https://github.com/$_owner/$_repo/releases/download/$_version/k9s_Linux_arm64.tar.gz" && find . -maxdepth 1 -type f -name '*.tar.gz' -execdir tar -xvzf {} \; && sudo install -m 755 k9s /usr/local/bin/k9s
 ```
 
+## Krew
+
+```bash
+(
+  set -x; cd "$(mktemp -d)" &&
+  OS="$(uname | tr '[:upper:]' '[:lower:]')" &&
+  ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" &&
+  KREW="krew-${OS}_${ARCH}" &&
+  curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz" &&
+  tar zxvf "${KREW}.tar.gz" &&
+  ./"${KREW}" install krew
+)
+```
+
+Then it to your rc file:
+
+```bash
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+```
+
 ## Kubecolor
 
 ```bash
