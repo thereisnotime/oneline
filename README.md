@@ -166,6 +166,12 @@ flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flat
 flatpak install -y com.github.tchx84.Flatseal ca.desrt.dconf-editor
 ```
 
+### Flatpak - GNOME Software Center Plugin
+
+```bash
+sudo apt-get install -y  gnome-software-plugin-flatpak 
+```
+
 ## NVM
 
 With curl:
@@ -697,18 +703,19 @@ cd ./azure-storage-explorer
 echo "You can now run it with $HOME/Software/azure-storage-explore/StorageExplorer"
 ```
 
-
-## Firefox
+## Firefox - no Snap
 
 Debian, Ubuntu, PopOS:
 
 ```bash
 sudo add-apt-repository ppa:mozillateam/ppa
-apt install firefox
-```
-
-```bash
-sudo apt install firefox -y
+echo '
+Package: *
+Pin: release o=LP-PPA-mozillateam
+Pin-Priority: 1001
+' | sudo tee /etc/apt/preferences.d/mozilla-firefox
+echo 'Unattended-Upgrade::Allowed-Origins:: "LP-PPA-mozillateam:${distro_codename}";' | sudo tee /etc/apt/apt.conf.d/51unattended-upgrades-firefox
+apt install -y firefox
 ```
 
 Fedora, CentOS, RHEL:
@@ -798,12 +805,22 @@ sudo dnf install -y zoom_x86_64.rpm
 
 ```bash
 apt-get install -y 7zip p7zip-full p7zip-rar
-``
+```
 
 ## Joplin
 
 ```bash
 sudo wget -O - https://raw.githubusercontent.com/laurent22/joplin/dev/Joplin_install_and_update.sh | bash
+```
+
+## VSCode Live Share can't sign in "fix"
+
+For Ubuntu 22.XX:
+
+```bash
+wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_amd64.deb
+sudo dpkg -i ./libssl1.1_1.1.0g-2ubuntu4_amd64.deb
+rm -rf -i libssl1.1_1.1.0g-2ubuntu4_amd64.deb
 ```
 
 ## Remove Snap and all its packages Debian, Ubuntu, PopOS
