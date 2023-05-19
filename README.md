@@ -1,13 +1,13 @@
 # oneline
 
-Frequently used one-liners in real life.
+Frequently used one-liners in real life for your copy-pasting needs.
 
 ## Basic Tools
 
 Debian, Ubuntu, popOS:
 
 ```bash
-apt install -y git wget curl nano net-tools iotop htop unzip sudo mtr sshpass autossh screen tmux openssl sqlite3 rsync rclone gnupg jq tcpdump nload telnet socat pv ethtool procps strace hping3 uuid-runtime iputils-ping fakeroot speedtest-cli
+apt install -y git wget curl nano net-tools iodtop htop unzip sudo mtr sshpass autossh screen tmux openssl sqlite3 rsync rclone gnupg jq tcpdump nload telnet socat pv ethtool procps strace hping3 uuid-runtime iputils-ping fakeroot speedtest-cli
 ```
 
 ## Security Tools
@@ -15,7 +15,7 @@ apt install -y git wget curl nano net-tools iotop htop unzip sudo mtr sshpass au
 Debian, Ubuntu, popOS:
 
 ```bash
-apt install -y rkhunter lynis chkrootkit clamav clamav-daemon 
+apt install -y rkhunter lynis chkrootkit clamav clamav-daemon
 ```
 
 ## Docker
@@ -68,6 +68,7 @@ apt install -y sudo curl; cd $(mktemp -d) && _version=$(curl --silent "https://a
 ```
 
 <<<<<<< HEAD
+
 ## Docker-Compose Arm64/Aarch64
 
 ```bash
@@ -75,13 +76,15 @@ apt install -y sudo curl; cd $(mktemp -d) && _version=$(curl --silent "https://a
 ```
 
 =======
+
 ## Docker-Compose arm64/aarch64
 
 ```bash
 apt install -y sudo curl; cd "$(mktemp -d)" && _version=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); curl -L "https://github.com/docker/compose/releases/download/$_version/docker-compose-linux-aarch64" -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/
 ```
 
->>>>>>> a7ea34b60f288c9fd457256dfa6a8e7630464459
+> > > > > > > a7ea34b60f288c9fd457256dfa6a8e7630464459
+
 ## Kompose
 
 ### Debian/Ubuntu
@@ -169,7 +172,7 @@ flatpak install -y com.github.tchx84.Flatseal ca.desrt.dconf-editor
 ### Flatpak - GNOME Software Center Plugin
 
 ```bash
-sudo apt-get install -y  gnome-software-plugin-flatpak 
+sudo apt-get install -y  gnome-software-plugin-flatpak
 ```
 
 ## NVM
@@ -195,7 +198,7 @@ wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 ## Upterm
 
 ```bash
-_owner="owenthereal" && _repo="upterm" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); sudo curl -L --silent "https://github.com/$_owner/$_repo/releases/download/$_version/upterm_linux_amd64.tar.gz" -o /tmp/upterm.tar.gz && tar -xf /tmp/upterm.tar.gz && sudo install /tmp/upterm /usr/bin/upterm 
+_owner="owenthereal" && _repo="upterm" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); sudo curl -L --silent "https://github.com/$_owner/$_repo/releases/download/$_version/upterm_linux_amd64.tar.gz" -o /tmp/upterm.tar.gz && tar -xf /tmp/upterm.tar.gz && sudo install /tmp/upterm /usr/bin/upterm
 ```
 
 ## Btop
@@ -242,7 +245,6 @@ vagrant plugin install vagrant-vbguest
 vagrant up
 vagrant vbguest
 ```
-
 
 ## Jabba
 
@@ -587,7 +589,7 @@ curl -fsSL https://raw.githubusercontent.com/tilt-dev/tilt/master/scripts/instal
 Fedora, CentOS, RHEL:
 
 ```bash
-cd $(mktemp -d) && _owner="mongodb-js" && _repo="compass" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); _version_no_v=$(echo $_version | sed 's/v//g'); wget "https://github.com/$_owner/$_repo/releases/download/$_version/mongodb-compass-isolated-${_version_no_v}.x86_64.rpm" -O mongo.rpm && sudo dnf install mongo.rpm && rm -rf ./mongo.rpm 
+cd $(mktemp -d) && _owner="mongodb-js" && _repo="compass" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); _version_no_v=$(echo $_version | sed 's/v//g'); wget "https://github.com/$_owner/$_repo/releases/download/$_version/mongodb-compass-isolated-${_version_no_v}.x86_64.rpm" -O mongo.rpm && sudo dnf install mongo.rpm && rm -rf ./mongo.rpm
 ```
 
 ## Golang
@@ -648,7 +650,8 @@ cd $(mktemp -d) && _repo="clients" && _owner="bitwarden" && _tag=$(curl -s https
 
 Fedora, CentOS, RHEL:
 
-```cd $(mktemp -d) && _repo="clients" && _owner="bitwarden" && _tag=$(curl -s https://github.com/$_owner/$_repo/tags | grep -oP 'href="\K[^"]*' | grep -oP 'desktop-v\d+\.\d+\.\d+' | head -n 1); _version=$(echo $_tag | cut -d'-' -f2 | grep -oP '\d+\.\d+\.\d+') && curl -L "https://github.com/$_owner/$_repo/releases/download/$_tag/Bitwarden-$_version-amd64.rpm" -o "Bitwarden.deb" && sudo dpkg -i Bitwarden.rpm
+```cd $(mktemp -d) && _repo="clients" && _owner="bitwarden" && _tag=$(curl -s https://github.com/$_owner/$_repo/tags | grep -oP 'href="\K[^"]*' | grep -oP 'desktop-v\d+.\d+.\d+' | head -n 1); _version=$(echo $_tag | cut -d'-' -f2 | grep -oP '\d+.\d+.\d+') && curl -L "https://github.com/$_owner/$_repo/releases/download/$_tag/Bitwarden-$_version-amd64.rpm" -o "Bitwarden.deb" && sudo dpkg -i Bitwarden.rpm
+
 ```
 
 ## 1Password
@@ -833,7 +836,7 @@ rm -rf $HOME/snap/
 sudo rm -rf /var/cache/snapd/
 sudo rm -rf /etc/apt/sources.list.d/snapd.list
 sudo apt autoremove --purge snapd
-echo 
+echo
 
 
 /etc/apt/preferences.d/nosnap.pref
