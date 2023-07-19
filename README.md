@@ -67,8 +67,6 @@ apt install -y sudo curl; cd $(mktemp -d) && _version=$(curl --silent "https://a
 apt install -y sudo curl; cd $(mktemp -d) && _version=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); curl -L "https://github.com/docker/compose/releases/download/$_version/docker-compose-armv7" -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/
 ```
 
-<<<<<<< HEAD
-
 ## Docker-Compose Arm64/Aarch64
 
 ```bash
@@ -82,8 +80,6 @@ apt install -y sudo curl; cd $(mktemp -d) && _version=$(curl --silent "https://a
 ```bash
 apt install -y sudo curl; cd "$(mktemp -d)" && _version=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); curl -L "https://github.com/docker/compose/releases/download/$_version/docker-compose-linux-aarch64" -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/
 ```
-
-> > > > > > > a7ea34b60f288c9fd457256dfa6a8e7630464459
 
 ## Kompose
 
@@ -372,7 +368,7 @@ apt-get install -y awscli
 Debian, Ubuntu, popOS:
 
 ```bash
-_owner="rustdesk" && _repo="rustdesk" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); cd /tmp; sudo curl -L --silent "https://github.com/$_owner/$_repo/releases/download/$_version/rustdesk-$_version.deb" -o /tmp/rustdesk.deb && dpkg -i /tmp/rustdesk.deb; apt-get -f install
+_owner="rustdesk" && _repo="rustdesk" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); cd /tmp; sudo curl -L --silent "https://github.com/$_owner/$_repo/releases/download/$_version/rustdesk-$_version-x86_64.deb" -o /tmp/rustdesk.deb && sudo dpkg -i /tmp/rustdesk.deb; sudo apt-get -f install
 ```
 
 Fedora, CentOS, RHEL:
