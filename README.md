@@ -680,6 +680,14 @@ Linux x86_64:
 cd $(mktemp -d) && _owner="gabrie30" && _repo="ghorg" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); _version_no_v=$(echo $_version | sed 's/v//g'); wget "https://github.com/$_owner/$_repo/releases/download/$_version/ghorg_${_version_no_v}_Linux_x86_64.tar.gz" && tar -xvzf "ghorg_${_version_no_v}_Linux_x86_64.tar.gz" ghorg && sudo install -m 755 ghorg /usr/local/bin/ghorg
 ```
 
+## git-crpyt
+
+Linux x86_64 (needs libcrypt 1.1...):
+
+```bash
+cd $(mktemp -d) && _owner="AGWA" && _repo="git-crypt" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); _version_no_v=$(echo $_version | sed 's/v//g'); wget "https://github.com/$_owner/$_repo/releases/download/$_version_no_v/git-crypt-${_version_no_v}-linux-x86_64" && sudo install -m 755 git-crypt* /usr/local/bin/git-crypt
+```
+
 ## KeePassXC
 
 Debian, Ubuntu, PopOS:
