@@ -800,6 +800,14 @@ sudo curl -s -o /etc/yum.repos.d/skype-stable.repo https://repo.skype.com/rpm/st
 sudo dnf install skypeforlinux -y
 ```
 
+## Slackdump
+
+Debian, Ubuntu, PopOS (x64/86):
+
+```bash
+cd $(mktemp -d) && _owner="rusq" && _repo="slackdump" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); _version_no_v=$(echo $_version | sed 's/v//g'); wget "https://github.com/$_owner/$_repo/releases/download/$_version/slackdump_Linux_x86_64.tar.gz" -O slackdump.tar.gz && tar -xf slackdump.tar.gz && sudo install ./slackdump /usr/bin
+```
+
 ## Zoom
 
 Debian, Ubuntu, PopOS:
