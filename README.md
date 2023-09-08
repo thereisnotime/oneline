@@ -680,6 +680,21 @@ Linux x86_64:
 cd $(mktemp -d) && _owner="gabrie30" && _repo="ghorg" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); _version_no_v=$(echo $_version | sed 's/v//g'); wget "https://github.com/$_owner/$_repo/releases/download/$_version/ghorg_${_version_no_v}_Linux_x86_64.tar.gz" && tar -xvzf "ghorg_${_version_no_v}_Linux_x86_64.tar.gz" ghorg && sudo install -m 755 ghorg /usr/local/bin/ghorg
 ```
 
+## Megatools
+
+Linux x86_64:
+
+```bash
+cd $(mktemp -d) && \
+  _owner="megatools" && \
+  _repo="megatools" && \
+  _version=$(curl --silent "https://api.example.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && \
+  _archive_name="megatools-${_version}-linux-x86_64.tar.gz" && \
+  wget "https://megatools.megous.com/builds/builds/$_archive_name" && \
+  tar -xvzf "$_archive_name" megatools && \
+  sudo install -m 755 megatools /usr/local/bin/megatools
+```
+
 ## git-crpyt
 
 Linux x86_64 (needs libcrypt 1.1...):
