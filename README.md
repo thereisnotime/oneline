@@ -588,6 +588,12 @@ Fedora, CentOS, RHEL:
 cd $(mktemp -d) && _owner="mongodb-js" && _repo="compass" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); _version_no_v=$(echo $_version | sed 's/v//g'); wget "https://github.com/$_owner/$_repo/releases/download/$_version/mongodb-compass-isolated-${_version_no_v}.x86_64.rpm" -O mongo.rpm && sudo dnf install mongo.rpm && rm -rf ./mongo.rpm
 ```
 
+## Mongo Tools
+
+```bash
+cd $(mktemp -d) && curl https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2204-x86_64-100.8.0.deb -o mongo-tools.deb && sudo dpkg -i mongo-tools.deb && rm -rf ./mongo-tools.deb
+```
+
 ## Golang
 
 ```bash
