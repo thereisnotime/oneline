@@ -215,6 +215,12 @@ apt install -y make sudo; cd "$(mktemp -d)" && _version=$(curl --silent "https:/
 cd $(mktemp -d) && wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy && install ./cloud_sql_proxy /usr/bin
 ```
 
+## VirtualBox Sharing Folders
+
+```bash
+sudo adduser $USER vboxsf
+```
+
 ## VirtualBox Guest Additions
 
 ### Option 1 - Mounting
