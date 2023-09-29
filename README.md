@@ -39,6 +39,13 @@ systemctl start docker
 du -sch /var/cache/apt/archives/ && sudo apt-get clean; du -sch /var/cache/apt/archives/
 ```
 
+## Minikube
+
+```bash
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
+sudo dpkg -i minikube_latest_amd64.deb
+```
+
 ## Minikube arm64/aarch64
 
 ```bash
@@ -510,6 +517,15 @@ brew install asdf
 ```
 
 ## Lens
+
+Lens:
+
+```bash
+curl -fsSL https://downloads.k8slens.dev/keys/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/lens-archive-keyring.gpg > /dev/null
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/lens-archive-keyring.gpg] https://downloads.k8slens.dev/apt/debian stable main" | sudo tee /etc/apt/sources.list.d/lens.list > /dev/null
+sudo apt update
+sudo apt install lens
+```
 
 OpenLens:
 
