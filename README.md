@@ -18,6 +18,23 @@ Debian, Ubuntu, popOS:
 apt install -y rkhunter lynis chkrootkit clamav clamav-daemon
 ```
 
+## OpenVPN
+
+```bash
+sudo apt-get install -y openvpn easy-rsa network-manager-openvpn
+sudo systemctl restart NetworkManager
+```
+
+## Fortigate
+
+```bash
+cd /tmp
+curl https://filestore.fortinet.com/forticlient/forticlient_vpn_7.0.7.0246_amd64.deb -o forticlient.deb
+sudo dpkg -i forti*
+sudo apt-get install -f
+rm -rf ./forticlient.deb
+```
+
 ## Docker
 
 ```bash
