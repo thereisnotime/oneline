@@ -209,6 +209,14 @@ With bash:
 wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 ```
 
+## yq
+
+With curl:
+
+```bash
+_owner="mikefarah" && _repo="yq" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); sudo curl -L --silent "https://github.com/$_owner/$_repo/releases/download/$_version/yq_linux_amd64" -o /tmp/yq && sudo install /tmp/yq /usr/bin/yq
+```
+
 ## Micro
 
 ```bash
