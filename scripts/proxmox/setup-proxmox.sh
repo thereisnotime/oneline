@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 #shellcheck disable=SC2317
-_SCRIPT_VERSION="1.0"
+_SCRIPT_VERSION="1.1"
 _SCRIPT_NAME="SETUP PROXMOX"
 ###########################
 # Configuration
 ###########################
+_CFG_REMOVE_LICENSE_NOTIFICATION="true"
+_CFG_REMOVE_OSPROBER="true"
+_CFG_REMOVE_ENTERPRISE_REPO="true"
 
 ###########################
 # Functions
@@ -55,10 +58,20 @@ trap 'failure "${BASH_LINENO[*]}" "$LINENO" "${FUNCNAME[*]:-script}" "$?" "$BASH
 ###########################
 log "Starting script" "INFO"
 log "Updating system" "INFO"
-log "Removing license notification" "INFO"
-sed -i 's/data.status !== "Active"/false/g' /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js
-log "Remove os-prober" "INFO"
-apt-get remove -y os-prober
+if [[ "$_CONFIG_REMOVE_LICENSE_NOTIFICATION" == "true" ]]; then
+    log "Removing license notification" "INFO"
+    sed -i 's/data.status !== "Active"/false/g' /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js
+fi
+if [[ "$_CONFIG_REMOVE_OSPROBER" == "true" ]]; then
+    log "Removing os-prober" "INFO"
+    apt-get remove -y os-prober
+fi
+if [[ "$_CONFIG_REMOVE_ENTERPRISE_REPO" == "true" ]]; then
+    log "Removing enterprise repo" "INFO"
+    sed -i "s/^deb/#deb/g" /etc/apt/sources.list.d/pve-enterprise.list
+    apt-get update
+fi
+
 
 ###########################
 # Clean Exit
