@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #shellcheck disable=SC2317
-_SCRIPT_VERSION="1.1"
+_SCRIPT_VERSION="1.2"
 _SCRIPT_NAME="EXTRA TERMINAL"
 ###########################
 # Configuration
@@ -57,7 +57,13 @@ function install_packages() {
 }
 function setup_omb() {
     log "Setting up Oh My Bash" "INFO"
-    bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
+    # if its installed skip
+    if [ -d "$HOME/.oh-my-bash" ]; then
+        log "Oh My Bash is already installed" "INFO"
+        return
+    else
+        bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
+    fi
     log "Configuring Oh My Bash for all users" "INFO"
 
     # Set the minimum UID for non-system (non-default) users
