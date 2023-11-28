@@ -5,7 +5,7 @@ _SCRIPT_NAME="SETUP GENERIC"
 ###########################
 # Configuration
 ###########################
-# Put your global configuration here.
+_SETUP_UTF8="true"
 
 ###########################
 # Functions
@@ -55,10 +55,20 @@ trap 'failure "${BASH_LINENO[*]}" "$LINENO" "${FUNCNAME[*]:-script}" "$?" "$BASH
 # Main
 ###########################
 log "Starting script" "INFO"
-log 
+log "Updating system" "INFO"
 apt-get update
 apt-get upgrade -f
 apt-get dist-upgrade -f
+log "Cleaning up" "INFO"
+apt-get autoremove -f
+log "Setting up locales" "INFO"
+if [[ "$_SETUP_UTF8" == "true" ]]; then
+    log "Setting up UTF-8" "INFO"
+    apt-get install -y locales
+    locale-gen en_US.UTF-8
+    update-locale LANG=en_US.UTF-8
+    dpkg-reconfigure locales
+fi
 
 ###########################
 # Clean Exit
