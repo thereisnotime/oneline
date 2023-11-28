@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #shellcheck disable=SC2317
-_SCRIPT_VERSION="1.0"
+_SCRIPT_VERSION="1.1"
 _SCRIPT_NAME="EXTRA TERMINAL"
 ###########################
 # Configuration
@@ -59,6 +59,7 @@ function setup_omb() {
     log "Setting up Oh My Bash" "INFO"
     bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
     log "Configuring Oh My Bash for all users" "INFO"
+
     # Set the minimum UID for non-system (non-default) users
     MIN_UID=1000
 
@@ -92,13 +93,28 @@ function setup_omb() {
                     sed -i "s/# $config/$config/" "$bashrc_file"
                 fi
 
-                # Configure plugins
-                plugins_formatted=$(format_array "${plugins[@]}")
-                sed -i "/^plugins=/,/)/c\plugins=(\n$plugins_formatted)" "$bashrc_file"
+                # Backup original .bashrc
+                cp "$bashrc_file" "${bashrc_file}.bak"
 
-                # Configure completions
-                completions_formatted=$(format_array "${completions[@]}")
-                sed -i "/^completions=/,/)/c\completions=(\n$completions_formatted)" "$bashrc_file"
+                # Read .bashrc, make changes, and write back
+                {
+                    rm "$bashrc_file"
+                    while IFS= read -r line; do
+                        if [[ $line == "plugins=("* ]]; then
+                            echo "plugins=("
+                            format_array "${plugins[@]}"
+                            echo ")"
+                            continue
+                        fi
+                        if [[ $line == "completions=("* ]]; then
+                            echo "completions=("
+                            format_array "${completions[@]}"
+                            echo ")"
+                            continue
+                        fi
+                        echo "$line"
+                    done < "${bashrc_file}.bak"
+                } > "$bashrc_file"
             fi
         fi
     done < /etc/passwd
