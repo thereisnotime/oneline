@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #shellcheck disable=SC2317
-_SCRIPT_VERSION="1.2"
+_SCRIPT_VERSION="1.3"
 _SCRIPT_NAME="SETUP PROXMOX"
 ###########################
 # Configuration
@@ -70,11 +70,13 @@ fi
 if [[ "$_CFG_REMOVE_ENTERPRISE_REPO" == "true" ]]; then
     log "Removing enterprise repo" "INFO"
     sed -i "s/^deb/#deb/g" /etc/apt/sources.list.d/pve-enterprise.list
-    apt-get update
 fi
 if [[ "$_CFG_REMOVE_CEPH_REPO" == "true" ]]; then
     log "Removing ceph repo" "INFO"
     sed -i "s/^deb/#deb/g" /etc/apt/sources.list.d/ceph.list
+fi
+if [[ "$_CFG_REMOVE_ENTERPRISE_REPO" == "true" || "$_CFG_REMOVE_CEPH_REPO" == "true" ]]; then
+    log "Updating repositories" "INFO"
     apt-get update
 fi
 
