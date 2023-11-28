@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #shellcheck disable=SC2317
-_SCRIPT_VERSION="1.2"
+_SCRIPT_VERSION="1.3"
 _SCRIPT_NAME="EXTRA TERMINAL"
 ###########################
 # Configuration
@@ -84,44 +84,47 @@ function setup_omb() {
         # Process for root or non-default users
         if [ "$uid" -eq 0 ] || [ "$uid" -ge "$MIN_UID" ] && [ -d "$home_dir" ]; then
             bashrc_file="$home_dir/.bashrc"
-            if [ -f "$bashrc_file" ]; then
+            if [ ! -f "$bashrc_file" ]; then
+                log "Creating .bashrc for User: $username" "INFO"
+                touch "$bashrc_file"
+            else
                 log "Updating .bashrc for User: $username" "INFO"
-
-                # Append and modify the .bashrc file
-                echo "DISABLE_UPDATE_PROMPT=true" >> "$bashrc_file"
-                sed -i 's/OSH_THEME=".*"/OSH_THEME="90210"/g' "$bashrc_file"
-
-                # Configure language
-                config='export LANG=en_US.UTF-8'
-                if ! grep -q "$config" "$bashrc_file"; then
-                    echo "$config" >> "$bashrc_file"
-                else
-                    sed -i "s/# $config/$config/" "$bashrc_file"
-                fi
-
-                # Backup original .bashrc
-                cp "$bashrc_file" "${bashrc_file}.bak"
-
-                # Read .bashrc, make changes, and write back
-                {
-                    rm "$bashrc_file"
-                    while IFS= read -r line; do
-                        if [[ $line == "plugins=("* ]]; then
-                            echo "plugins=("
-                            format_array "${plugins[@]}"
-                            echo ")"
-                            continue
-                        fi
-                        if [[ $line == "completions=("* ]]; then
-                            echo "completions=("
-                            format_array "${completions[@]}"
-                            echo ")"
-                            continue
-                        fi
-                        echo "$line"
-                    done < "${bashrc_file}.bak"
-                } > "$bashrc_file"
             fi
+
+            # Append and modify the .bashrc file
+            echo "DISABLE_UPDATE_PROMPT=true" >> "$bashrc_file"
+            sed -i 's/OSH_THEME=".*"/OSH_THEME="90210"/g' "$bashrc_file"
+
+            # Configure language
+            config='export LANG=en_US.UTF-8'
+            if ! grep -q "$config" "$bashrc_file"; then
+                echo "$config" >> "$bashrc_file"
+            else
+                sed -i "s/# $config/$config/" "$bashrc_file"
+            fi
+
+            # Backup original .bashrc
+            cp "$bashrc_file" "${bashrc_file}.bak"
+
+            # Read .bashrc, make changes, and write back
+            {
+                rm "$bashrc_file"
+                while IFS= read -r line; do
+                    if [[ $line == "plugins=("* ]]; then
+                        echo "plugins=("
+                        format_array "${plugins[@]}"
+                        echo ")"
+                        continue
+                    fi
+                    if [[ $line == "completions=("* ]]; then
+                        echo "completions=("
+                        format_array "${completions[@]}"
+                        echo ")"
+                        continue
+                    fi
+                    echo "$line"
+                done < "${bashrc_file}.bak"
+            } > "$bashrc_file"
         fi
     done < /etc/passwd
 }
