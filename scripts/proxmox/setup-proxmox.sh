@@ -58,15 +58,15 @@ trap 'failure "${BASH_LINENO[*]}" "$LINENO" "${FUNCNAME[*]:-script}" "$?" "$BASH
 ###########################
 log "Starting script" "INFO"
 log "Updating system" "INFO"
-if [[ "$_CONFIG_REMOVE_LICENSE_NOTIFICATION" == "true" ]]; then
+if [[ "$_CFG_REMOVE_LICENSE_NOTIFICATION" == "true" ]]; then
     log "Removing license notification" "INFO"
     sed -i 's/data.status !== "Active"/false/g' /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js
 fi
-if [[ "$_CONFIG_REMOVE_OSPROBER" == "true" ]]; then
+if [[ "$_CFG_REMOVE_OSPROBER" == "true" ]]; then
     log "Removing os-prober" "INFO"
     apt-get remove -y os-prober
 fi
-if [[ "$_CONFIG_REMOVE_ENTERPRISE_REPO" == "true" ]]; then
+if [[ "$_CFG_REMOVE_ENTERPRISE_REPO" == "true" ]]; then
     log "Removing enterprise repo" "INFO"
     sed -i "s/^deb/#deb/g" /etc/apt/sources.list.d/pve-enterprise.list
     apt-get update
