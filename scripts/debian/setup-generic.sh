@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #shellcheck disable=SC2317
-_SCRIPT_VERSION="1.0"
+_SCRIPT_VERSION="1.4"
 _SCRIPT_NAME="SETUP GENERIC"
 ###########################
 # Configuration
@@ -44,6 +44,33 @@ function failure() {
     if [[ "$_lineno_fns" != "0" ]]; then _lineno="${_lineno} ${_lineno_fns}"; fi
     log "Error in ${BASH_SOURCE[1]}:${_fn}[${_lineno}] Failed with status ${_exitstatus}: ${_msg}" "ERROR"
 }
+function check_root() {
+    log "Checking if script is run as root" "INFO"
+    if [[ "$EUID" -ne 0 ]]; then
+        log "This script must be run as root" "ERROR"
+        exit 1
+    fi
+}
+function set_locale() {
+    log "Setting locale" "INFO"
+    if [[ "$_SETUP_UTF8" == "true" ]]; then
+        log "Setting up UTF-8" "INFO"
+        locale-gen en_US.UTF-8
+        sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen
+        update-locale LANG=en_US.UTF-8
+    fi
+}
+function update_system() {
+    log "Updating system" "INFO"
+    apt-get update
+    apt-get upgrade -f
+    apt-get dist-upgrade -f
+    apt-get autoremove -f
+}
+function install_packages() {
+    log "Installing packages" "INFO"
+    apt-get install -y -f "$@"
+}
 
 ###########################
 # Error Handling
@@ -55,20 +82,11 @@ trap 'failure "${BASH_LINENO[*]}" "$LINENO" "${FUNCNAME[*]:-script}" "$?" "$BASH
 # Main
 ###########################
 log "Starting script" "INFO"
-log "Updating system" "INFO"
-apt-get update
-apt-get upgrade -f
-apt-get dist-upgrade -f
-log "Cleaning up" "INFO"
-apt-get autoremove -f
-log "Setting up locales" "INFO"
-if [[ "$_SETUP_UTF8" == "true" ]]; then
-    log "Setting up UTF-8" "INFO"
-    apt-get install -y locales
-    locale-gen en_US.UTF-8
-    update-locale LANG=en_US.UTF-8
-    dpkg-reconfigure locales
-fi
+check_root
+update_system
+set_locale
+# NOTE: Takes around 229 MB
+install_packages curl wget git vim nano htop tmux nmon screen net-tools iotop unzip sudo mtr sshpass ncdu autossh openssl sqlite3 rsync rclone gnupg jq tcpdump iputils-ping speedtest-cli ethtool pv socat yq
 
 ###########################
 # Clean Exit

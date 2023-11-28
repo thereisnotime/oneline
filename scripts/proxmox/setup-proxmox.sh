@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #shellcheck disable=SC2317
-_SCRIPT_VERSION="1.3"
+_SCRIPT_VERSION="1.4"
 _SCRIPT_NAME="SETUP PROXMOX"
 ###########################
 # Configuration
@@ -47,6 +47,13 @@ function failure() {
     if [[ "$_lineno_fns" != "0" ]]; then _lineno="${_lineno} ${_lineno_fns}"; fi
     log "Error in ${BASH_SOURCE[1]}:${_fn}[${_lineno}] Failed with status ${_exitstatus}: ${_msg}" "ERROR"
 }
+function check_root() {
+    log "Checking if script is run as root" "INFO"
+    if [[ "$EUID" -ne 0 ]]; then
+        log "This script must be run as root" "ERROR"
+        exit 1
+    fi
+}
 
 ###########################
 # Error Handling
@@ -58,6 +65,7 @@ trap 'failure "${BASH_LINENO[*]}" "$LINENO" "${FUNCNAME[*]:-script}" "$?" "$BASH
 # Main
 ###########################
 log "Starting script" "INFO"
+check_root
 log "Updating system" "INFO"
 if [[ "$_CFG_REMOVE_LICENSE_NOTIFICATION" == "true" ]]; then
     log "Removing license notification" "INFO"
