@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #shellcheck disable=SC2317
-_SCRIPT_VERSION="1.3"
+_SCRIPT_VERSION="1.4"
 _SCRIPT_NAME="EXTRA TERMINAL"
 ###########################
 # Configuration
@@ -103,9 +103,6 @@ function setup_omb() {
                 sed -i "s/# $config/$config/" "$bashrc_file"
             fi
 
-            # Backup original .bashrc
-            cp "$bashrc_file" "${bashrc_file}.bak"
-
             # Read .bashrc, make changes, and write back
             {
                 rm "$bashrc_file"
@@ -123,7 +120,7 @@ function setup_omb() {
                         continue
                     fi
                     echo "$line"
-                done < "${bashrc_file}.bak"
+                done < "${bashrc_file}"
             } > "$bashrc_file"
         fi
     done < /etc/passwd
