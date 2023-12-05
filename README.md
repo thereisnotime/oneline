@@ -958,3 +958,28 @@ apt update
 sudo sed -i 's/#WaylandEnable=false/WaylandEnable=false/' /etc/gdm3/custom.conf
 sudo systemctl restart gdm
 ```
+
+## Asdf Addons
+
+```bash
+asdf plugin-add helm https://github.com/Antiarchitect/asdf-helm.git
+asdf plugin-add boundary https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin-add consul https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin-add levant https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin-add nomad https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin-add packer https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin-add sentinel https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin-add serf https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin-add terraform https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin-add terraform-ls https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin-add tfc-agent https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin-add vault https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin-add waypoint https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin add gcloud https://github.com/jthegedus/asdf-gcloud
+asdf install nodejs latest
+asdf global nodejs latest
+asdf install helm latest
+asdf global helm latest
+asdf install terraform latest
+asdf global terraform latest
+```
