@@ -762,6 +762,14 @@ sudo sh -c 'echo -e "[1password]\nname=1Password Stable Channel\nbaseurl=https:/
 sudo dnf install -y 1password
 ```
 
+## DO CLI
+
+Debian, Ubuntu, PopOS:
+
+```bash
+cd $(mktemp -d) && _owner="digitalocean" && _repo="doctl" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); _version_no_v=$(echo $_version | sed 's/v//g'); sudo curl -L --silent "https://github.com/$_owner/$_repo/releases/download/$_version/doctl-$_version_no_v-linux-amd64.tar.gz" -o "doctl.tar.gz" && tar -xvzf "doctl.tar.gz" doctl && sudo install -m 755 doctl /usr/local/bin/doctl
+```
+
 ## Ghorg
 
 Linux x86_64:
