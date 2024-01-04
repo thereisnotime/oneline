@@ -976,6 +976,39 @@ echo
 apt update
 ```
 
+Server option:
+
+```bash
+for snap in $(snap list | awk '!/^(Name|core|lxd|snapd)/ {print $1}')
+do
+    echo "Removing $snap"
+    sudo snap remove "$snap"
+done
+echo "Removing lxd"
+sudo snap remove lxd
+echo "Removing core* packages"
+for corepkg in $(snap list | awk '/^core/ {print $1}')
+do
+    echo "Removing $corepkg"
+    sudo snap remove "$corepkg"
+done
+echo "Removing snapd"
+sudo snap remove snapd
+echo "All specified snap packages have been removed."
+sudo apt remove --autoremove -y snapd
+PREF_FILE="/etc/apt/preferences.d/nosnap.pref"
+echo "Creating $PREF_FILE to stop snapd installation"
+sudo bash -c "cat << EOF > $PREF_FILE
+Package: snapd
+Pin: release a=*
+Pin-Priority: -10
+EOF"
+echo "$PREF_FILE has been created successfully."
+echo "Contents of $PREF_FILE:"
+sudo cat "$PREF_FILE"
+apt update
+```
+
 ## Switch from Wayland to X11 (Debian and GDM based)
 
 ```bash
