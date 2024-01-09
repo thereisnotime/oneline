@@ -831,6 +831,28 @@ cd ./azure-storage-explorer
 echo "You can now run it with $HOME/Software/azure-storage-explore/StorageExplorer"
 ```
 
+## Dynmotd
+
+Debian, Ubuntu, PopOS:
+
+```bash
+apt install -y coreutils bc procps hostname sed mawk grep bind9-host lsb-release git
+sudo -i
+git clone https://github.com/rtulke/dynmotd.git
+cd dynmotd
+./dynmotd.sh --install
+```
+
+CentOS, Rocky Linux and RedHat:
+
+```bash
+yum install -y bc bind-utils redhat-lsb-core git 
+sudo -i
+git clone https://github.com/rtulke/dynmotd.git
+cd dynmotd
+./dynmotd.sh --install
+```
+
 ## Firefox - no Snap
 
 Debian, Ubuntu, PopOS:
