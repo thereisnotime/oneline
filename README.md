@@ -831,6 +831,38 @@ cd ./azure-storage-explorer
 echo "You can now run it with $HOME/Software/azure-storage-explore/StorageExplorer"
 ```
 
+## VMWare Workstation
+
+Debian, Ubuntu, PopOS:
+
+```bash
+_VERSION="17.5.0-22583795"
+# Install GCC (it is required in order to install vmmon and vmnet kernel modules
+sudo add-apt-repository ppa:ubuntu-toolchain-r/ppa -y
+sudo apt update
+sudo apt install -y g++-12 gcc-12
+# Manual install of vmmon and vmnet (issues on Ubuntu 22.04)
+VMWARE_VERSION=workstation-17.5.0 #This needs to be the actual name of the appropriate branch in mkubecek's GitHub repo for your purposes
+TMP_FOLDER=/tmp/patch-vmware
+rm -fdr $TMP_FOLDER
+mkdir -p $TMP_FOLDER
+cd $TMP_FOLDER
+git clone https://github.com/mkubecek/vmware-host-modules.git #Use `git branch -a` to find all available branches and find the one that's appropriate for you
+cd $TMP_FOLDER/vmware-host-modules
+git checkout $VMWARE_VERSION
+git fetch
+make
+sudo make install
+sudo rm /usr/lib/vmware/lib/libz.so.1/libz.so.1
+sudo ln -s /lib/x86_64-linux-gnu/libz.so.1 /usr/lib/vmware/lib/libz.so.1/libz.so.1
+sudo systemctl restart vmware && vmware &
+# Install build-essential
+sudo apt install build-essential linux-headers-$(uname -r) -y
+wget https://download3.vmware.com/software/WKST-1750-LX/VMware-Workstation-Full-$_VERSION.x86_64.bundle
+sudo chmod +x VMware-Workstation-Full-$_VERSION.x86_64.bundle
+sudo ./VMware-Workstation-Full-$_VERSION.x86_64.bundle
+```
+
 ## Dynmotd
 
 Debian, Ubuntu, PopOS:
