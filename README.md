@@ -56,6 +56,14 @@ systemctl start docker
 du -sch /var/cache/apt/archives/ && sudo apt-get clean; du -sch /var/cache/apt/archives/
 ```
 
+## Stern
+
+```bash
+asdf plugin-add stern
+asdf install stern latest
+asdf global stern latest
+```
+
 ## Minikube
 
 ```bash
