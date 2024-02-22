@@ -662,8 +662,16 @@ cd $(mktemp -d) && _owner="tilt-dev" && _repo="ctlptl" && _version=$(curl --sile
 
 Tilt:
 
+Debian, Ubuntu, PopOS:
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/tilt-dev/tilt/master/scripts/install.sh | bash
+```
+
+Windows 10/11:
+
+```powershell
+iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/tilt-dev/tilt/master/scripts/install.ps1'))
 ```
 
 ## Mongo Compass
