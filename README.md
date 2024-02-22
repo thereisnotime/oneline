@@ -145,6 +145,16 @@ sed -i 's/font/90210/g' "$HOME/.bashrc"
 echo "DISABLE_UPDATE_PROMPT=true" >> "$HOME/.bashrc"
 ```
 
+## Scoop
+
+Windows 10/11:
+
+```powershell
+# As user
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression
+```
+
 ## Oh-my-zsh
 
 ```bash
