@@ -155,6 +155,22 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression
 ```
 
+## Powershell Core
+
+Dabian, Ubuntu, PopOS:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y wget apt-transport-https software-properties-common
+source /etc/os-release
+wget -q https://packages.microsoft.com/config/ubuntu/$VERSION_ID/packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
+rm packages-microsoft-prod.deb
+sudo apt-get update
+sudo apt-get install -y powershell
+pwsh
+```
+
 ## Oh-my-zsh
 
 ```bash
@@ -543,8 +559,6 @@ sudo apt install -y virtualbox
 ```
 
 Fedora, CentOS, RHEL:
-Dependencies:
-Fedora 36:
 
 ```bash
 sudo dnf -y install @development-tools
@@ -1113,6 +1127,9 @@ asdf plugin-add tfc-agent https://github.com/asdf-community/asdf-hashicorp.git
 asdf plugin-add vault https://github.com/asdf-community/asdf-hashicorp.git
 asdf plugin-add waypoint https://github.com/asdf-community/asdf-hashicorp.git
 asdf plugin add gcloud https://github.com/jthegedus/asdf-gcloud
+asdf plugin add awscli
+asdf install awscli latest
+asdf global awscli latest
 asdf install nodejs latest
 asdf global nodejs latest
 asdf install helm latest
