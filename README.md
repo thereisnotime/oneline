@@ -964,6 +964,15 @@ sudo dnf config-manager --set-enabled google-chrome
 sudo dnf install google-chrome-stable
 ```
 
+## Veracrypt
+
+Debian, Ubuntu, PopOS:
+
+```bash
+sudo add-apt-repository ppa:unit193/encryption -y
+sudo apt-get install -y veracrypt
+```
+
 ## Microsoft Teams
 
 Debian, Ubuntu, PopOS:
