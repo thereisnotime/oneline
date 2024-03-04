@@ -356,6 +356,32 @@ sudo apt-get install -y kubectl
 brew install kubectl
 ```
 
+## Nautilus - GNOME - Biased setup
+
+Debian, Ubuntu, PopOS:
+
+```bash
+# Nautilus
+# NOTE: Tested on GNOME nautilus 42.6
+sudo apt install -y libnautilus-extension1a git python3-requests python3-nautilus python3-gi nautilus-actions
+# As user
+mkdir ~/.local/share/nautilus-python && mkdir ~/.local/share/nautilus-python/extensions
+# Tools
+sudo apt install -y nautilus-image-converter nautilus-script-audio-convert nautilus-gtkhash nautilus-wipe nautilus-extension-gnome-terminal nautilus-admin nautilus-nextcloud
+# Terminal
+sudo apt install -y python3-psutil python3-pip libglib2.0-bin dconf-editor
+sudo pip3 install nautilus-terminal
+sudo nautilus-terminal --install-system
+# Custom actions
+_temp_dir=$(mktemp -d)
+cd "$_temp_dir" || exit
+git clone https://github.com/bassmanitram/actions-for-nautilus.git
+cd actions-for-nautilus || exit
+sudo apt-get install -y xclip
+make install
+cd /tmp && rm -rf "$_temp_dir"
+```
+
 ## Kubectl arm64/aarch64
 
 ```bash
@@ -1136,8 +1162,14 @@ asdf plugin-add tfc-agent https://github.com/asdf-community/asdf-hashicorp.git
 asdf plugin-add vault https://github.com/asdf-community/asdf-hashicorp.git
 asdf plugin-add waypoint https://github.com/asdf-community/asdf-hashicorp.git
 asdf plugin add gcloud https://github.com/jthegedus/asdf-gcloud
+asdf plugin-add dotnet-core https://github.com/emersonsoares/asdf-dotnet-core.git
+asdf plugin-add java https://github.com/halcyon/asdf-java.git
+asdf install java adoptopenjdk-jre-21.0.2+13.0.LTS
+asdf global java adoptopenjdk-jre-21.0.2+13.0.LTS
 asdf plugin add awscli
 asdf install awscli latest
+asdf install dotnet-core latest
+asdf global dotnet-core latest
 asdf global awscli latest
 asdf install nodejs latest
 asdf global nodejs latest
