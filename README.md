@@ -792,6 +792,14 @@ Debian, Ubuntu, PopOS:
 sudo apt install gnome-shell-extensions gnome-shell-extension-manager -y
 ```
 
+## Rambox
+
+Debian, Ubuntu, PopOS:
+
+```bash
+cd $(mktemp -d) && _repo="download" && _owner="ramboxapp" && _tag=$(curl -s https://github.com/$_owner/$_repo/tags | grep -oP 'href="\K[^"]*' | grep -oP 'desktop-v\d+\.\d+\.\d+' | head -n 1); _version=$(echo $_tag | cut -d'-' -f2 | grep -oP '\d+\.\d+\.\d+'); _version_no_v=$(echo $_version | sed 's/v//g') &&  curl --silent -L "https://github.com/$_owner/$_repo/releases/download/$_tag/Rambox-$_version_no_v-linux-x64.deb" -o "Rambox.deb" && sudo dpkg -i Rambox.deb && rm -rf Rambox.deb
+```
+
 ## Bitwarden
 
 Debian, Ubuntu, PopOS:
