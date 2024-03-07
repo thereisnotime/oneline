@@ -1186,3 +1186,57 @@ asdf global helm latest
 asdf install terraform latest
 asdf global terraform latest
 ```
+
+## K3s
+
+### Setup k3s master
+
+```bash
+curl -sfL https://get.k3s.io | sh -
+```
+
+### Setup k3s master without traefik
+
+```bash
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server" sh -s - --disable-traefik
+```
+
+### Get k3s join token
+
+```bash
+cat /var/lib/rancher/k3s/server/node-token
+```
+
+or
+
+```bash
+_token=$(cat /var/lib/rancher/k3s/server/node-token); _iip=$(hostname -I | awk '{print $1}'); echo "curl -sfL https://get.k3s.io | K3S_URL=https://${_iip}:6443 K3S_TOKEN=${_token} sh -"
+```
+
+### Get k3s kubeconfig
+
+```bash
+_iip=$(hostname -I | awk '{print $1}'); cat /etc/rancher/k3s/k3s.yaml | sed "s/127.0.0.1/${_iip}/g" 
+```
+
+### Setup k3s node
+
+```bash
+curl -sfL https://get.k3s.io | K3S_URL=https://myserver:6443 K3S_TOKEN=mynodetoken sh -
+```
+
+### Uninstall k3s master
+
+To uninstall K3s from a server node, run:
+
+```bash
+/usr/local/bin/k3s-uninstall.sh
+```
+
+### Uninstall k3s node
+
+To uninstall K3s from an agent node, run:
+
+```bash
+/usr/local/bin/k3s-agent-uninstall.sh
+```
