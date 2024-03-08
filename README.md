@@ -1198,7 +1198,7 @@ curl -sfL https://get.k3s.io | sh -
 ### Setup k3s master without traefik
 
 ```bash
-curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server" sh -s - --disable-traefik
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server" sh -s - --disable=traefik
 ```
 
 ### Get k3s join token
