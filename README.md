@@ -1215,8 +1215,16 @@ _token=$(cat /var/lib/rancher/k3s/server/node-token); _iip=$(hostname -I | awk '
 
 ### Get k3s kubeconfig
 
+Internal IP:
+
 ```bash
-_iip=$(hostname -I | awk '{print $1}'); cat /etc/rancher/k3s/k3s.yaml | sed "s/127.0.0.1/${_iip}/g" 
+_iip=$(hostname -I | awk '{print $1}'); cat /etc/rancher/k3s/k3s.yaml | sed "s/127.0.0.1/${_iip}/g" | sed "s/default/$(hostname)/g"
+```
+
+External IP:
+
+```bash
+_eip=$(curl -s ip.rso.bg); cat /etc/rancher/k3s/k3s.yaml | sed "s/127.0.0.1/${_eip}/g"  | sed "s/default/$(hostname)/g"
 ```
 
 ### Setup k3s node
