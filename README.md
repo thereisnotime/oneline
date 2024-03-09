@@ -406,17 +406,6 @@ sudo mv /tmp/eksctl /usr/local/bin
 Debian, Ubuntu:
 
 ```bash
-sudo apt-get update
-sudo apt-get install -y ca-certificates curl
-sudo curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
-echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-sudo apt-get update
-sudo apt-get install -y kubectl
-sudo apt-get update
-sudo apt-get install -y kubectl
-```
-
-```bash
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 ```
@@ -449,6 +438,13 @@ Then it to your rc file:
 
 ```bash
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+```
+
+or:
+
+```bash
+grep -qxF 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"' /root/.bashrc || echo 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"' >> /root/.bashrc
+
 ```
 
 ## Kubecolor
@@ -603,7 +599,6 @@ With autocomplete:
 
 ```bash
 if [ "$EUID" -eq 0 ]; then echo "Please do not run as root or sudo"; exit; fi; if [ ! -d "$HOME/.asdf" ]; then mkdir "$HOME/.asdf"; fi; git clone https://github.com/asdf-vm/asdf.git "$HOME/.asdf"; _shellrc="$HOME/."$(ps -p $$ | tail -1 | awk '{print $NF}')"rc"; if ! grep -q ".asdf/asdf.sh" "$_shellrc"; then echo ". $HOME/.asdf/asdf.sh; . $HOME/.asdf/completions/asdf.bash" >> "$_shellrc"; fi
-
 ```
 
 ```bash
@@ -944,6 +939,7 @@ Debian, Ubuntu, PopOS:
 ```bash
 apt install -y coreutils bc procps hostname sed mawk grep bind9-host lsb-release git
 sudo -i
+cd $HOME
 git clone https://github.com/rtulke/dynmotd.git
 cd dynmotd
 ./dynmotd.sh --install
@@ -1193,6 +1189,7 @@ asdf global terraform latest
 
 ```bash
 curl -sfL https://get.k3s.io | sh -
+sudo k3s kubectl cluster-info
 ```
 
 ### Setup k3s master without traefik
