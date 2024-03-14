@@ -1245,3 +1245,67 @@ To uninstall K3s from an agent node, run:
 ```bash
 /usr/local/bin/k3s-agent-uninstall.sh
 ```
+
+## Setup TPM Unlock of LUKS
+
+Ubuntu 22:
+
+```bash
+# TODO: Remove service restart prompts.
+apt-get update
+apt-get upgrade -y
+mkdir -p $HOME/Workspace/Projects/Public
+cd $HOME/Workspace/Projects/Public
+sudo apt -y install git
+sudo apt -y install \
+  autoconf-archive \
+  libcmocka0 \
+  libcmocka-dev \
+  procps \
+  iproute2 \
+  build-essential \
+  git \
+  pkg-config \
+  gcc \
+  libtool \
+  automake \
+  libssl-dev \
+  uthash-dev \
+  autoconf \
+  doxygen \
+  libjson-c-dev \
+  libini-config-dev \
+  libcurl4-openssl-dev \
+  uuid-dev \
+  libltdl-dev \
+  libusb-1.0-0-dev \
+  libftdi-dev
+git clone https://github.com/tpm2-software/tpm2-tss.git
+cd tpm2-tss
+./bootstrap
+./configure  --with-udevrulesdir=/etc/udev/rules.d/
+make -j`nproc`
+sudo make install
+sudo ldconfig
+sudo udevadm control --reload-rules && sudo udevadm trigger
+sudo pkill -HUP dbus-daemon
+cd ..
+sudo apt -y install libglib2.0-dev
+git clone https://github.com/tpm2-software/tpm2-abrmd.git
+cd tpm2-abrmd
+./bootstrap
+./configure --with-dbuspolicydir=/etc/dbus-1/system.d
+make -j`nproc`
+sudo make install
+sudo ldconfig
+cd ..
+git clone https://github.com/tpm2-software/tpm2-tools.git
+cd tpm2-tools
+./bootstrap
+./configure
+make -j`nproc`
+sudo make install
+sudo ldconfig
+sudo tpm2_getrandom --hex 8
+# TODO: Add cleanup of dev packages.
+```
