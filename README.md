@@ -1308,4 +1308,24 @@ sudo make install
 sudo ldconfig
 sudo tpm2_getrandom --hex 8
 # TODO: Add cleanup of dev packages.
+rm -rf $HOME/Workspace/Projects/Public
+sudo systemctl start tpm2-abrmd.service
+sudo systemctl enable tpm2-abrmd.service
+# NOTE: Setup autounlock for new TPM devices (choose one)
+echo -n 'Enter yout main partition (ex. /dev/sda3 or /dev/nvme0n1p3):'
+read -s MAIN_PART
+echo ""
+systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7 /dev/sda3
+# NOTE: Setup autounlock for old TPM devices (choose one)
+apt-get -y install clevis clevis-tpm2 clevis-luks clevis-initramfs initramfs-tools tss2 clevis-udisks2 clevis-systemd tpm2-openssl
+echo -n Enter LUKS password:
+read -s LUKSKEY
+echo -n 'Enter yout main partition (ex. /dev/sda3 or /dev/nvme0n1p3):'
+read -s MAIN_PART
+echo ""
+clevis luks bind -d $MAIN_PART tpm2 '{"pcr_bank":"sha256"}' <<< "$LUKSKEY"
+update-initramfs -u -k all
+clevis luks list -d $MAIN_PART
+#delete example; -s is one of the slots reported by the previous command
+#clevis luks unbind -d $MAIN_PART -s 1 tpm2
 ```
