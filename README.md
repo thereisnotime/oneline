@@ -15,7 +15,7 @@ apt install -y git wget curl nano net-tools iotop htop unzip sudo mtr sshpass au
 Debian, Ubuntu, popOS:
 
 ```bash
-apt install -y copyq flameshot
+apt install -y copyq flameshot vlc
 ```
 
 ## Security Tools
