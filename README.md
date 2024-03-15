@@ -62,6 +62,8 @@ systemctl start docker
 
 ```bash
 du -sch /var/cache/apt/archives/ && sudo apt-get clean; du -sch /var/cache/apt/archives/
+sudo apt-get autoremove --purge
+rm -rf /tmp/*
 ```
 
 ## Stern
