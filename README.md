@@ -15,7 +15,7 @@ apt install -y git wget curl nano net-tools iotop htop unzip sudo mtr sshpass au
 Debian, Ubuntu, popOS:
 
 ```bash
-apt install -y rkhunter lynis chkrootkit clamav clamav-daemon
+apt install -y rkhunter lynis chkrootkit putty-tools clamav clamav-daemon
 ```
 
 ## OpenVPN
@@ -1149,6 +1149,7 @@ sudo systemctl restart gdm
 ## Asdf Addons
 
 ```bash
+. $HOME/.asdf/asdf.sh; . $HOME/.asdf/completions/asdf.bash
 asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
 asdf plugin-add helm https://github.com/Antiarchitect/asdf-helm.git
 asdf plugin-add boundary https://github.com/asdf-community/asdf-hashicorp.git
