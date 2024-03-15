@@ -105,8 +105,6 @@ apt install -y sudo curl; cd $(mktemp -d) && _version=$(curl --silent "https://a
 apt install -y sudo curl; cd $(mktemp -d) && _version=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); curl -L "https://github.com/docker/compose/releases/download/$_version/docker-compose-linux-aarch64" -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/
 ```
 
-=======
-
 ## Docker-Compose arm64/aarch64
 
 ```bash
@@ -1079,7 +1077,8 @@ apt-get install -y 7zip p7zip-full p7zip-rar
 ## Joplin
 
 ```bash
-sudo wget -O - https://raw.githubusercontent.com/laurent22/joplin/dev/Joplin_install_and_update.sh | bash
+# As user
+wget -O - https://raw.githubusercontent.com/laurent22/joplin/dev/Joplin_install_and_update.sh | bash
 ```
 
 ## VSCode Live Share can't sign in "fix"
@@ -1103,8 +1102,6 @@ sudo rm -rf /var/cache/snapd/
 sudo rm -rf /etc/apt/sources.list.d/snapd.list
 sudo apt autoremove --purge snapd
 echo
-
-
 /etc/apt/preferences.d/nosnap.pref
 apt update
 ```
@@ -1152,6 +1149,7 @@ sudo systemctl restart gdm
 ## Asdf Addons
 
 ```bash
+asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
 asdf plugin-add helm https://github.com/Antiarchitect/asdf-helm.git
 asdf plugin-add boundary https://github.com/asdf-community/asdf-hashicorp.git
 asdf plugin-add consul https://github.com/asdf-community/asdf-hashicorp.git
@@ -1171,6 +1169,8 @@ asdf plugin-add java https://github.com/halcyon/asdf-java.git
 asdf install java adoptopenjdk-jre-21.0.2+13.0.LTS
 asdf global java adoptopenjdk-jre-21.0.2+13.0.LTS
 asdf plugin add awscli
+asdf install nodejs latest
+asdf global nodejs latest
 asdf install awscli latest
 asdf install dotnet-core latest
 asdf global dotnet-core latest
@@ -1244,6 +1244,19 @@ To uninstall K3s from an agent node, run:
 
 ```bash
 /usr/local/bin/k3s-agent-uninstall.sh
+```
+
+## Ubuntu Codecs
+
+```bash
+sudo apt-get install -y ubuntu-restricted-extras
+```
+
+## Tilix
+
+```bash
+sudo apt-get install -y tilix
+sudo ln -s /etc/profile.d/vte-2.91.sh /etc/profile.d/vte.sh
 ```
 
 ## Setup TPM Unlock of LUKS
