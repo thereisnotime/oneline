@@ -10,6 +10,14 @@ Debian, Ubuntu, popOS:
 apt install -y git wget curl nano net-tools iotop htop unzip sudo mtr sshpass autossh screen tmux openssl sqlite3 rsync rclone gnupg jq tcpdump nload telnet socat pv ethtool procps strace hping3 uuid-runtime iputils-ping fakeroot speedtest-cli
 ```
 
+## Basic Desktop Tools
+
+Debian, Ubuntu, popOS:
+
+```bash
+apt install -y copyq flameshot
+```
+
 ## Security Tools
 
 Debian, Ubuntu, popOS:
@@ -1245,6 +1253,13 @@ To uninstall K3s from an agent node, run:
 
 ```bash
 /usr/local/bin/k3s-agent-uninstall.sh
+```
+
+## Podman
+
+```bash
+apt-get install podman -y
+flatpak install -y flathub io.podman_desktop.PodmanDesktop
 ```
 
 ## Ubuntu Codecs
