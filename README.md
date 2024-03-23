@@ -66,6 +66,18 @@ sudo apt-get autoremove --purge
 rm -rf /tmp/*
 ```
 
+## asdf
+
+With autocomplete:
+
+```bash
+[ "$EUID" -eq 0 ] && echo "Please do not run as root or sudo" && exit; [ -d "$HOME/.asdf" ] && rm -rf "$HOME/.asdf" || mkdir "$HOME/.asdf"; git clone https://github.com/asdf-vm/asdf.git "$HOME/.asdf"; _shellrc="$HOME/."$(ps -p $$ | tail -1 | awk '{print $NF}')"rc"; grep -q ".asdf/asdf.sh" "$_shellrc" || echo ". $HOME/.asdf/asdf.sh; . $HOME/.asdf/completions/asdf.bash" >> "$_shellrc";
+```
+
+```bash
+brew install asdf
+```
+
 ## Stern
 
 ```bash
@@ -605,18 +617,6 @@ VirtualBox:
 
 ```bash
 sudo dnf install -y VirtualBox
-```
-
-## asdf
-
-With autocomplete:
-
-```bash
-if [ "$EUID" -eq 0 ]; then echo "Please do not run as root or sudo"; exit; fi; if [ ! -d "$HOME/.asdf" ]; then mkdir "$HOME/.asdf"; fi; git clone https://github.com/asdf-vm/asdf.git "$HOME/.asdf"; _shellrc="$HOME/."$(ps -p $$ | tail -1 | awk '{print $NF}')"rc"; if ! grep -q ".asdf/asdf.sh" "$_shellrc"; then echo ". $HOME/.asdf/asdf.sh; . $HOME/.asdf/completions/asdf.bash" >> "$_shellrc"; fi
-```
-
-```bash
-brew install asdf
 ```
 
 ## Lens
