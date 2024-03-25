@@ -21,3 +21,5 @@ Expand-Archive -Path $zipPath -DestinationPath $tempDir
 Copy-Item -Path (Join-Path -Path $tempDir -ChildPath "doctl.exe") -Destination (Join-Path -Path $installPath -ChildPath "doctl.exe")
 Remove-Item -Path $tempDir -Recurse -Force
 ```
+
+## TODO: Add https://gitlab.com/openconnect/openconnect-gui/-/releases/v1.6.1/evidences/8001003.json
