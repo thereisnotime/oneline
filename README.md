@@ -666,6 +666,15 @@ sudo apt update
 sudo apt-get install -y terraform
 ```
 
+## Terraform-docs
+
+```bash
+curl -sSLo ./terraform-docs.tar.gz https://terraform-docs.io/dl/v0.17.0/terraform-docs-v0.17.0-$(uname)-amd64.tar.gz
+tar -xzf terraform-docs.tar.gz
+chmod +x terraform-docs
+sudo mv terraform-docs /usr/local/bin/
+```
+
 ## Terraform-cloud-cli
 
 ```bash
