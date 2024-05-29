@@ -1107,6 +1107,15 @@ apt-get install -y 7zip p7zip-full p7zip-rar
 wget -O - https://raw.githubusercontent.com/laurent22/joplin/dev/Joplin_install_and_update.sh | bash
 ```
 
+## Status
+
+```bash
+sudo apt-get install -y libefuse2
+cd /tmp
+wget https://objects.githubusercontent.com/github-production-release-asset-2e65be/261270348/6dfa6ca8-4cd4-4d9e-8990-23612f56af92?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=releaseassetproduction%2F20240529%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240529T105643Z&X-Amz-Expires=300&X-Amz-Signature=4c9d1852e05a255161eca425b73d3f90f5c18b3d11509c7c642b0842aae01f59&X-Amz-SignedHeaders=host&actor_id=37583483&key_id=0&repo_id=261270348&response-content-disposition=attachment%3B%20filename%3DStatusIm-Desktop-v2.28.1-ee0590-x86_64.tar.gz&response-content-type=application%2Foctet-stream
+# install as appimage
+```
+
 ## VSCode Live Share can't sign in "fix"
 
 For Ubuntu 22.XX:
