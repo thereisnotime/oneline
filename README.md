@@ -1116,6 +1116,14 @@ wget https://objects.githubusercontent.com/github-production-release-asset-2e65b
 # install as appimage
 ```
 
+## Keybase
+
+```bash
+curl --remote-name https://prerelease.keybase.io/keybase_amd64.deb
+sudo apt install ./keybase_amd64.deb
+run_keybase
+```
+
 ## VSCode Live Share can't sign in "fix"
 
 For Ubuntu 22.XX:
