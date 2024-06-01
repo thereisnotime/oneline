@@ -1140,6 +1140,14 @@ rm -rf -i libssl1.1_1.1.0g-2ubuntu4_amd64.deb
 cd /tmp; git clone https://github.com/thereisnotime/xxToolbelt && mkdir "$HOME/.xxtoolbelt" && mv ./xxToolbelt/* "$HOME/.xxtoolbelt" && echo -ne "# START xxToolbelt\nsource \"$HOME/.xxtoolbelt/xxtoolbelt.sh\"\n# END xxToolbelt" >> "$HOME/.$(ps -p $$ -ocomm=)rc" && source "$HOME/.$(ps -p $$ -ocomm=)rc" && echo -ne "\n\e[1;32m======= xxToolbelt was installed. Try 'xxtb'\e[m\n"
 ```
 
+## Homebrew
+
+NOTE: Add to your bashrc file: `eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"`
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
 ## apt-fast
 
 ```bash
