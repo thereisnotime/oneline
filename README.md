@@ -1134,6 +1134,14 @@ sudo dpkg -i ./libssl1.1_1.1.0g-2ubuntu4_amd64.deb
 rm -rf -i libssl1.1_1.1.0g-2ubuntu4_amd64.deb
 ```
 
+## apt-fast
+
+```bash
+sudo add-apt-repository ppa:apt-fast/stable
+sudo apt-get update
+sudo apt-get -y install apt-fast
+```
+
 ## Remove Snap and all its packages Debian, Ubuntu, PopOS
 
 ```bash
