@@ -1490,5 +1490,5 @@ flatpak install -y cc.arduino.IDE2 io.dbeaver.DBeaverCommunity com.redis.RedisIn
 ## Flatpak: System Tooling
 
 ```bash
-flatpak install -y io.github.hakandundar34coding.system-monitoring-center io.github.prateekmedia.appimagepool io.github.giantpinkrobots.flatsweep it.mijorus.gearlever com.usebottles.bottles 
+flatpak install -y io.github.hakandundar io.missioncenter.MissionCenter io.github.prateekmedia.appimagepool io.github.giantpinkrobots.flatsweep it.mijorus.gearlever com.usebottles.bottles 
 ```
