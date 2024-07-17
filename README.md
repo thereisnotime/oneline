@@ -1444,3 +1444,9 @@ sudo tee /etc/apparmor.d/usr.bin.firefox << 'EOF'
 /sys/devices/**/hidraw/hidraw*/uevent r,
 EOF
 ```
+
+## Add FIDO MFA Support
+
+```bash
+apt install -y libfido2-1 libfido2-dev libfido2-doc fido2-tools libpam-u2f
+```
