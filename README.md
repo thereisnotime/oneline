@@ -240,7 +240,7 @@ brew install kubeseal
 ```bash
 sudo apt install flatpak -y
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak install -y com.github.tchx.Flatseal ca.desrt.dconf-editor io.github.giantpinkrobots.flatsweep
+flatpak install -y com.github.tchx.Flatseal ca.desrt.dconf-editor io.github.giantpinkrobots.flatsweep io.github.flattool.Warehouse
 ```
 
 ### Flatpak - GNOME Software Center Plugin
@@ -1454,7 +1454,7 @@ apt install -y libfido2-1 libfido2-dev libfido2-doc fido2-tools libpam-u2f
 ## Flatpak: User Software
 
 ```bash
-flatpak install -y me.kozec.syncthingtk  nz.mega.MEGAsync com.nextcloud.desktopclient.nextcloud com.calibre_ebook.calibre org.filezillaproject.Filezilla org.torproject.torbrowser-launcher com.obsproject.Studio
+flatpak install -y me.kozec.syncthingtk  nz.mega.MEGAsync com.nextcloud.desktopclient.nextcloud com.calibre_ebook.calibre org.filezillaproject.Filezilla org.torproject.torbrowser-launcher com.obsproject.Studio io.github.slgobinath.SafeEyes
 ```
 
 ## Flaptak: Organization
