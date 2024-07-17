@@ -1450,3 +1450,45 @@ EOF
 ```bash
 apt install -y libfido2-1 libfido2-dev libfido2-doc fido2-tools libpam-u2f
 ```
+
+## Flatpak: User Software
+
+```bash
+flatpak install -y me.kozec.syncthingtk  nz.mega.MEGAsync com.nextcloud.desktopclient.nextcloud com.calibre_ebook.calibre org.filezillaproject.Filezilla org.torproject.torbrowser-launcher com.obsproject.Studio
+```
+
+## Flaptak: Organization
+
+```bash
+flatpak install -y md.obsidian.Obsidian net.miok.SpeechNote
+```
+
+## Flaptak: Media
+
+```bash
+flatpak install -y org.gnome.Logs org.shotcut.Shotcut org.gimp.GIMP com.stremio.Stremio com.spotify.Client org.audacityteam.Audacity org.kde.kasts
+```
+
+## Flatpak: Gaming
+
+```bash
+flatpak install -y net.lutris.Lutris org.libretro.RetroArch com.heroicgameslauncher.hgl org.winehq.Wine com.valvesoftware.Steam com.valvesoftware.SteamLink com.parsecgaming.parsec io.itch.itch
+```
+
+## Flatpak: Messaging and Social
+
+```bash
+flatpak install -y im.riot.Riot com.viber.Viber uk.zoom.Zoom io.github.tdesktop_x64.TDesktop com.slack.Slack com.mattermost.Desktop flathub org.kde.tokodon
+```
+
+## Flatpak: Development
+
+```bash
+flatpak install -y cc.arduino.IDE2 io.dbeaver.DBeaverCommunity com.redis.RedisInsight org.apache.directory.studio com.microsoft.AzureStorageExplorer io.kapsa.drive com.getpostman.Postman
+```
+
+## Flatpak: System Tooling
+
+```bash
+flatpak install -y io.github.hakandundar34coding.system-monitoring-center io.github.prateekmedia.appimagepool io.github.giantpinkrobots.flatsweep it.mijorus.gearlever com.usebottles.bottles 
+```
