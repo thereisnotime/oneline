@@ -240,7 +240,7 @@ brew install kubeseal
 ```bash
 sudo apt install flatpak -y
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak install -y com.github.tchx84.Flatseal ca.desrt.dconf-editor
+flatpak install -y com.github.tchx.Flatseal ca.desrt.dconf-editor io.github.giantpinkrobots.flatsweep
 ```
 
 ### Flatpak - GNOME Software Center Plugin
@@ -603,7 +603,7 @@ sudo dnf install -y azure-cli
 Debian, Ubuntu, PopOS:
 
 ```bash
-sudo apt-get install -y qbittorrent vlc remmina
+sudo apt-get install -y qbittorrent vlc remmina remmina-plugin-rdp remmina-plugin-secret remmina-plugin-vnc remmina-plugin-exec remmina-plugin-python remmina-plugin-www
 ```
 
 ## VirtualBox
@@ -1460,7 +1460,7 @@ flatpak install -y me.kozec.syncthingtk  nz.mega.MEGAsync com.nextcloud.desktopc
 ## Flaptak: Organization
 
 ```bash
-flatpak install -y md.obsidian.Obsidian net.miok.SpeechNote
+flatpak install -y md.obsidian.Obsidian net.mkiol.SpeechNote com.github.ryonakano.reco
 ```
 
 ## Flaptak: Media
