@@ -7,7 +7,7 @@ Frequently used one-liners in real life for your copy-pasting needs.
 Debian, Ubuntu, popOS:
 
 ```bash
-apt install -y git wget curl nano net-tools iotop htop unzip sudo mtr sshpass autossh screen tmux openssl sqlite3 rsync rclone gnupg jq tcpdump nload telnet socat pv ethtool procps strace hping3 uuid-runtime iputils-ping fakeroot speedtest-cli fzf bash-completion
+apt install -y git wget curl nano net-tools iotop htop unzip sudo mtr sshpass autossh screen tmux openssl sqlite3 rsync rclone gnupg jq tcpdump nload telnet socat pv ethtool procps strace hping3 uuid-runtime iputils-ping fakeroot speedtest-cli fzf bash-completion lsd bat ripgrep fd-find xclip apt-transport-https software-properties-common 7zip p7zip-full p7zip-rar bzip2 easy-rsa ca-certificates gpg golang
 ```
 
 ## Basic Desktop Tools
@@ -286,7 +286,7 @@ _owner="owenthereal" && _repo="upterm" && _version=$(curl --silent "https://api.
 ## Btop
 
 ```bash
-apt install -y make sudo; cd $(mktemp -d) && _version=$(curl --silent "https://api.github.com/repos/aristocratos/btop/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); wget "https://github.com/aristocratos/btop/releases/download/$_version/btop-x86_64-linux-musl.tbz" -O btop.tbz && tar -xvjf btop.tbz && cd btop && sudo sh install.sh && sudo sh setuid.sh
+apt install -y make sudo bzip2; cd $(mktemp -d) && _version=$(curl --silent "https://api.github.com/repos/aristocratos/btop/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); wget "https://github.com/aristocratos/btop/releases/download/$_version/btop-x86_64-linux-musl.tbz" -O btop.tbz && tar -xvjf btop.tbz && cd btop && sudo sh install.sh && sudo sh setuid.sh
 ```
 
 ## Btop arm64
@@ -598,6 +598,14 @@ Fedora, CentOS, RHEL:
 sudo dnf install -y azure-cli
 ```
 
+## Generic User Software
+
+Debian, Ubuntu, PopOS:
+
+```bash
+sudo apt-get install -y qbittorrent vlc remmina
+```
+
 ## VirtualBox
 
 Debian, Ubuntu, PopOS:
@@ -816,7 +824,7 @@ sudo apt install gnome-shell-extensions gnome-shell-extension-manager -y
 Debian, Ubuntu, PopOS:
 
 ```bash
-cd $(mktemp -d) && _repo="download" && _owner="ramboxapp" && _tag=$(curl -s https://github.com/$_owner/$_repo/tags | grep -oP 'href="\K[^"]*' | grep -oP 'desktop-v\d+\.\d+\.\d+' | head -n 1); _version=$(echo $_tag | cut -d'-' -f2 | grep -oP '\d+\.\d+\.\d+'); _version_no_v=$(echo $_version | sed 's/v//g') &&  curl --silent -L "https://github.com/$_owner/$_repo/releases/download/$_tag/Rambox-$_version_no_v-linux-x64.deb" -o "Rambox.deb" && sudo dpkg -i Rambox.deb && rm -rf Rambox.deb
+cd $(mktemp -d) && _repo="download" && _owner="ramboxapp" && _tag=$(curl -s https://github.com/$_owner/$_repo/tags | grep -oP 'href="\K[^"]*' | grep 'releases\/tag' | head -n 1 | awk -F'/' '{print $NF}'); _version=$(echo $_tag | cut -d'-' -f2 | grep -oP '\d+\.\d+\.\d+'); _version_no_v=$(echo $_version | sed 's/v//g') &&  curl --silent -L "https://github.com/$_owner/$_repo/releases/download/$_tag/Rambox-${_version_no_v}-linux-x64.deb" -o "Rambox.deb" && sudo dpkg -i Rambox.deb && rm -rf Rambox.deb
 ```
 
 ## Bitwarden
@@ -1094,12 +1102,6 @@ wget https://zoom.us/client/latest/zoom_x86_64.rpm
 sudo dnf install -y zoom_x86_64.rpm
 ```
 
-## 7Zip
-
-```bash
-apt-get install -y 7zip p7zip-full p7zip-rar
-```
-
 ## Joplin
 
 ```bash
@@ -1159,16 +1161,27 @@ sudo apt-get -y install apt-fast
 ## Remove Snap and all its packages Debian, Ubuntu, PopOS
 
 ```bash
-sudo snap remove gtk-common-themes
-sudo apt remove --purge --assume-yes snapd gnome-software-plugin-snap
-sudo snap remove $(snap list | awk '{print $1}' | tail -n +2)
-rm -rf $HOME/snap/
-sudo rm -rf /var/cache/snapd/
-sudo rm -rf /etc/apt/sources.list.d/snapd.list
-sudo apt autoremove --purge snapd
-echo
-/etc/apt/preferences.d/nosnap.pref
-apt update
+sudo snap  remove --purge snap-store
+sudo snap  remove --purge firefox
+sudo snap  remove --purge firmware-updater
+sudo snap  remove --purge snapd-desktop-integration
+sudo snap  remove --purge gtk-common-themes
+sudo snap  remove --purge $(snap list --all | grep gnome- | awk '{print $1}')
+sudo snap  remove --purge bare
+sudo snap  remove --purge $(snap list --all | grep core | awk '{print $1}')
+sudo snap  remove --purge snapd
+sudo apt autoremove --purge
+sudo apt-mark hold snapd
+sudo rm -rf $HOME/snap || true
+sudo rm -rf /root/snap || true
+sudo rm -rf /snap || true
+sudo rm -rf /var/snap || true
+sudo rm -rf /var/lib/snapd || true
+sudo rm -rf /var/cache/snapd || true
+sudo rm -rf /etc/apt/sources.list.d/snapd.list || true
+echo -e "Package: snapd\nPin: release a=*\nPin-Priority: -10" | sudo tee /etc/apt/preferences.d/nosnap.pref >/dev/null
+sudo apt-get update
+# NOTE: Now do a reboot.
 ```
 
 Server option:
@@ -1217,6 +1230,7 @@ sudo systemctl restart gdm
 . $HOME/.asdf/asdf.sh; . $HOME/.asdf/completions/asdf.bash
 asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
 asdf plugin-add helm https://github.com/Antiarchitect/asdf-helm.git
+asdf plugin-add kubectl https://github.com/asdf-community/asdf-kubectl.git
 asdf plugin-add boundary https://github.com/asdf-community/asdf-hashicorp.git
 asdf plugin-add consul https://github.com/asdf-community/asdf-hashicorp.git
 asdf plugin-add levant https://github.com/asdf-community/asdf-hashicorp.git
@@ -1247,6 +1261,8 @@ asdf install helm latest
 asdf global helm latest
 asdf install terraform latest
 asdf global terraform latest
+asdf install kubectl latest
+asdf global kubectl latest
 ```
 
 ## K3s
@@ -1315,7 +1331,7 @@ To uninstall K3s from an agent node, run:
 ## Podman
 
 ```bash
-apt-get install podman -y
+sudo apt-get install podman -y
 flatpak install -y flathub io.podman_desktop.PodmanDesktop
 ```
 
@@ -1414,4 +1430,17 @@ update-initramfs -u -k all
 clevis luks list -d $MAIN_PART
 #delete example; -s is one of the slots reported by the previous command
 #clevis luks unbind -d $MAIN_PART -s 1 tpm2
+```
+
+## Allow MFA Device in AppArmor
+
+```bash
+sudo tee /etc/apparmor.d/usr.bin.firefox << 'EOF'
+/sys/class/ r,
+/sys/bus/ r,
+/sys/class/hidraw/ r,
+/run/udev/data/c24{7,9}:* r,
+/dev/hidraw* rw,
+/sys/devices/**/hidraw/hidraw*/uevent r,
+EOF
 ```
