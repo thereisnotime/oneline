@@ -1478,17 +1478,17 @@ flatpak install -y net.lutris.Lutris org.libretro.RetroArch com.heroicgameslaunc
 ## Flatpak: Messaging and Social
 
 ```bash
-flatpak install -y im.riot.Riot com.viber.Viber uk.zoom.Zoom io.github.tdesktop_x64.TDesktop com.slack.Slack com.mattermost.Desktop flathub org.kde.tokodon
+flatpak install -y im.riot.Riot com.viber.Viber io.github.tdesktop_x64.TDesktop com.slack.Slack com.mattermost.Desktop flathub org.kde.tokodon org.signal.Signal
 ```
 
 ## Flatpak: Development
 
 ```bash
-flatpak install -y cc.arduino.IDE2 io.dbeaver.DBeaverCommunity com.redis.RedisInsight org.apache.directory.studio com.microsoft.AzureStorageExplorer io.kapsa.drive com.getpostman.Postman org.soapui.SoapUI org.apache.jmeter
+flatpak install -y cc.arduino.IDE2 io.dbeaver.DBeaverCommunity com.redis.RedisInsight org.apache.directory.studio com.microsoft.AzureStorageExplorer com.getpostman.Postman org.soapui.SoapUI org.apache.jmeter
 ```
 
 ## Flatpak: System Tooling
 
 ```bash
-flatpak install -y io.github.hakandundar io.missioncenter.MissionCenter io.github.prateekmedia.appimagepool io.github.giantpinkrobots.flatsweep it.mijorus.gearlever com.usebottles.bottles 
+flatpak install -y io.github.hakandundar io.missioncenter.MissionCenter io.github.prateekmedia.appimagepool io.github.giantpinkrobots.flatsweep it.mijorus.gearlever com.usebottles.bottles
 ```
