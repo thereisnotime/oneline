@@ -1484,7 +1484,7 @@ flatpak install -y im.riot.Riot com.viber.Viber uk.zoom.Zoom io.github.tdesktop_
 ## Flatpak: Development
 
 ```bash
-flatpak install -y cc.arduino.IDE2 io.dbeaver.DBeaverCommunity com.redis.RedisInsight org.apache.directory.studio com.microsoft.AzureStorageExplorer io.kapsa.drive com.getpostman.Postman
+flatpak install -y cc.arduino.IDE2 io.dbeaver.DBeaverCommunity com.redis.RedisInsight org.apache.directory.studio com.microsoft.AzureStorageExplorer io.kapsa.drive com.getpostman.Postman org.soapui.SoapUI org.apache.jmeter
 ```
 
 ## Flatpak: System Tooling
