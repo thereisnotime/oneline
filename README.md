@@ -1150,6 +1150,20 @@ NOTE: Add to your bashrc file: `eval "$(/home/linuxbrew/.linuxbrew/bin/brew shel
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
+## Scrcpy
+
+```bash
+sudo apt install ffmpeg libsdl2-2.0-0 adb meson wget \
+                 gcc git pkg-config meson ninja-build libsdl2-dev \
+                 libavcodec-dev libsdl2-dev cmake libavformat-dev libavdevice-dev libavformat-dev libavutil-dev \
+                 libswresample-dev libusb-1.0-0 libusb-1.0-0-dev
+sudo su
+cd /opt
+git clone https://github.com/Genymobile/scrcpy
+cd scrcpy
+./install_release.sh
+```
+
 ## apt-fast
 
 ```bash
