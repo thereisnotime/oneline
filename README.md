@@ -1148,6 +1148,12 @@ cd /tmp; git clone https://github.com/thereisnotime/xxToolbelt && mkdir "$HOME/.
 cd $(mktemp -d) && _owner="GyulyVGC" && _repo="sniffnet" && curl -LJ "https://github.com/$_owner/$_repo/releases/latest/download/Sniffnet_LinuxDEB_amd64.deb" -o sniffnet.deb && sudo dpkg -i sniffnet.deb
 ```
 
+## Tempmail
+
+```bash
+curl -L "https://git.io/tempmail" > tempmail && chmod +x tempmail && sudo mv tempmail /usr/bin/tempmail
+```
+
 ## Homebrew
 
 NOTE: Add to your bashrc file: `eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"`
