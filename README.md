@@ -1040,19 +1040,13 @@ sudo apt-get install -y veracrypt
 Debian, Ubuntu, PopOS:
 
 ```bash
-curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/ms-teams stable main" > /etc/apt/sources.list.d/teams.list'
-sudo apt update -y
-sudo apt install teams -y
+flatpak install -y flathub com.github.IsmaelMartinez.teams_for_linux
 ```
 
-Fedora, CentOS, RHEL:
+## Mattermost
 
 ```bash
-sudo sh -c 'echo -e "[teams]\nname=teams\nbaseurl=https://packages.microsoft.com/yumrepos/ms-teams\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/teams.repo'
-sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
-sudo dnf check-update
-sudo dnf install teams -y
+flatpak install -y flathub com.mattermost.Desktop
 ```
 
 ## Slack
