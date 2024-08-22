@@ -1374,6 +1374,24 @@ sudo apt-get install -y tilix
 sudo ln -s /etc/profile.d/vte-2.91.sh /etc/profile.d/vte.sh
 ```
 
+## Teleport Client - tsh
+
+Check server version:
+
+```bash
+curl https://teleport.example.com/webapi/find | jq '.server_version'
+```
+
+Install same version:
+
+```bash
+TSH_VERSION="16.1.4"
+curl -O https://cdn.teleport.dev/teleport-v$TSH_VERSION-linux-amd64-bin.tar.gz
+tar -xzf teleport-v$TSH_VERSION-linux-amd64-bin.tar.gz
+cd teleport
+sudo ./install
+```
+
 ## Setup TPM Unlock of LUKS
 
 Ubuntu 22:
