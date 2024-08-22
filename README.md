@@ -240,7 +240,7 @@ brew install kubeseal
 ```bash
 sudo apt install flatpak -y
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak install -y com.github.tchx.Flatseal ca.desrt.dconf-editor io.github.giantpinkrobots.flatsweep io.github.flattool.Warehouse
+flatpak install -y com.github.tchx84.Flatseal ca.desrt.dconf-editor io.github.giantpinkrobots.flatsweep io.github.flattool.Warehouse
 ```
 
 ### Flatpak - GNOME Software Center Plugin
