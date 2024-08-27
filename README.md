@@ -761,6 +761,12 @@ cd $(mktemp -d) && curl https://fastdl.mongodb.org/tools/db/mongodb-database-too
 apt-get install -y golang
 ```
 
+Update Golang:
+
+```bash
+cd $(mktemp -d) && _version=$(curl -s https://go.dev/dl/ | grep "linux-amd64.tar.gz" | head -n1 | cut -d/ -f3 | cut -d\" -f1) && wget "https://go.dev/dl/$_version" && sudo rm -rf /usr/local/go; sudo rm -rf /usr/bin/go; sudo tar -C /usr/local -xzf "$_version"; sudo ln -s /usr/local/go/bin/go /usr/bin/go
+```
+
 ## tfsec
 
 ```bash
