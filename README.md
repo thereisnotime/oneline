@@ -476,7 +476,7 @@ kubectl krew install access-matrix kurt popeye datree view-allocations view-util
 ## Kubecolor
 
 ```bash
-curl -s https://raw.githubusercontent.com/dty1er/kubecolor/master/scripts/install.sh | bash
+go install github.com/kubecolor/kubecolor@latest
 ```
 
 ## GCloud CLI
