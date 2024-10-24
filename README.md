@@ -1191,9 +1191,7 @@ cd scrcpy
 ## apt-fast
 
 ```bash
-sudo add-apt-repository ppa:apt-fast/stable
-sudo apt-get update
-sudo apt-get -y install apt-fast
+/bin/bash -c "$(curl -sL https://git.io/vokNn)"
 ```
 
 ## Remove Snap and all its packages Debian, Ubuntu, PopOS
