@@ -1280,6 +1280,14 @@ echo "$PREF_FILE has been created successfully."
 echo "Contents of $PREF_FILE:"
 sudo cat "$PREF_FILE"
 apt update
+# Find and unmount all Snap mounts
+mount | grep snap | awk '{print $3}' | while read -r mount_point; do
+  echo "Unmounting $mount_point..."
+  sudo umount "$mount_point"
+done
+sudo apt-get purge snapd -y
+sudo rm -rf /var/cache/snapd/ /var/lib/snapd/ /var/snap /var/lib/app-info/icons/ubuntu-snap/ /snap
+sudo systemctl mask snapd
 ```
 
 ## Switch from Wayland to X11 (Debian and GDM based)
@@ -1391,6 +1399,29 @@ To uninstall K3s from an agent node, run:
 
 ```bash
 /usr/local/bin/k3s-agent-uninstall.sh
+```
+
+### Remove k3s Network and Storage Leftovers
+
+```bash
+# Unmount all tmpfs and nsfs mounts related to K3s and Kubernetes pods
+echo "Unmounting Kubernetes-related tmpfs and nsfs mounts..."
+mount | grep -E '/run/k3s|/var/lib/kubelet|/run/netns' | awk '{print $3}' | while read -r mount_point; do
+  echo "Unmounting $mount_point..."
+  umount "$mount_point"
+done
+# Clean up network namespaces related to CNI
+echo "Removing leftover network namespaces..."
+ip netns list | grep -E 'cni-' | awk '{print $1}' | while read -r netns; do
+  echo "Deleting network namespace $netns..."
+  ip netns delete "$netns"
+done
+# Clean up CNI bridge interfaces if they exist
+echo "Deleting CNI bridge interfaces..."
+ip link show | grep -E 'cni|flannel' | awk '{print $2}' | sed 's/://g' | while read -r interface; do
+  echo "Deleting interface $interface..."
+  ip link delete "$interface" || true
+done
 ```
 
 ## Podman
