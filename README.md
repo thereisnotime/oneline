@@ -1044,6 +1044,35 @@ sudo dnf config-manager --set-enabled google-chrome
 sudo dnf install google-chrome-stable
 ```
 
+## 64Gram - Telegram Client
+
+NOTE: Run it again in order to update.
+
+Debian, Ubuntu, PopOS:
+
+```bash
+_INSTALL_LOCATION="$HOME/Software/64Gram"
+mkdir -p $_INSTALL_LOCATION || true
+cd $(mktemp -d) && _owner="TDesktop-x64" && _repo="tdesktop" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); _version_no_v=$(echo $_version | sed 's/v//g'); wget "https://github.com/$_owner/$_repo/releases/download/$_version/64Gram_${_version_no_v}_linux.zip" -O 64Gram.zip && unzip -o 64Gram.zip -d $_INSTALL_LOCATION && rm 64Gram.zip
+# Get icon
+wget -O $_INSTALL_LOCATION/icon.png https://avatars.githubusercontent.com/u/62358867?s=200&v=4
+# Setup shortcut
+if [ -f ~/.local/share/applications/64Gram.desktop ]; then rm ~/.local/share/applications/64Gram.desktop; fi
+cat > ~/.local/share/applications/64Gram.desktop <<EOL
+[Desktop Entry]
+Version=1.0
+Name=64Gram Telegram
+Comment=Launch 64Gram Telegram Client
+Exec=$HOME/Software/64Gram/Telegram
+Icon=$HOME/Software/64Gram/icon.png
+Terminal=false
+Type=Application
+Categories=Network;Chat;
+EOL
+chmod +x ~/.local/share/applications/64Gram.desktop
+echo "64Gram installed/updated!"
+```
+
 ## Veracrypt
 
 Debian, Ubuntu, PopOS:
