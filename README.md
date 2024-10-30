@@ -46,7 +46,7 @@ rm -rf ./forticlient.deb
 ## Docker
 
 ```bash
-curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh && rm get-docker.sh && sudo usermod -aG docker $USER
+curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh && rm get-docker.sh && sudo usermod -aG docker $USER && newgrp && docker info
 ```
 
 Linux Mint 22:
