@@ -509,6 +509,16 @@ Plugins:
 kubectl krew install access-matrix kurt popeye datree view-allocations view-utilization whoami unlimited topology count df-pv sick-pods advise-policy advise-psp cilium clog browse-pvc blame bd-xray apparmor-manager community-images cost ctx crane ctr datadog debug-pdb doctor dumpy explore gadget mtail graph history images janitor klock konfig kopilot ktop kubescape kubesec-scan kuota-calc kyverno lineage marvin mtail node-admin node-logs node-restart node-shell nodegizmo ns oomd open-svc openebs outdated permissions pexec plogs pod-dive pod-inspect pod-lens pod-logs pod-shell podevents pods-on pv-migrate pvmigrate psp-util prune-unused print-env rbac-view rbac-lookup rbac-tool reap relay rename-pvc rm-standalone-pods score service-tree shovel sniff spy ssh-jump starboard status stern strace tail unused-volumes vela virt viewnode warp who-can windows-debug deprecations get-all kor
 ```
 
+## Flux2
+
+Via asdf:
+
+```bash
+asdf plugin-add flux2 https://github.com/tablexi/asdf-flux2.git
+asdf install flux2 2.3.0
+asdf global flux 2.3.0
+```
+
 ## Kubecolor
 
 ```bash
