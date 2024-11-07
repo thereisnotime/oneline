@@ -147,11 +147,8 @@ apt install -y sudo curl; cd "$(mktemp -d)" && _version=$(curl --silent "https:/
 
 ## Kompose
 
-### Debian/Ubuntu
-
 ```bash
-wget https://github.com/kubernetes/kompose/releases/download/v1.27.0/kompose_1.27.0_amd64.deb # Replace 1.27.0 with latest tag
-sudo apt install ./kompose_1.27.0_amd64.deb
+_v=$(curl -s "https://api.github.com/repos/kubernetes/kompose/releases/latest" | grep html_url.*tag | grep -o 'v[0-9.]\+') && curl -L "https://github.com/kubernetes/kompose/releases/download/$_v/kompose-linux-amd64" -o kompose && chmod +x kompose && sudo mv ./kompose /usr/local/bin/kompose
 ```
 
 ## Oh-my-bash
