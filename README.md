@@ -1382,21 +1382,21 @@ asdf plugin add dotnet-core https://github.com/emersonsoares/asdf-dotnet-core.gi
 asdf plugin add java https://github.com/halcyon/asdf-java.git
 asdf plugin add awscli
 asdf install java adoptopenjdk-jre-21.0.2+13.0.LTS
-asdf global java adoptopenjdk-jre-21.0.2+13.0.LTS
+asdf set -u java adoptopenjdk-jre-21.0.2+13.0.LTS
 asdf install nodejs latest
-asdf global nodejs latest
+asdf set -u nodejs latest
 asdf install awscli latest
 asdf install dotnet-core latest
-asdf global dotnet-core latest
-asdf global awscli latest
+asdf set -u dotnet-core latest
+asdf set -u awscli latest
 asdf install nodejs latest
-asdf global nodejs latest
+asdf set -u nodejs latest
 asdf install helm latest
-asdf global helm latest
+asdf set -u helm latest
 asdf install terraform latest
-asdf global terraform latest
+asdf set -u terraform latest
 asdf install kubectl latest
-asdf global kubectl latest
+asdf set -u kubectl latest
 ```
 
 ## K3s
