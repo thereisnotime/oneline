@@ -91,9 +91,10 @@ cd $(mktemp -d) && \
   sudo install -m 755 asdf /usr/local/bin/asdf
 ```
 
-Add shell completions to your rc file:
+Add shell completions and paths to your rc file:
 
 ```bash
+export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 . <(asdf completion bash)
 ```
 
