@@ -80,14 +80,21 @@ rm -rf /tmp/*
 
 ## asdf
 
-With autocomplete:
-
 ```bash
-[ "$EUID" -eq 0 ] && echo "Please do not run as root or sudo" && exit; [ -d "$HOME/.asdf" ] && rm -rf "$HOME/.asdf" || mkdir "$HOME/.asdf"; git clone https://github.com/asdf-vm/asdf.git "$HOME/.asdf"; _shellrc="$HOME/."$(ps -p $$ | tail -1 | awk '{print $NF}')"rc"; grep -q ".asdf/asdf.sh" "$_shellrc" || echo ". $HOME/.asdf/asdf.sh; . $HOME/.asdf/completions/asdf.bash" >> "$_shellrc";
+cd $(mktemp -d) && \
+  _owner="asdf-vm" && \
+  _repo="asdf" && \
+  _version="v0.16.5" && \
+  _version_no_v=$(echo $_version | sed 's/v//g') && \
+  wget "https://github.com/$_owner/$_repo/releases/download/$_version/asdf-$_version-linux-amd64.tar.gz" && \
+  tar -xvzf "asdf-$_version-linux-amd64.tar.gz" asdf && \
+  sudo install -m 755 asdf /usr/local/bin/asdf
 ```
 
+Add shell completions to your rc file:
+
 ```bash
-brew install asdf
+. <(asdf completion bash)
 ```
 
 ## Stern
@@ -256,6 +263,13 @@ flatpak install -y com.github.tchx84.Flatseal ca.desrt.dconf-editor io.github.gi
 
 ```bash
 sudo apt-get install -y  gnome-software-plugin-flatpak
+```
+
+### Shift + Alt Language Switch on Gnome
+
+```bash
+gsettings set org.gnome.desktop.wm.keybindings switch-input-source "['<Shift>Alt_L']"
+gsettings set org.gnome.desktop.wm.keybindings switch-input-source-backward "['<Alt>Shift_L']"
 ```
 
 ## NVM
