@@ -1362,28 +1362,27 @@ sudo systemctl restart gdm
 ## Asdf Addons
 
 ```bash
-. $HOME/.asdf/asdf.sh; . $HOME/.asdf/completions/asdf.bash
 asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
-asdf plugin-add helm https://github.com/Antiarchitect/asdf-helm.git
-asdf plugin-add kubectl https://github.com/asdf-community/asdf-kubectl.git
-asdf plugin-add boundary https://github.com/asdf-community/asdf-hashicorp.git
-asdf plugin-add consul https://github.com/asdf-community/asdf-hashicorp.git
-asdf plugin-add levant https://github.com/asdf-community/asdf-hashicorp.git
-asdf plugin-add nomad https://github.com/asdf-community/asdf-hashicorp.git
-asdf plugin-add packer https://github.com/asdf-community/asdf-hashicorp.git
-asdf plugin-add sentinel https://github.com/asdf-community/asdf-hashicorp.git
-asdf plugin-add serf https://github.com/asdf-community/asdf-hashicorp.git
-asdf plugin-add terraform https://github.com/asdf-community/asdf-hashicorp.git
-asdf plugin-add terraform-ls https://github.com/asdf-community/asdf-hashicorp.git
-asdf plugin-add tfc-agent https://github.com/asdf-community/asdf-hashicorp.git
-asdf plugin-add vault https://github.com/asdf-community/asdf-hashicorp.git
-asdf plugin-add waypoint https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin add helm https://github.com/Antiarchitect/asdf-helm.git
+asdf plugin add kubectl https://github.com/asdf-community/asdf-kubectl.git
+asdf plugin add boundary https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin add consul https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin add levant https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin add nomad https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin add packer https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin add sentinel https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin add serf https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin add terraform https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin add terraform-ls https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin add tfc-agent https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin add vault https://github.com/asdf-community/asdf-hashicorp.git
+asdf plugin add waypoint https://github.com/asdf-community/asdf-hashicorp.git
 asdf plugin add gcloud https://github.com/jthegedus/asdf-gcloud
-asdf plugin-add dotnet-core https://github.com/emersonsoares/asdf-dotnet-core.git
-asdf plugin-add java https://github.com/halcyon/asdf-java.git
+asdf plugin add dotnet-core https://github.com/emersonsoares/asdf-dotnet-core.git
+asdf plugin add java https://github.com/halcyon/asdf-java.git
+asdf plugin add awscli
 asdf install java adoptopenjdk-jre-21.0.2+13.0.LTS
 asdf global java adoptopenjdk-jre-21.0.2+13.0.LTS
-asdf plugin add awscli
 asdf install nodejs latest
 asdf global nodejs latest
 asdf install awscli latest
