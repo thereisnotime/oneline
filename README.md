@@ -1381,6 +1381,7 @@ asdf plugin add waypoint https://github.com/asdf-community/asdf-hashicorp.git
 asdf plugin add gcloud https://github.com/jthegedus/asdf-gcloud
 asdf plugin add dotnet-core https://github.com/emersonsoares/asdf-dotnet-core.git
 asdf plugin add java https://github.com/halcyon/asdf-java.git
+asdf plugin add azure-cli https://github.com/EcoMind/asdf-azure-cli
 asdf plugin add awscli
 asdf install java adoptopenjdk-jre-21.0.2+13.0.LTS
 asdf set -u java adoptopenjdk-jre-21.0.2+13.0.LTS
@@ -1398,6 +1399,8 @@ asdf install terraform latest
 asdf set -u terraform latest
 asdf install kubectl latest
 asdf set -u kubectl latest
+asdf install azure-cli latest
+asdf set -u azure-cli latest
 ```
 
 ## K3s
