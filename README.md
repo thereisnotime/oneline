@@ -1489,6 +1489,13 @@ ip link show | grep -E 'cni|flannel' | awk '{print $2}' | sed 's/://g' | while r
 done
 ```
 
+## Nextcloud
+
+```bash
+mkdir -p ~/AppImages && _tag=$(curl -s https://api.github.com/repos/nextcloud-releases/desktop/releases/latest | jq -r '.tag_name') && _ver="${_tag#v}" && curl -sL "https://github.com/nextcloud-releases/desktop/releases/download/${_tag}/Nextcloud-${_ver}-x86_64.AppImage" -o ~/AppImages/Nextcloud.AppImage && chmod +x ~/AppImages/Nextcloud.AppImage
+
+```
+
 ## Podman
 
 ```bash
@@ -1633,7 +1640,7 @@ apt install -y libfido2-1 libfido2-dev libfido2-doc fido2-tools libpam-u2f
 ## Flatpak: User Software
 
 ```bash
-flatpak install -y me.kozec.syncthingtk  nz.mega.MEGAsync com.nextcloud.desktopclient.nextcloud com.calibre_ebook.calibre org.filezillaproject.Filezilla org.torproject.torbrowser-launcher com.obsproject.Studio io.github.slgobinath.SafeEyes
+flatpak install -y me.kozec.syncthingtk  nz.mega.MEGAsync com.calibre_ebook.calibre org.filezillaproject.Filezilla org.torproject.torbrowser-launcher com.obsproject.Studio io.github.slgobinath.SafeEyes
 ```
 
 ## Flaptak: Organization
