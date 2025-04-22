@@ -526,9 +526,9 @@ kubectl krew install access-matrix kurt popeye datree view-allocations view-util
 Via asdf:
 
 ```bash
-asdf plugin-add flux2 https://github.com/tablexi/asdf-flux2.git
-asdf install flux2 2.3.0
-asdf global flux 2.3.0
+asdf plugin add flux2 https://github.com/tablexi/asdf-flux2.git
+asdf install flux2 latest
+asdf set -u flux latest
 ```
 
 ## Kubecolor
