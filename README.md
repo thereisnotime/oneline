@@ -896,7 +896,7 @@ sudo apt install gnome-shell-extensions gnome-shell-extension-manager -y
 Debian, Ubuntu, PopOS:
 
 ```bash
-cd $(mktemp -d) && _repo="download" && _owner="ramboxapp" && _tag=$(curl -s https://github.com/$_owner/$_repo/tags | grep -oP 'href="\K[^"]*' | grep 'releases\/tag' | head -n 1 | awk -F'/' '{print $NF}'); _version=$(echo $_tag | cut -d'-' -f2 | grep -oP '\d+\.\d+\.\d+'); _version_no_v=$(echo $_version | sed 's/v//g') &&  curl --silent -L "https://github.com/$_owner/$_repo/releases/download/$_tag/Rambox-${_version_no_v}-linux-x64.deb" -o "Rambox.deb" && sudo dpkg -i Rambox.deb && rm -rf Rambox.deb
+cd $(mktemp -d) && _owner="ramboxapp" && _repo="download" && _tag=$(curl -s https://api.github.com/repos/$_owner/$_repo/releases/latest | jq -r '.tag_name') && _ver="${_tag#v}" && curl -sL "https://github.com/$_owner/$_repo/releases/download/$_tag/Rambox-${_ver}-linux-x64.deb" -o Rambox.deb && sudo dpkg -i Rambox.deb && rm -f Rambox.deb
 ```
 
 ## Bitwarden
@@ -1669,5 +1669,5 @@ flatpak install -y cc.arduino.IDE2 io.dbeaver.DBeaverCommunity com.redis.RedisIn
 ## Flatpak: System Tooling
 
 ```bash
-flatpak install -y io.github.hakandundar io.missioncenter.MissionCenter io.github.prateekmedia.appimagepool io.github.giantpinkrobots.flatsweep it.mijorus.gearlever com.usebottles.bottles
+flatpak install -y io.missioncenter.MissionCenter io.github.prateekmedia.appimagepool io.github.giantpinkrobots.flatsweep it.mijorus.gearlever com.usebottles.bottles
 ```
