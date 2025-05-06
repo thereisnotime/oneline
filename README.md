@@ -1155,8 +1155,17 @@ flatpak install -y flathub com.github.IsmaelMartinez.teams_for_linux
 
 ## Mattermost
 
+Flatpack:
+
 ```bash
 flatpak install -y flathub com.mattermost.Desktop
+```
+
+Debian, Ubuntu, PopOS:
+
+```bash
+curl -fsS -o- https://deb.packages.mattermost.com/setup-repo.sh | sudo bash
+sudo apt install mattermost-desktop -y
 ```
 
 ## Slack
