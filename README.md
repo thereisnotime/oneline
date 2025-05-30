@@ -1505,6 +1505,32 @@ mkdir -p ~/AppImages && _tag=$(curl -s https://api.github.com/repos/nextcloud-re
 
 ```
 
+AppImage:
+
+```bash
+mkdir -p ~/AppImages ~/.local/share/applications ~/.icons
+ver="3.16.4"
+appimage_path=~/AppImages/Nextcloud.AppImage
+curl -sL "https://github.com/nextcloud-releases/desktop/releases/download/v${ver}/Nextcloud-${ver}-x86_64.AppImage" -o "$appimage_path"
+chmod +x "$appimage_path"
+icon_url="https://static-00.iconduck.com/assets.00/nextcloud-icon-512x512-9r19op3c.png"
+icon_path=~/.icons/nextcloud.png
+curl -sL "$icon_url" -o "$icon_path"
+desktop_entry=~/.local/share/applications/nextcloud-appimage.desktop
+rm -f "$desktop_entry"
+cat > "$desktop_entry" <<EOF
+[Desktop Entry]
+Name=Nextcloud
+Exec=$appimage_path
+Icon=$icon_path
+Type=Application
+Categories=Network;FileTransfer;
+Comment=Nextcloud Client (AppImage)
+Terminal=false
+EOF
+echo "Nextcloud installed with icon."
+```
+
 ## Podman
 
 ```bash
