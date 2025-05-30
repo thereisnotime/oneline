@@ -1512,6 +1512,34 @@ sudo apt-get install podman -y
 flatpak install -y flathub io.podman_desktop.PodmanDesktop
 ```
 
+## Librewolf
+
+AppImage:
+
+```bash
+mkdir -p ~/AppImages ~/.local/share/applications ~/.icons
+ver=$(curl -s 'https://gitlab.com/api/v4/projects/24386000/packages?package_name=librewolf' | jq -r '.[0].version')
+appimage_path=~/AppImages/LibreWolf.AppImage
+curl -sL "https://gitlab.com/api/v4/projects/24386000/packages/generic/librewolf/${ver}/LibreWolf.x86_64.AppImage" -o "$appimage_path"
+chmod +x "$appimage_path"
+icon_url="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/LibreWolf_icon.svg/1200px-LibreWolf_icon.svg.png"
+icon_path=~/.icons/librewolf.png
+curl -sL "$icon_url" -o "$icon_path"
+desktop_entry=~/.local/share/applications/librewolf-appimage.desktop
+rm -f "$desktop_entry"
+cat > "$desktop_entry" <<EOF
+[Desktop Entry]
+Name=LibreWolf
+Exec=$appimage_path
+Icon=$icon_path
+Type=Application
+Categories=Network;WebBrowser;
+Comment=LibreWolf Browser (AppImage)
+Terminal=false
+EOF
+echo "LibreWolf installed with icon."
+```
+
 ## Ubuntu Codecs
 
 ```bash
