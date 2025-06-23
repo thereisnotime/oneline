@@ -46,7 +46,7 @@ rm -rf ./forticlient.deb
 ## Docker
 
 ```bash
-curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh && rm get-docker.sh && sudo usermod -aG docker $USER && newgrp && docker info
+curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh && rm get-docker.sh && sudo usermod -aG docker $USER && newgrp docker && docker info
 ```
 
 Linux Mint 22:
@@ -1536,6 +1536,20 @@ echo "Nextcloud installed with icon."
 ```bash
 sudo apt-get install podman -y
 flatpak install -y flathub io.podman_desktop.PodmanDesktop
+```
+
+## AppImageLauncher
+
+```bash
+# https://github.com/TheAssassin/AppImageLauncher/releases/download/v3.0.0-alpha-4/appimagelauncher_3.0.0-alpha-4-gha253.36951ec_amd64.deb
+cd $(mktemp -d) && \
+  _owner="TheAssassin" && \
+  _repo="AppImageLauncher" && \
+  _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); \
+  wget "
+
+  
+
 ```
 
 ## Librewolf
