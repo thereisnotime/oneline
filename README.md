@@ -1695,6 +1695,12 @@ clevis luks list -d $MAIN_PART
 #clevis luks unbind -d $MAIN_PART -s 1 tpm2
 ```
 
+## OBS
+
+```bash
+
+```
+
 ## Allow MFA Device in AppArmor
 
 ```bash
