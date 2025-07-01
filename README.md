@@ -1552,6 +1552,12 @@ cd $(mktemp -d) && \
 
 ```
 
+## OnlyOffice
+
+```bash
+mkdir -p ~/AppImages && curl -L https://github.com/ONLYOFFICE/appimage-desktopeditors/releases/download/v9.0.0/DesktopEditors-x86_64.AppImage -o ~/AppImages/OnlyOffice.AppImage && chmod +x ~/AppImages/OnlyOffice.AppImage
+```
+
 ## Librewolf
 
 AppImage:
