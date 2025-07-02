@@ -7,7 +7,7 @@ Frequently used one-liners in real life for your copy-pasting needs.
 Debian, Ubuntu, popOS:
 
 ```bash
-apt install -y git wget curl nano net-tools iotop htop unzip sudo mtr sshpass autossh screen tmux openssl sqlite3 rsync rclone gnupg jq tcpdump nload telnet socat pv ethtool procps strace hping3 uuid-runtime iputils-ping fakeroot speedtest-cli fzf bash-completion lsd bat ripgrep fd-find xclip apt-transport-https software-properties-common 7zip p7zip-full p7zip-rar bzip2 easy-rsa ca-certificates gpg golang exfat-fuse exfatprogs nfs-common libfuse2t64
+apt install -y git wget curl nano net-tools iotop htop unzip sudo mtr sshpass autossh screen tmux openssl sqlite3 rsync rclone gnupg jq tcpdump nload telnet socat pv ethtool procps strace hp@ting3 uuid-runtime iputils-ping fakeroot speedtest-cli fzf bash-completion lsd bat ripgrep fd-find xclip apt-transport-https software-properties-common 7zip p7zip-full p7zip-rar bzip2 easy-rsa ca-certificates gpg golang exfat-fuse exfatprogs nfs-common libfuse2t64
 ```
 
 ## Basic Desktop Tools
@@ -250,6 +250,20 @@ cd $(mktemp -d) && _owner="bitnami-labs" && _repo="sealed-secrets" && _version=$
 
 ```bash
 brew install kubeseal
+```
+
+## Gitpack
+
+Local (user) installation:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/dominiksalvet/gitpack/master/.install/initl.sh | sh
+```
+
+Global (system) installation:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/dominiksalvet/gitpack/master/.install/initg.sh | sh
 ```
 
 ## Flatpak
