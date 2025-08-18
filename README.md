@@ -719,6 +719,20 @@ cd $(mktemp -d) && _owner="MuhammedKalkan" && _repo="OpenLens" && _version=$(cur
 brew cask install lens
 ```
 
+## TermShot
+
+```bash
+cd "$(mktemp -d)" && \
+_owner="homeport" _repo="termshot" && \
+_version=$(curl -s "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && \
+_url="https://github.com/$_owner/$_repo/releases/download/$_version/termshot_${_version#v}_linux_amd64.tar.gz" && \
+wget -q "$_url" && \
+tar -xzf termshot_*_linux_amd64.tar.gz && \
+sudo install -m 0755 termshot /usr/local/bin/termshot && \
+termshot --version
+```
+
+
 ## Infisical CLI
 
 ```bash
