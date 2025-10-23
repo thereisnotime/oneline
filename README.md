@@ -1575,9 +1575,6 @@ cd $(mktemp -d) && \
   _repo="AppImageLauncher" && \
   _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")'); \
   wget "
-
-  
-
 ```
 
 ## OnlyOffice
@@ -1643,6 +1640,14 @@ curl -O https://cdn.teleport.dev/teleport-v$TSH_VERSION-linux-amd64-bin.tar.gz
 tar -xzf teleport-v$TSH_VERSION-linux-amd64-bin.tar.gz
 cd teleport
 sudo ./install
+```
+
+## Pluto
+
+```bash
+asdf plugin add pluto
+asdf install pluto latest
+asdf set -u pluto latest
 ```
 
 ## Setup TPM Unlock of LUKS
