@@ -391,8 +391,25 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/powershell.min.js"></script>
     
     <script>
+        // Helper to create slug from text
+        function slugify(text) {
+            return text.toLowerCase()
+                .replace(/[^\w\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-')
+                .trim();
+        }
+
+        // Custom renderer for headings with IDs
+        const renderer = new marked.Renderer();
+        renderer.heading = function(text, level) {
+            const slug = slugify(text);
+            return `<h${level} id="${slug}">${text}</h${level}>`;
+        };
+
         // Configure marked
         marked.setOptions({
+            renderer: renderer,
             highlight: function(code, lang) {
                 if (lang && hljs.getLanguage(lang)) {
                     return hljs.highlight(code, { language: lang }).value;
