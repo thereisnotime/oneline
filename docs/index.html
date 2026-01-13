@@ -21,6 +21,18 @@
             --code-bg: #1c2128;
             --success: #3fb950;
             --warning: #d29922;
+            --purple: #a371f7;
+        }
+
+        /* Scroll progress bar */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--purple));
+            z-index: 1000;
+            transition: width 0.1s ease;
         }
 
         * {
@@ -79,6 +91,38 @@
             color: var(--text-muted);
             font-size: 0.85rem;
             margin-top: 0.5rem;
+        }
+
+        .stats-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--bg-tertiary);
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.75rem;
+        }
+
+        .stats-badge span {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .kbd {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 0.15rem 0.4rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+            pointer-events: none;
         }
 
         /* Search */
@@ -277,9 +321,22 @@
             border: 1px solid var(--border);
             border-radius: 8px;
             padding: 1rem 1.25rem;
+            padding-top: 2.2rem;
             overflow-x: auto;
             margin: 1rem 0 1.5rem;
             position: relative;
+        }
+
+        .code-lang {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.75rem;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--purple);
+            font-weight: 600;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         pre code {
@@ -348,6 +405,90 @@
             height: 1px;
             background: var(--border);
             margin: 3rem 0;
+        }
+
+        /* Heading anchor links */
+        h2, h3 {
+            cursor: pointer;
+            position: relative;
+        }
+
+        h2:hover::after, h3:hover::after {
+            content: '🔗';
+            position: absolute;
+            margin-left: 0.5rem;
+            font-size: 0.7em;
+            opacity: 0.5;
+        }
+
+        .link-copied-toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--success);
+            color: var(--bg);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .link-copied-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Back to top button */
+        .back-to-top {
+            position: fixed;
+            bottom: 5rem;
+            right: 1.5rem;
+            width: 44px;
+            height: 44px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-to-top:hover {
+            background: var(--accent);
+            color: var(--bg);
+            border-color: var(--accent);
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Fade in animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .main h2, .main h3, .main pre, .main p {
+            animation: fadeInUp 0.4s ease forwards;
         }
 
         /* Mobile toggle */
@@ -456,6 +597,7 @@
     </style>
 </head>
 <body>
+    <div class="scroll-progress" id="scrollProgress"></div>
     <div class="loading" id="loading">Loading snippets</div>
     
     <div class="container" id="app" style="display: none;">
@@ -463,11 +605,15 @@
             <div class="sidebar-header">
                 <h1>oneline</h1>
                 <p>Copy-paste ready snippets for Linux & more</p>
+                <div class="stats-badge">
+                    📦 <span id="snippetCount">0</span> snippets
+                </div>
             </div>
             <div class="search-container">
                 <div class="search-wrapper">
                     <span class="search-icon">🔍</span>
-                    <input type="text" class="search-input" id="searchInput" placeholder="Search snippets..." autocomplete="off">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search..." autocomplete="off">
+                    <span class="kbd">⌘K</span>
                 </div>
             </div>
             <div class="search-results hidden" id="searchResults"></div>
@@ -477,7 +623,9 @@
         <main class="main" id="content"></main>
     </div>
 
+    <button class="back-to-top" id="backToTop">↑</button>
     <button class="mobile-toggle" id="mobileToggle">☰</button>
+    <div class="link-copied-toast" id="toast">Link copied to clipboard!</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
@@ -590,6 +738,21 @@
 
         function addCopyButtons() {
             document.querySelectorAll('pre').forEach(pre => {
+                // Add language badge
+                const code = pre.querySelector('code');
+                if (code) {
+                    const classes = code.className.split(' ');
+                    const langClass = classes.find(c => c.startsWith('language-'));
+                    if (langClass) {
+                        const lang = langClass.replace('language-', '');
+                        const badge = document.createElement('span');
+                        badge.className = 'code-lang';
+                        badge.textContent = lang;
+                        pre.appendChild(badge);
+                    }
+                }
+
+                // Add copy button
                 const btn = document.createElement('button');
                 btn.className = 'copy-btn';
                 btn.textContent = 'Copy';
@@ -606,6 +769,52 @@
                 pre.appendChild(btn);
             });
         }
+
+        // Add click-to-copy for headings
+        function addHeadingLinks() {
+            document.querySelectorAll('#content h2, #content h3').forEach(heading => {
+                heading.onclick = async () => {
+                    const url = window.location.origin + window.location.pathname + '#' + heading.id;
+                    await navigator.clipboard.writeText(url);
+                    showToast();
+                };
+            });
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        // Update snippet count
+        function updateStats() {
+            const count = document.querySelectorAll('#content h3').length;
+            document.getElementById('snippetCount').textContent = count;
+        }
+
+        // Scroll progress bar
+        function updateScrollProgress() {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = (scrollTop / docHeight) * 100;
+            document.getElementById('scrollProgress').style.width = progress + '%';
+
+            // Back to top visibility
+            const backToTop = document.getElementById('backToTop');
+            if (scrollTop > 500) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        }
+
+        // Back to top
+        document.getElementById('backToTop').onclick = () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.addEventListener('scroll', updateScrollProgress);
 
         // Mobile toggle
         document.getElementById('mobileToggle').onclick = () => {
@@ -729,15 +938,26 @@
             document.getElementById('searchInput').addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
                     clearSearch();
+                    e.target.blur();
+                }
+            });
+
+            // Keyboard shortcut: Cmd/Ctrl + K to focus search
+            document.addEventListener('keydown', (e) => {
+                if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                    e.preventDefault();
+                    document.getElementById('searchInput').focus();
                 }
             });
         });
 
-        // Wrap init to also build search index
+        // Wrap init to also build search index and add features
         const originalInit = init;
         async function initWithSearch() {
             await originalInit();
             buildSearchIndex();
+            addHeadingLinks();
+            updateStats();
         }
 
         initWithSearch();
