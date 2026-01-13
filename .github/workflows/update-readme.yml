@@ -19,7 +19,7 @@ jobs:
   update-readme:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       - run: touch test.txt
       - name: action-push
         uses: ludeeus/action-push@0.0.1
