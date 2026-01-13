@@ -81,6 +81,90 @@
             margin-top: 0.5rem;
         }
 
+        /* Search */
+        .search-container {
+            padding: 0 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            padding-left: 2.5rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.15s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
+
+        .search-results {
+            padding: 0 1rem;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+
+        .search-result {
+            display: block;
+            padding: 0.6rem 0.75rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            border-radius: 4px;
+            margin-bottom: 0.25rem;
+            transition: all 0.15s ease;
+        }
+
+        .search-result:hover {
+            color: var(--accent);
+            background: var(--bg-tertiary);
+        }
+
+        .search-result-section {
+            font-size: 0.7rem;
+            color: var(--accent);
+            opacity: 0.7;
+            display: block;
+            margin-top: 0.2rem;
+        }
+
+        .search-no-results {
+            padding: 1rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
         /* TOC */
         .toc {
             padding: 0 1rem;
@@ -380,6 +464,13 @@
                 <h1>oneline</h1>
                 <p>Copy-paste ready snippets for Linux & more</p>
             </div>
+            <div class="search-container">
+                <div class="search-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search snippets..." autocomplete="off">
+                </div>
+            </div>
+            <div class="search-results hidden" id="searchResults"></div>
             <nav class="toc" id="toc"></nav>
         </aside>
         
@@ -540,7 +631,116 @@
             });
         });
 
-        init();
+        // Search functionality
+        let searchIndex = [];
+
+        function buildSearchIndex() {
+            const content = document.getElementById('content');
+            const sections = content.querySelectorAll('h2, h3');
+            
+            sections.forEach(heading => {
+                // Get the parent section name for h3s
+                let parentSection = '';
+                if (heading.tagName === 'H3') {
+                    let prev = heading.previousElementSibling;
+                    while (prev) {
+                        if (prev.tagName === 'H2') {
+                            parentSection = prev.textContent;
+                            break;
+                        }
+                        prev = prev.previousElementSibling;
+                    }
+                }
+
+                // Get associated code blocks
+                let codeContent = '';
+                let sibling = heading.nextElementSibling;
+                while (sibling && !['H2', 'H3'].includes(sibling.tagName)) {
+                    if (sibling.tagName === 'PRE') {
+                        codeContent += ' ' + sibling.textContent;
+                    }
+                    if (sibling.tagName === 'P') {
+                        codeContent += ' ' + sibling.textContent;
+                    }
+                    sibling = sibling.nextElementSibling;
+                }
+
+                searchIndex.push({
+                    title: heading.textContent,
+                    id: heading.id,
+                    section: parentSection,
+                    type: heading.tagName,
+                    content: codeContent.toLowerCase()
+                });
+            });
+        }
+
+        function performSearch(query) {
+            const searchResults = document.getElementById('searchResults');
+            const toc = document.getElementById('toc');
+            const q = query.toLowerCase().trim();
+
+            if (!q) {
+                searchResults.classList.add('hidden');
+                toc.classList.remove('hidden');
+                return;
+            }
+
+            searchResults.classList.remove('hidden');
+            toc.classList.add('hidden');
+
+            const results = searchIndex.filter(item => 
+                item.title.toLowerCase().includes(q) || 
+                item.content.includes(q)
+            );
+
+            if (results.length === 0) {
+                searchResults.innerHTML = '<div class="search-no-results">No results found</div>';
+                return;
+            }
+
+            searchResults.innerHTML = results.slice(0, 20).map(item => `
+                <a href="#${item.id}" class="search-result" onclick="clearSearch()">
+                    ${item.title}
+                    ${item.section ? `<span class="search-result-section">${item.section}</span>` : ''}
+                </a>
+            `).join('');
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').classList.add('hidden');
+            document.getElementById('toc').classList.remove('hidden');
+            // Close sidebar on mobile
+            if (window.innerWidth <= 1024) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+        }
+
+        // Debounce search
+        let searchTimeout;
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => performSearch(e.target.value), 150);
+            });
+
+            // Clear search on Escape
+            document.getElementById('searchInput').addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    clearSearch();
+                }
+            });
+        });
+
+        // Wrap init to also build search index
+        const originalInit = init;
+        async function initWithSearch() {
+            await originalInit();
+            buildSearchIndex();
+        }
+
+        initWithSearch();
     </script>
 </body>
 </html>
