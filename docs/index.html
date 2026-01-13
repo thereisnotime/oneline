@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>oneline</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <style>
+        :root {
+            --bg: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text: #e6edf3;
+            --text-muted: #8b949e;
+            --accent: #58a6ff;
+            --accent-hover: #79c0ff;
+            --border: #30363d;
+            --code-bg: #1c2128;
+            --success: #3fb950;
+            --warning: #d29922;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 16px;
+        }
+
+        /* Layout */
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 2rem 0;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar-header p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        /* TOC */
+        .toc {
+            padding: 0 1rem;
+        }
+
+        .toc-section {
+            margin-bottom: 0.5rem;
+        }
+
+        .toc-section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 0.75rem;
+            color: var(--text);
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.15s ease;
+        }
+
+        .toc-section-title:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .toc-section-title::before {
+            content: '▸';
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            transition: transform 0.2s ease;
+        }
+
+        .toc-section.open .toc-section-title::before {
+            transform: rotate(90deg);
+        }
+
+        .toc-items {
+            display: none;
+            padding-left: 1.5rem;
+        }
+
+        .toc-section.open .toc-items {
+            display: block;
+        }
+
+        .toc-item {
+            display: block;
+            padding: 0.4rem 0.75rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            border-radius: 4px;
+            transition: all 0.15s ease;
+        }
+
+        .toc-item:hover {
+            color: var(--accent);
+            background: var(--bg-tertiary);
+        }
+
+        .toc-item.active {
+            color: var(--accent);
+            background: rgba(88, 166, 255, 0.1);
+        }
+
+        /* Main content */
+        .main {
+            flex: 1;
+            margin-left: 320px;
+            padding: 3rem 4rem;
+            max-width: 900px;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        h1 { font-size: 2.5rem; margin-top: 0; }
+        h2 { 
+            font-size: 1.75rem; 
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        h3 { font-size: 1.25rem; color: var(--accent); }
+        h4 { font-size: 1rem; color: var(--text-muted); }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-muted);
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+
+        /* Code blocks */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            overflow-x: auto;
+            margin: 1rem 0 1.5rem;
+            position: relative;
+        }
+
+        pre code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            background: none;
+            padding: 0;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-tertiary);
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        /* Copy button */
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.4rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-family: 'Space Grotesk', sans-serif;
+            transition: all 0.15s ease;
+            opacity: 0;
+        }
+
+        pre:hover .copy-btn {
+            opacity: 1;
+        }
+
+        .copy-btn:hover {
+            background: var(--accent);
+            color: var(--bg);
+            border-color: var(--accent);
+        }
+
+        .copy-btn.copied {
+            background: var(--success);
+            border-color: var(--success);
+            color: var(--bg);
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+            color: var(--text-muted);
+        }
+
+        li {
+            margin: 0.5rem 0;
+        }
+
+        /* Horizontal rule */
+        hr {
+            border: none;
+            height: 1px;
+            background: var(--border);
+            margin: 3rem 0;
+        }
+
+        /* Mobile toggle */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 50px;
+            height: 50px;
+            background: var(--accent);
+            border: none;
+            border-radius: 50%;
+            color: var(--bg);
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        /* Badge for user/root */
+        .exec-context {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 0.2em 0.5em;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+            font-weight: 500;
+        }
+
+        .exec-context.user {
+            background: rgba(63, 185, 80, 0.15);
+            color: var(--success);
+        }
+
+        .exec-context.root {
+            background: rgba(210, 153, 34, 0.15);
+            color: var(--warning);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 100;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 2rem 1.5rem;
+            }
+
+            .mobile-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        /* Loading state */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: var(--text-muted);
+        }
+
+        .loading::after {
+            content: '';
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading">Loading snippets</div>
+    
+    <div class="container" id="app" style="display: none;">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h1>oneline</h1>
+                <p>Copy-paste ready snippets for Linux & more</p>
+            </div>
+            <nav class="toc" id="toc"></nav>
+        </aside>
+        
+        <main class="main" id="content"></main>
+    </div>
+
+    <button class="mobile-toggle" id="mobileToggle">☰</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/powershell.min.js"></script>
+    
+    <script>
+        // Configure marked
+        marked.setOptions({
+            highlight: function(code, lang) {
+                if (lang && hljs.getLanguage(lang)) {
+                    return hljs.highlight(code, { language: lang }).value;
+                }
+                return hljs.highlightAuto(code).value;
+            },
+            breaks: false,
+            gfm: true
+        });
+
+        // Fetch and render README
+        async function init() {
+            try {
+                const response = await fetch('../README.md');
+                let markdown = await response.text();
+                
+                // Remove doctoc comments and details wrapper
+                markdown = markdown.replace(/<!-- START doctoc[\s\S]*?<!-- END doctoc[^>]*-->/g, '');
+                markdown = markdown.replace(/<details>[\s\S]*?<\/details>/g, '');
+                
+                // Parse and render
+                const html = marked.parse(markdown);
+                document.getElementById('content').innerHTML = html;
+                
+                // Build TOC from rendered content
+                buildTOC();
+                
+                // Add copy buttons to code blocks
+                addCopyButtons();
+                
+                // Show content
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('app').style.display = 'flex';
+                
+            } catch (error) {
+                document.getElementById('loading').textContent = 'Error loading content: ' + error.message;
+            }
+        }
+
+        function buildTOC() {
+            const content = document.getElementById('content');
+            const toc = document.getElementById('toc');
+            const h2s = content.querySelectorAll('h2');
+            
+            h2s.forEach((h2, index) => {
+                // Create section
+                const section = document.createElement('div');
+                section.className = 'toc-section';
+                if (index === 0) section.classList.add('open');
+                
+                // Section title
+                const title = document.createElement('div');
+                title.className = 'toc-section-title';
+                title.textContent = h2.textContent;
+                title.onclick = () => section.classList.toggle('open');
+                section.appendChild(title);
+                
+                // Get h3s until next h2
+                const items = document.createElement('div');
+                items.className = 'toc-items';
+                
+                let sibling = h2.nextElementSibling;
+                while (sibling && sibling.tagName !== 'H2') {
+                    if (sibling.tagName === 'H3') {
+                        const link = document.createElement('a');
+                        link.className = 'toc-item';
+                        link.href = '#' + sibling.id;
+                        link.textContent = sibling.textContent;
+                        link.onclick = (e) => {
+                            // Close sidebar on mobile
+                            if (window.innerWidth <= 1024) {
+                                document.getElementById('sidebar').classList.remove('open');
+                            }
+                        };
+                        items.appendChild(link);
+                    }
+                    sibling = sibling.nextElementSibling;
+                }
+                
+                section.appendChild(items);
+                toc.appendChild(section);
+            });
+        }
+
+        function addCopyButtons() {
+            document.querySelectorAll('pre').forEach(pre => {
+                const btn = document.createElement('button');
+                btn.className = 'copy-btn';
+                btn.textContent = 'Copy';
+                btn.onclick = async () => {
+                    const code = pre.querySelector('code').textContent;
+                    await navigator.clipboard.writeText(code);
+                    btn.textContent = 'Copied!';
+                    btn.classList.add('copied');
+                    setTimeout(() => {
+                        btn.textContent = 'Copy';
+                        btn.classList.remove('copied');
+                    }, 2000);
+                };
+                pre.appendChild(btn);
+            });
+        }
+
+        // Mobile toggle
+        document.getElementById('mobileToggle').onclick = () => {
+            document.getElementById('sidebar').classList.toggle('open');
+        };
+
+        // Active section tracking
+        window.addEventListener('scroll', () => {
+            const items = document.querySelectorAll('.toc-item');
+            let current = '';
+            
+            document.querySelectorAll('h3').forEach(h3 => {
+                if (h3.getBoundingClientRect().top < 150) {
+                    current = h3.id;
+                }
+            });
+            
+            items.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('href') === '#' + current) {
+                    item.classList.add('active');
+                }
+            });
+        });
+
+        init();
+    </script>
+</body>
+</html>
