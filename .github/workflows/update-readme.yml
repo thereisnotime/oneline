@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       logLevel:
-        description: 'Log level'     
+        description: 'Log level'
         required: true
         default: 'warning'
       tags:
@@ -19,7 +19,13 @@ jobs:
   update-readme:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - run: touch test.txt
-      - name: action-push
-        uses: ludeeus/action-push@0.0.1
+      - uses: actions/checkout@v4
+
+      - name: Generate Table of Contents
+        uses: technote-space/toc-generator@v4
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_PATHS: 'README.md'
+          TOC_TITLE: '## Table of Contents'
+          MAX_HEADER_LEVEL: 3
+          COMMIT_MESSAGE: 'docs: update table of contents'
