@@ -110,6 +110,152 @@
             font-weight: 600;
         }
 
+        .github-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--bg-tertiary);
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .github-btn:hover {
+            background: var(--accent);
+            color: var(--bg);
+            text-decoration: none;
+        }
+
+        /* Favorites */
+        .favorite-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1rem;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: all 0.2s ease;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+
+        .favorite-btn:hover {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+        .favorite-btn.active {
+            color: #f85149;
+            opacity: 1;
+        }
+
+        .favorites-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .favorites-toggle:hover {
+            color: var(--text);
+        }
+
+        .favorites-toggle input {
+            accent-color: var(--accent);
+        }
+
+        .favorites-toggle.active {
+            color: #f85149;
+        }
+
+        h3 .favorite-btn {
+            float: right;
+        }
+
+        .snippet-hidden {
+            display: none !important;
+        }
+
+        /* Safety badges */
+        .safety-badge {
+            position: absolute;
+            top: 0.5rem;
+            right: 4.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 500;
+            cursor: help;
+        }
+
+        .safety-badge.idempotent {
+            background: rgba(63, 185, 80, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(63, 185, 80, 0.3);
+        }
+
+        .safety-badge.one-time {
+            background: rgba(210, 153, 34, 0.15);
+            color: var(--warning);
+            border: 1px solid rgba(210, 153, 34, 0.3);
+        }
+
+        .safety-badge .safety-icon {
+            font-size: 0.8rem;
+        }
+
+        /* Tooltip for safety badges */
+        .safety-badge::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 400;
+            color: var(--text);
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            z-index: 100;
+        }
+
+        .safety-badge:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .sidebar-badges {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
         .kbd {
             position: absolute;
             right: 0.5rem;
@@ -707,8 +853,13 @@
             <div class="sidebar-header">
                 <h1>oneline</h1>
                 <p>Copy-paste ready snippets for Linux & more</p>
-                <div class="stats-badge">
-                    📦 <span id="snippetCount">0</span> snippets
+                <div class="sidebar-badges">
+                    <div class="stats-badge">
+                        📦 <span id="snippetCount">0</span> snippets
+                    </div>
+                    <a href="https://github.com/thereisnotime/oneline" target="_blank" class="github-btn">
+                        ⭐ Star
+                    </a>
                 </div>
             </div>
             <div class="search-container">
@@ -719,6 +870,10 @@
                 </div>
             </div>
             <div class="search-results hidden" id="searchResults"></div>
+            <label class="favorites-toggle" id="favoritesToggle">
+                <input type="checkbox" id="favoritesOnly">
+                ❤️ Show favorites only
+            </label>
             <button class="privacy-btn" id="privacyBtn">
                 <span class="privacy-icon">🔒</span>
                 privacy.sexy
@@ -889,6 +1044,179 @@
                     }, 2000);
                 };
                 pre.appendChild(btn);
+            });
+        }
+
+        // Favorites system
+        function loadFavorites() {
+            try {
+                return JSON.parse(localStorage.getItem('oneline-favorites') || '[]');
+            } catch {
+                return [];
+            }
+        }
+
+        function saveFavorites(favorites) {
+            localStorage.setItem('oneline-favorites', JSON.stringify(favorites));
+        }
+
+        function toggleFavorite(id) {
+            let favorites = loadFavorites();
+            if (favorites.includes(id)) {
+                favorites = favorites.filter(f => f !== id);
+            } else {
+                favorites.push(id);
+            }
+            saveFavorites(favorites);
+            return favorites.includes(id);
+        }
+
+        function addFavoriteButtons() {
+            const favorites = loadFavorites();
+            document.querySelectorAll('#content h3').forEach(h3 => {
+                const btn = document.createElement('button');
+                btn.className = 'favorite-btn' + (favorites.includes(h3.id) ? ' active' : '');
+                btn.innerHTML = '♡';
+                btn.title = 'Add to favorites';
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    const isActive = toggleFavorite(h3.id);
+                    btn.classList.toggle('active', isActive);
+                    btn.innerHTML = isActive ? '♥' : '♡';
+                    updateFavoritesCount();
+                };
+                if (favorites.includes(h3.id)) {
+                    btn.innerHTML = '♥';
+                }
+                h3.appendChild(btn);
+            });
+            updateFavoritesCount();
+        }
+
+        function updateFavoritesCount() {
+            const count = loadFavorites().length;
+            const toggle = document.getElementById('favoritesToggle');
+            toggle.classList.toggle('active', count > 0);
+        }
+
+        function filterFavorites(showOnlyFavorites) {
+            const favorites = loadFavorites();
+            const content = document.getElementById('content');
+            
+            // Get all h3s and their associated content
+            content.querySelectorAll('h3').forEach(h3 => {
+                const isFavorite = favorites.includes(h3.id);
+                const shouldHide = showOnlyFavorites && !isFavorite;
+                
+                // Hide/show the h3
+                h3.classList.toggle('snippet-hidden', shouldHide);
+                
+                // Hide/show content until next heading
+                let sibling = h3.nextElementSibling;
+                while (sibling && !['H2', 'H3'].includes(sibling.tagName)) {
+                    sibling.classList.toggle('snippet-hidden', shouldHide);
+                    sibling = sibling.nextElementSibling;
+                }
+            });
+        }
+
+        // Command safety detection
+        function detectSafety(code) {
+            const cmd = code.toLowerCase();
+            
+            // Idempotent patterns - safe to re-run
+            const idempotentPatterns = [
+                /apt(-get)?\s+(install|update|upgrade|autoremove|autoclean)/,
+                /apt-fast\s+(install|update|upgrade)/,
+                /dnf\s+(install|update|upgrade)/,
+                /yum\s+(install|update)/,
+                /pacman\s+-S/,
+                /brew\s+(install|upgrade|update)/,
+                /pip\s+install/,
+                /npm\s+(install|i)\s/,
+                /flatpak\s+(install|update)/,
+                /systemctl\s+(enable|disable|start|stop|restart|reload)/,
+                /service\s+\w+\s+(start|stop|restart)/,
+                /mkdir\s+-p/,
+                /ln\s+-sf/,
+                /chmod\s+/,
+                /chown\s+/,
+                /cp\s+(-[a-z]*f|-f)/,
+                /mv\s+(-[a-z]*f|-f)/,
+                /wget\s+(-[a-z]*O|-O)/,
+                /curl\s+(-[a-z]*o|-o)/,
+                /git\s+config/,
+                /git\s+pull/,
+                /git\s+fetch/,
+                /timedatectl/,
+                /hostnamectl/,
+                /update-alternatives/,
+                /gsettings\s+set/,
+                /dconf\s+write/,
+                /sysctl\s+-w/,
+                /echo\s+.*>\s+[^>]/,  // Single > (overwrite)
+                /tee\s+[^-]/,  // tee without -a (overwrite)
+                /cat\s+.*>\s+[^>]/,
+            ];
+
+            // One-time patterns - may fail or duplicate if re-run
+            const oneTimePatterns = [
+                />>/,  // Append
+                /tee\s+-a/,  // Append with tee
+                /adduser\s/,
+                /useradd\s/,
+                /groupadd\s/,
+                /usermod\s/,
+                /git\s+clone\s/,
+                /ssh-keygen/,
+                /gpg\s+--gen-key/,
+                /snap\s+install/,
+                /curl\s+.*\|\s*(sudo\s+)?bash/,
+                /wget\s+.*\|\s*(sudo\s+)?bash/,
+                /curl\s+.*\|\s*(sudo\s+)?sh/,
+                /wget\s+.*\|\s*(sudo\s+)?sh/,
+                /add-apt-repository/,
+                /dpkg\s+-i/,
+                /rpm\s+-i/,
+            ];
+
+            // Check one-time first (higher priority)
+            for (const pattern of oneTimePatterns) {
+                if (pattern.test(cmd)) {
+                    return 'one-time';
+                }
+            }
+
+            // Check idempotent
+            for (const pattern of idempotentPatterns) {
+                if (pattern.test(cmd)) {
+                    return 'idempotent';
+                }
+            }
+
+            return null; // Unknown
+        }
+
+        function addSafetyBadges() {
+            document.querySelectorAll('#content pre').forEach(pre => {
+                const code = pre.querySelector('code');
+                if (!code) return;
+
+                const safety = detectSafety(code.textContent);
+                if (!safety) return;
+
+                const badge = document.createElement('span');
+                badge.className = `safety-badge ${safety}`;
+                
+                if (safety === 'idempotent') {
+                    badge.innerHTML = '<span class="safety-icon">🔄</span> Re-runnable';
+                    badge.setAttribute('data-tooltip', 'Safe to run multiple times');
+                } else {
+                    badge.innerHTML = '<span class="safety-icon">⚡</span> One-time';
+                    badge.setAttribute('data-tooltip', 'May fail or duplicate if re-run');
+                }
+
+                pre.appendChild(badge);
             });
         }
 
@@ -1072,6 +1400,11 @@
                 }
             });
 
+            // Favorites toggle
+            document.getElementById('favoritesOnly').addEventListener('change', (e) => {
+                filterFavorites(e.target.checked);
+            });
+
             // Privacy.sexy modal
             const privacyBtn = document.getElementById('privacyBtn');
             const privacyModal = document.getElementById('privacyModal');
@@ -1111,6 +1444,8 @@
             await originalInit();
             buildSearchIndex();
             addHeadingLinks();
+            addFavoriteButtons();
+            addSafetyBadges();
             updateStats();
         }
 
