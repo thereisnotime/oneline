@@ -1305,7 +1305,7 @@
                 let tooltipText;
                 if (safety === 'idempotent') {
                     badge.innerHTML = '<span class="safety-icon">🔄</span> Idempotent';
-                    tooltipText = 'Idempotent: Safe to run multiple times. Has the same effect as running once.';
+                    tooltipText = 'Idempotent: Safe to run multiple times. Has the same effect as running once. Use to update packages.';
                 } else {
                     badge.innerHTML = '<span class="safety-icon">⚡</span> One-time';
                     tooltipText = 'One-time: May fail, duplicate, or append data if re-run.';
