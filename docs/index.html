@@ -815,12 +815,34 @@
             .main {
                 margin-left: 0;
                 padding: 2rem 1.5rem;
+                max-width: 100%;
             }
 
             .mobile-toggle {
                 display: flex;
                 align-items: center;
                 justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main {
+                padding: 1.5rem 1rem;
+            }
+
+            pre {
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
+                margin-left: -0.5rem;
+                margin-right: -0.5rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            h3 {
+                font-size: 1.15rem;
             }
         }
 
