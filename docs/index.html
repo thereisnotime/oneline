@@ -202,6 +202,108 @@
             padding: 1rem;
             color: var(--text-muted);
             font-size: 0.85rem;
+        }
+
+        /* Privacy.sexy button */
+        .privacy-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: calc(100% - 3rem);
+            margin: 0 1.5rem 1rem;
+            padding: 0.6rem 1rem;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .privacy-btn:hover {
+            background: linear-gradient(135deg, var(--purple) 0%, var(--accent) 100%);
+            border-color: var(--purple);
+            transform: translateY(-1px);
+        }
+
+        .privacy-icon {
+            font-size: 1rem;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-container {
+            width: 95%;
+            max-width: 1400px;
+            height: 90vh;
+            background: var(--bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.open .modal-container {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-muted);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .modal-close:hover {
+            background: #f85149;
+            border-color: #f85149;
+            color: white;
+        }
+
+        .modal-iframe {
+            flex: 1;
+            width: 100%;
+            border: none;
+            background: #1a1a2e;
             text-align: center;
         }
 
@@ -617,8 +719,23 @@
                 </div>
             </div>
             <div class="search-results hidden" id="searchResults"></div>
+            <button class="privacy-btn" id="privacyBtn">
+                <span class="privacy-icon">🔒</span>
+                privacy.sexy
+            </button>
             <nav class="toc" id="toc"></nav>
         </aside>
+        
+        <!-- Privacy.sexy Modal -->
+        <div class="modal-overlay" id="privacyModal">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <span>🔒 privacy.sexy</span>
+                    <button class="modal-close" id="modalClose">✕</button>
+                </div>
+                <iframe src="" id="privacyFrame" class="modal-iframe" allow="clipboard-write"></iframe>
+            </div>
+        </div>
         
         <main class="main" id="content"></main>
     </div>
@@ -947,6 +1064,38 @@
                 if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                     e.preventDefault();
                     document.getElementById('searchInput').focus();
+                }
+            });
+
+            // Privacy.sexy modal
+            const privacyBtn = document.getElementById('privacyBtn');
+            const privacyModal = document.getElementById('privacyModal');
+            const privacyFrame = document.getElementById('privacyFrame');
+            const modalClose = document.getElementById('modalClose');
+
+            privacyBtn.addEventListener('click', () => {
+                privacyFrame.src = 'https://privacy.sexy/';
+                privacyModal.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            });
+
+            modalClose.addEventListener('click', () => {
+                privacyModal.classList.remove('open');
+                document.body.style.overflow = '';
+                // Clear iframe after animation
+                setTimeout(() => { privacyFrame.src = ''; }, 300);
+            });
+
+            privacyModal.addEventListener('click', (e) => {
+                if (e.target === privacyModal) {
+                    modalClose.click();
+                }
+            });
+
+            // Escape to close modal
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && privacyModal.classList.contains('open')) {
+                    modalClose.click();
                 }
             });
         });
