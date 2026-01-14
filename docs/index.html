@@ -624,12 +624,8 @@
             font-size: 0.75rem;
             font-family: 'Space Grotesk', sans-serif;
             transition: all 0.15s ease;
-            opacity: 0;
-            line-height: 1;
-        }
-
-        pre:hover .copy-btn {
             opacity: 1;
+            line-height: 1;
         }
 
         .copy-btn:hover {
@@ -1217,11 +1213,11 @@
                 badge.className = `safety-badge ${safety}`;
                 
                 if (safety === 'idempotent') {
-                    badge.innerHTML = '<span class="safety-icon">🔄</span> Re-runnable';
-                    badge.setAttribute('data-tooltip', 'Safe to run multiple times');
+                    badge.innerHTML = '<span class="safety-icon">🔄</span> Idempotent';
+                    badge.setAttribute('data-tooltip', 'Idempotent: Running multiple times has the same effect as running once');
                 } else {
                     badge.innerHTML = '<span class="safety-icon">⚡</span> One-time';
-                    badge.setAttribute('data-tooltip', 'May fail or duplicate if re-run');
+                    badge.setAttribute('data-tooltip', 'One-time: May fail, duplicate, or append data if re-run');
                 }
 
                 pre.appendChild(badge);
