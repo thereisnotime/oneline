@@ -793,6 +793,11 @@
                 const html = marked.parse(markdown);
                 document.getElementById('content').innerHTML = html;
                 
+                // Apply syntax highlighting
+                document.querySelectorAll('pre code').forEach((block) => {
+                    hljs.highlightElement(block);
+                });
+                
                 // Build TOC from rendered content
                 buildTOC();
                 
