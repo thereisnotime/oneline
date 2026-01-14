@@ -102,6 +102,8 @@
             border-radius: 20px;
             font-size: 0.75rem;
             color: var(--text-muted);
+            cursor: help;
+            position: relative;
         }
 
         .stats-badge span {
@@ -227,12 +229,9 @@
             font-size: 0.8rem;
         }
 
-        /* Tooltip for safety badges */
-        .safety-badge::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: calc(100% + 8px);
-            right: 0;
+        /* Tooltip for safety badges - using fixed positioning to avoid clipping */
+        .tooltip {
+            position: fixed;
             padding: 0.75rem 1rem;
             background: var(--bg-secondary);
             color: var(--text);
@@ -243,38 +242,33 @@
             white-space: normal;
             min-width: 200px;
             max-width: 300px;
-            width: max-content;
             line-height: 1.4;
             pointer-events: none;
             opacity: 0;
             visibility: hidden;
-            transform: translateY(4px);
             transition: all 0.2s ease;
             z-index: 10000;
             box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            transform: translateY(4px);
         }
 
-        .safety-badge::before {
+        .tooltip.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .tooltip::before {
             content: '';
             position: absolute;
-            bottom: calc(100% + 2px);
-            right: 1.5rem;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
             width: 0;
             height: 0;
             border-left: 6px solid transparent;
             border-right: 6px solid transparent;
-            border-top: 6px solid var(--accent);
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.2s ease;
-            z-index: 10000;
-        }
-
-        .safety-badge:hover::after,
-        .safety-badge:hover::before {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
+            border-bottom: 6px solid var(--accent);
         }
 
         .sidebar-badges {
@@ -789,33 +783,27 @@
             position: fixed;
             bottom: 1.5rem;
             right: 1.5rem;
-            width: 60px;
-            height: 60px;
-            background: var(--accent);
-            border: none;
+            width: 56px;
+            height: 56px;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
             border-radius: 50%;
-            color: var(--bg);
+            color: var(--text);
             font-size: 1.5rem;
             cursor: pointer;
             z-index: 1000;
             box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: all 0.2s ease;
+        }
+
+        .mobile-toggle:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--accent);
+            transform: scale(1.05);
         }
 
         .mobile-toggle:active {
             transform: scale(0.95);
-        }
-
-        .mobile-toggle::before {
-            content: 'Menu';
-            position: absolute;
-            bottom: -1.5rem;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.7rem;
-            font-weight: 500;
-            white-space: nowrap;
-            color: var(--text-muted);
         }
 
         /* Badge for user/root */
@@ -986,6 +974,7 @@
     <button class="back-to-top" id="backToTop">↑</button>
     <button class="mobile-toggle" id="mobileToggle">☰</button>
     <div class="link-copied-toast" id="toast">Link copied to clipboard!</div>
+    <div class="tooltip" id="tooltip"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
@@ -1313,13 +1302,18 @@
                 const badge = document.createElement('span');
                 badge.className = `safety-badge ${safety}`;
                 
+                let tooltipText;
                 if (safety === 'idempotent') {
                     badge.innerHTML = '<span class="safety-icon">🔄</span> Idempotent';
-                    badge.setAttribute('data-tooltip', 'Idempotent: Safe to run multiple times. Has the same effect as running once.');
+                    tooltipText = 'Idempotent: Safe to run multiple times. Has the same effect as running once.';
                 } else {
                     badge.innerHTML = '<span class="safety-icon">⚡</span> One-time';
-                    badge.setAttribute('data-tooltip', 'One-time: May fail, duplicate, or append data if re-run.');
+                    tooltipText = 'One-time: May fail, duplicate, or append data if re-run.';
                 }
+
+                // Add tooltip on hover
+                badge.onmouseenter = (e) => showTooltip(badge, tooltipText);
+                badge.onmouseleave = hideTooltip;
 
                 pre.appendChild(badge);
             });
@@ -1342,10 +1336,69 @@
             setTimeout(() => toast.classList.remove('show'), 2000);
         }
 
-        // Update snippet count
+        // Tooltip helper functions
+        let tooltip;
+        
+        function showTooltip(element, content) {
+            if (!tooltip) tooltip = document.getElementById('tooltip');
+            tooltip.innerHTML = content;
+            tooltip.classList.add('show');
+            
+            const rect = element.getBoundingClientRect();
+            const tooltipRect = tooltip.getBoundingClientRect();
+            
+            // Position tooltip above the element
+            let left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+            let top = rect.top - tooltipRect.height - 10;
+            
+            // Keep tooltip on screen
+            if (left < 10) left = 10;
+            if (left + tooltipRect.width > window.innerWidth - 10) {
+                left = window.innerWidth - tooltipRect.width - 10;
+            }
+            if (top < 10) top = rect.bottom + 10;
+            
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+        }
+        
+        function hideTooltip() {
+            if (!tooltip) tooltip = document.getElementById('tooltip');
+            tooltip.classList.remove('show');
+        }
+
+        // Update snippet count with language breakdown
+        let languageStats = {};
+        
         function updateStats() {
-            const count = document.querySelectorAll('#content h3').length;
+            languageStats = {};
+            const snippets = document.querySelectorAll('#content h3');
+            const count = snippets.length;
+            
+            // Count snippets by language
+            document.querySelectorAll('#content pre code').forEach(code => {
+                const classes = code.className.split(' ');
+                const langClass = classes.find(c => c.startsWith('language-'));
+                if (langClass) {
+                    const lang = langClass.replace('language-', '');
+                    languageStats[lang] = (languageStats[lang] || 0) + 1;
+                }
+            });
+            
             document.getElementById('snippetCount').textContent = count;
+            
+            // Add tooltip to stats badge
+            const statsBadge = document.querySelector('.stats-badge');
+            if (statsBadge) {
+                statsBadge.onmouseenter = (e) => {
+                    const breakdown = Object.entries(languageStats)
+                        .sort((a, b) => b[1] - a[1])
+                        .map(([lang, count]) => `<div style="display: flex; justify-content: space-between; gap: 1rem;"><span>${lang}</span><span style="color: var(--accent); font-weight: 600;">${count}</span></div>`)
+                        .join('');
+                    showTooltip(statsBadge, `<div style="font-size: 0.75rem;"><div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--accent);">Snippets by Language:</div>${breakdown}</div>`);
+                };
+                statsBadge.onmouseleave = hideTooltip;
+            }
         }
 
         // Scroll progress bar
