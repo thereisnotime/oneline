@@ -744,14 +744,29 @@
             animation: fadeInUp 0.4s ease forwards;
         }
 
+        /* Mobile sidebar backdrop */
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-backdrop.show {
+            opacity: 1;
+        }
+
         /* Mobile toggle */
         .mobile-toggle {
             display: none;
             position: fixed;
             bottom: 1.5rem;
             right: 1.5rem;
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             background: var(--accent);
             border: none;
             border-radius: 50%;
@@ -759,7 +774,24 @@
             font-size: 1.5rem;
             cursor: pointer;
             z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .mobile-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .mobile-toggle::before {
+            content: 'Menu';
+            position: absolute;
+            bottom: -1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            font-weight: 500;
+            white-space: nowrap;
+            color: var(--text-muted);
         }
 
         /* Badge for user/root */
@@ -822,6 +854,10 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
+            }
+
+            .sidebar-backdrop {
+                display: block;
             }
         }
 
@@ -922,6 +958,7 @@
         <main class="main" id="content"></main>
     </div>
 
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
     <button class="back-to-top" id="backToTop">↑</button>
     <button class="mobile-toggle" id="mobileToggle">☰</button>
     <div class="link-copied-toast" id="toast">Link copied to clipboard!</div>
@@ -1027,7 +1064,7 @@
                         link.onclick = (e) => {
                             // Close sidebar on mobile
                             if (window.innerWidth <= 1024) {
-                                document.getElementById('sidebar').classList.remove('open');
+                                closeSidebar();
                             }
                         };
                         items.appendChild(link);
@@ -1294,9 +1331,31 @@
         window.addEventListener('scroll', updateScrollProgress);
 
         // Mobile toggle
-        document.getElementById('mobileToggle').onclick = () => {
-            document.getElementById('sidebar').classList.toggle('open');
-        };
+        const sidebar = document.getElementById('sidebar');
+        const backdrop = document.getElementById('sidebarBackdrop');
+        const mobileToggle = document.getElementById('mobileToggle');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            backdrop.classList.toggle('show');
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            backdrop.classList.remove('show');
+        }
+
+        mobileToggle.onclick = toggleSidebar;
+        backdrop.onclick = closeSidebar;
+
+        // Close sidebar when clicking TOC links on mobile
+        document.querySelectorAll('.toc-item, .toc-section-title').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 1024) {
+                    closeSidebar();
+                }
+            });
+        });
 
         // Active section tracking
         window.addEventListener('scroll', () => {
@@ -1399,7 +1458,7 @@
             document.getElementById('toc').classList.remove('hidden');
             // Close sidebar on mobile
             if (window.innerWidth <= 1024) {
-                document.getElementById('sidebar').classList.remove('open');
+                closeSidebar();
             }
         }
 
