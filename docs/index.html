@@ -228,29 +228,54 @@
         }
 
         /* Tooltip for safety badges */
+        .safety-badge {
+            position: relative;
+        }
+
         .safety-badge::after {
             content: attr(data-tooltip);
             position: absolute;
-            bottom: 100%;
+            bottom: calc(100% + 0.5rem);
             right: 0;
-            margin-bottom: 0.5rem;
-            padding: 0.5rem 0.75rem;
+            padding: 0.75rem 1rem;
             background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 400;
             color: var(--text);
+            border: 2px solid var(--accent);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
             white-space: nowrap;
+            max-width: 300px;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(4px);
+            transition: all 0.2s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .safety-badge::before {
+            content: '';
+            position: absolute;
+            bottom: calc(100% + 0.1rem);
+            right: 1rem;
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid var(--accent);
             opacity: 0;
             visibility: hidden;
             transition: all 0.2s ease;
-            z-index: 100;
+            z-index: 1000;
         }
 
-        .safety-badge:hover::after {
+        .safety-badge:hover::after,
+        .safety-badge:hover::before {
             opacity: 1;
             visibility: visible;
+            transform: translateY(0);
         }
 
         .sidebar-badges {
@@ -978,6 +1003,23 @@
                 .trim();
         }
 
+        // Mobile sidebar functions (defined early for global access)
+        let sidebar, backdrop, mobileToggle;
+        
+        function toggleSidebar() {
+            if (sidebar) {
+                sidebar.classList.toggle('open');
+                backdrop.classList.toggle('show');
+            }
+        }
+
+        function closeSidebar() {
+            if (sidebar) {
+                sidebar.classList.remove('open');
+                backdrop.classList.remove('show');
+            }
+        }
+
         // Custom renderer for headings with IDs
         const renderer = new marked.Renderer();
         renderer.heading = function(text, level) {
@@ -1330,23 +1372,17 @@
 
         window.addEventListener('scroll', updateScrollProgress);
 
-        // Mobile toggle
-        const sidebar = document.getElementById('sidebar');
-        const backdrop = document.getElementById('sidebarBackdrop');
-        const mobileToggle = document.getElementById('mobileToggle');
+        // Initialize mobile toggle elements
+        sidebar = document.getElementById('sidebar');
+        backdrop = document.getElementById('sidebarBackdrop');
+        mobileToggle = document.getElementById('mobileToggle');
 
-        function toggleSidebar() {
-            sidebar.classList.toggle('open');
-            backdrop.classList.toggle('show');
+        if (mobileToggle) {
+            mobileToggle.onclick = toggleSidebar;
         }
-
-        function closeSidebar() {
-            sidebar.classList.remove('open');
-            backdrop.classList.remove('show');
+        if (backdrop) {
+            backdrop.onclick = closeSidebar;
         }
-
-        mobileToggle.onclick = toggleSidebar;
-        backdrop.onclick = closeSidebar;
 
         // Close sidebar when clicking TOC links on mobile
         document.querySelectorAll('.toc-item, .toc-section-title').forEach(link => {
