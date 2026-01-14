@@ -228,38 +228,37 @@
         }
 
         /* Tooltip for safety badges */
-        .safety-badge {
-            position: relative;
-        }
-
         .safety-badge::after {
             content: attr(data-tooltip);
             position: absolute;
-            bottom: calc(100% + 0.5rem);
+            bottom: calc(100% + 8px);
             right: 0;
             padding: 0.75rem 1rem;
             background: var(--bg-secondary);
             color: var(--text);
             border: 2px solid var(--accent);
             border-radius: 6px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 500;
-            white-space: nowrap;
+            white-space: normal;
+            min-width: 200px;
             max-width: 300px;
+            width: max-content;
+            line-height: 1.4;
             pointer-events: none;
             opacity: 0;
             visibility: hidden;
             transform: translateY(4px);
             transition: all 0.2s ease;
-            z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 10000;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
         }
 
         .safety-badge::before {
             content: '';
             position: absolute;
-            bottom: calc(100% + 0.1rem);
-            right: 1rem;
+            bottom: calc(100% + 2px);
+            right: 1.5rem;
             width: 0;
             height: 0;
             border-left: 6px solid transparent;
@@ -268,7 +267,7 @@
             opacity: 0;
             visibility: hidden;
             transition: all 0.2s ease;
-            z-index: 1000;
+            z-index: 10000;
         }
 
         .safety-badge:hover::after,
@@ -1316,10 +1315,10 @@
                 
                 if (safety === 'idempotent') {
                     badge.innerHTML = '<span class="safety-icon">🔄</span> Idempotent';
-                    badge.setAttribute('data-tooltip', 'Idempotent: Running multiple times has the same effect as running once');
+                    badge.setAttribute('data-tooltip', 'Idempotent: Safe to run multiple times. Has the same effect as running once.');
                 } else {
                     badge.innerHTML = '<span class="safety-icon">⚡</span> One-time';
-                    badge.setAttribute('data-tooltip', 'One-time: May fail, duplicate, or append data if re-run');
+                    badge.setAttribute('data-tooltip', 'One-time: May fail, duplicate, or append data if re-run.');
                 }
 
                 pre.appendChild(badge);
@@ -1372,26 +1371,30 @@
 
         window.addEventListener('scroll', updateScrollProgress);
 
-        // Initialize mobile toggle elements
-        sidebar = document.getElementById('sidebar');
-        backdrop = document.getElementById('sidebarBackdrop');
-        mobileToggle = document.getElementById('mobileToggle');
+        // Initialize mobile toggle (to be called after DOM loads)
+        function initMobileMenu() {
+            sidebar = document.getElementById('sidebar');
+            backdrop = document.getElementById('sidebarBackdrop');
+            mobileToggle = document.getElementById('mobileToggle');
 
-        if (mobileToggle) {
-            mobileToggle.onclick = toggleSidebar;
-        }
-        if (backdrop) {
-            backdrop.onclick = closeSidebar;
-        }
+            if (mobileToggle) {
+                mobileToggle.onclick = toggleSidebar;
+                console.log('Mobile toggle initialized');
+            }
+            if (backdrop) {
+                backdrop.onclick = closeSidebar;
+                console.log('Backdrop initialized');
+            }
 
-        // Close sidebar when clicking TOC links on mobile
-        document.querySelectorAll('.toc-item, .toc-section-title').forEach(link => {
-            link.addEventListener('click', () => {
-                if (window.innerWidth <= 1024) {
-                    closeSidebar();
-                }
+            // Close sidebar when clicking TOC links on mobile
+            document.querySelectorAll('.toc-item, .toc-section-title').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 1024) {
+                        closeSidebar();
+                    }
+                });
             });
-        });
+        }
 
         // Active section tracking
         window.addEventListener('scroll', () => {
@@ -1569,6 +1572,7 @@
             addFavoriteButtons();
             addSafetyBadges();
             updateStats();
+            initMobileMenu(); // Initialize mobile sidebar after DOM is ready
         }
 
         initWithSearch();
