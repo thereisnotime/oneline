@@ -222,7 +222,7 @@ yum install -y bc bind-utils redhat-lsb-core git && cd $HOME && git clone https:
 Linux x86_64 (as user):
 
 ```bash
-cd $(mktemp -d) && _owner="asdf-vm" && _repo="asdf" && _version="v0.16.5" && _version_no_v=$(echo $_version | sed 's/v//g') && wget "https://github.com/$_owner/$_repo/releases/download/$_version/asdf-$_version-linux-amd64.tar.gz" && tar -xvzf "asdf-$_version-linux-amd64.tar.gz" asdf && sudo install -m 755 asdf /usr/local/bin/asdf
+cd $(mktemp -d) && _owner="asdf-vm" && _repo="asdf" && _version="v0.18.0" && _version_no_v=$(echo $_version | sed 's/v//g') && wget "https://github.com/$_owner/$_repo/releases/download/$_version/asdf-$_version-linux-amd64.tar.gz" && tar -xvzf "asdf-$_version-linux-amd64.tar.gz" asdf && sudo install -m 755 asdf /usr/local/bin/asdf
 ```
 
 Add shell completions and paths to your rc file (as user):
@@ -256,6 +256,8 @@ asdf plugin add dotnet-core https://github.com/emersonsoares/asdf-dotnet-core.gi
 asdf plugin add java https://github.com/halcyon/asdf-java.git
 asdf plugin add azure-cli https://github.com/EcoMind/asdf-azure-cli
 asdf plugin add awscli
+asdf plugin add flux2 https://github.com/tablexi/asdf-flux2.git
+asdf plugin add argocd https://github.com/beardix/asdf-argocd.git
 asdf install java adoptopenjdk-jre-21.0.2+13.0.LTS && asdf set -u java adoptopenjdk-jre-21.0.2+13.0.LTS
 asdf install nodejs latest && asdf set -u nodejs latest
 asdf install awscli latest && asdf set -u awscli latest
@@ -264,6 +266,8 @@ asdf install helm latest && asdf set -u helm latest
 asdf install terraform latest && asdf set -u terraform latest
 asdf install kubectl latest && asdf set -u kubectl latest
 asdf install azure-cli latest && asdf set -u azure-cli latest
+asdf install flux2 latest && asdf set -u flux2 latest
+asdf install argocd latest && asdf set -u argocd latest
 ```
 
 ### NVM

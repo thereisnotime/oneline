@@ -222,7 +222,7 @@ yum install -y bc bind-utils redhat-lsb-core git && cd $HOME && git clone https:
 Linux x86_64 (as user):
 
 ```bash
-cd $(mktemp -d) && _owner="asdf-vm" && _repo="asdf" && _version="v0.16.5" && _version_no_v=$(echo $_version | sed 's/v//g') && wget "https://github.com/$_owner/$_repo/releases/download/$_version/asdf-$_version-linux-amd64.tar.gz" && tar -xvzf "asdf-$_version-linux-amd64.tar.gz" asdf && sudo install -m 755 asdf /usr/local/bin/asdf
+cd $(mktemp -d) && _owner="asdf-vm" && _repo="asdf" && _version="v0.18.0" && _version_no_v=$(echo $_version | sed 's/v//g') && wget "https://github.com/$_owner/$_repo/releases/download/$_version/asdf-$_version-linux-amd64.tar.gz" && tar -xvzf "asdf-$_version-linux-amd64.tar.gz" asdf && sudo install -m 755 asdf /usr/local/bin/asdf
 ```
 
 Add shell completions and paths to your rc file (as user):
