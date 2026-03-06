@@ -888,6 +888,18 @@ Debian, Ubuntu x64 (as user):
 cd $(mktemp -d) && API_ENDPOINT="https://gitlab.com/api/v4/projects" && PROJECT_ID="gitlab-org%2Fcli" && LATEST_RELEASE=$(curl --silent "${API_ENDPOINT}/${PROJECT_ID}/releases" | jq -r '.[0].tag_name') && LATEST_RELEASE_NO_V=$(echo "$LATEST_RELEASE" | sed 's/v//') && wget "https://gitlab.com/gitlab-org/cli/-/releases/${LATEST_RELEASE}/downloads/glab_${LATEST_RELEASE_NO_V}_linux_amd64.deb" -O glab.deb && sudo dpkg -i glab.deb
 ```
 
+### openspec
+
+```bash
+npm install -g openspec
+```
+
+### zellij
+
+```bash
+cargo install zellij
+```
+
 ### git-crypt
 
 Linux x86_64 (as user):
