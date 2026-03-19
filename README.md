@@ -848,6 +848,26 @@ For Ubuntu 22.XX (as user):
 cd $(mktemp -d) && wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_amd64.deb && sudo dpkg -i ./libssl1.1_1.1.0g-2ubuntu4_amd64.deb
 ```
 
+### Claude Code CLI
+
+Linux/macOS (as user):
+
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+Windows PowerShell (as user):
+
+```powershell
+irm https://claude.ai/install.ps1 | iex
+```
+
+Via npm (as user):
+
+```bash
+npm install -g @anthropic-ai/claude-code
+```
+
 ### Micro
 
 Linux (as user):
