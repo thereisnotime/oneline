@@ -256,6 +256,8 @@ asdf plugin add dotnet-core https://github.com/emersonsoares/asdf-dotnet-core.gi
 asdf plugin add java https://github.com/halcyon/asdf-java.git
 asdf plugin add azure-cli https://github.com/EcoMind/asdf-azure-cli
 asdf plugin add awscli
+asdf plugin add flux2 https://github.com/tablexi/asdf-flux2.git
+asdf plugin add argocd https://github.com/beardix/asdf-argocd.git
 asdf install java adoptopenjdk-jre-21.0.2+13.0.LTS && asdf set -u java adoptopenjdk-jre-21.0.2+13.0.LTS
 asdf install nodejs latest && asdf set -u nodejs latest
 asdf install awscli latest && asdf set -u awscli latest
@@ -264,6 +266,8 @@ asdf install helm latest && asdf set -u helm latest
 asdf install terraform latest && asdf set -u terraform latest
 asdf install kubectl latest && asdf set -u kubectl latest
 asdf install azure-cli latest && asdf set -u azure-cli latest
+asdf install flux2 latest && asdf set -u flux2 latest
+asdf install argocd latest && asdf set -u argocd latest
 ```
 
 ### NVM
@@ -842,6 +846,26 @@ For Ubuntu 22.XX (as user):
 
 ```bash
 cd $(mktemp -d) && wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_amd64.deb && sudo dpkg -i ./libssl1.1_1.1.0g-2ubuntu4_amd64.deb
+```
+
+### Claude Code CLI
+
+Linux/macOS (as user):
+
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+Windows PowerShell (as user):
+
+```powershell
+irm https://claude.ai/install.ps1 | iex
+```
+
+Via npm (as user):
+
+```bash
+npm install -g @anthropic-ai/claude-code
 ```
 
 ### Micro
