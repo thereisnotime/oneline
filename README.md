@@ -756,6 +756,14 @@ Debian, Ubuntu, PopOS (as user):
 cd $(mktemp -d) && _owner="digitalocean" && _repo="doctl" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && _version_no_v=$(echo $_version | sed 's/v//g') && curl -L --silent "https://github.com/$_owner/$_repo/releases/download/$_version/doctl-$_version_no_v-linux-amd64.tar.gz" -o "doctl.tar.gz" && tar -xvzf "doctl.tar.gz" doctl && sudo install -m 755 doctl /usr/local/bin/doctl
 ```
 
+### Hetzner Cloud CLI
+
+Any Linux with Go (as user):
+
+```bash
+go install github.com/hetznercloud/cli/cmd/hcloud@latest
+```
+
 ---
 
 ## Infrastructure as Code
