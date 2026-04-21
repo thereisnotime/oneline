@@ -1562,7 +1562,7 @@ cd /tmp && git clone https://github.com/thereisnotime/xxToolbelt && mkdir -p "$H
 Linux x86_64 (as user):
 
 ```bash
-cd $(mktemp -d) && wget "https://megatools.megous.com/builds/megatools-1.11.1.20230212-linux-x86_64.tar.gz" && tar -xvzf megatools-*.tar.gz && cd megatools-*/ && sudo install -m 755 megatools /usr/local/bin/megatools
+cd $(mktemp -d) && wget "https://xff.cz/megatools/builds/builds/megatools-1.11.5.20250706-linux-x86_64.tar.gz" && tar -xvzf megatools-*.tar.gz && cd megatools-*/ && sudo install -m 755 megatools /usr/local/bin/megatools
 ```
 
 ---
