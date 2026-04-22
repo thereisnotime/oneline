@@ -199,6 +199,22 @@ Linux x86_64 (as user):
 cd $(mktemp -d) && _owner="homeport" && _repo="termshot" && _version=$(curl -s "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && _url="https://github.com/$_owner/$_repo/releases/download/$_version/termshot_${_version#v}_linux_amd64.tar.gz" && wget -q "$_url" && tar -xzf termshot_*_linux_amd64.tar.gz && sudo install -m 0755 termshot /usr/local/bin/termshot && termshot --version
 ```
 
+### Asciinema
+
+Debian, Ubuntu (as user):
+
+```bash
+sudo apt-get install -y asciinema
+```
+
+### Agg
+
+Linux x86_64 (as user):
+
+```bash
+cd $(mktemp -d) && _owner="asciinema" && _repo="agg" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && wget "https://github.com/$_owner/$_repo/releases/download/$_version/agg-x86_64-unknown-linux-gnu" -O agg && sudo install -m 755 agg /usr/local/bin/agg && agg --version
+```
+
 ### Dynmotd
 
 Debian, Ubuntu, PopOS (as root):
@@ -756,6 +772,14 @@ Debian, Ubuntu, PopOS (as user):
 cd $(mktemp -d) && _owner="digitalocean" && _repo="doctl" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && _version_no_v=$(echo $_version | sed 's/v//g') && curl -L --silent "https://github.com/$_owner/$_repo/releases/download/$_version/doctl-$_version_no_v-linux-amd64.tar.gz" -o "doctl.tar.gz" && tar -xvzf "doctl.tar.gz" doctl && sudo install -m 755 doctl /usr/local/bin/doctl
 ```
 
+### Hetzner Cloud CLI
+
+Any Linux with Go (as user):
+
+```bash
+go install github.com/hetznercloud/cli/cmd/hcloud@latest
+```
+
 ---
 
 ## Infrastructure as Code
@@ -1277,6 +1301,20 @@ Debian, Ubuntu (as user):
 sudo apt install -y ffmpeg libsdl2-2.0-0 adb meson wget gcc git pkg-config ninja-build libsdl2-dev libavcodec-dev cmake libavformat-dev libavdevice-dev libavutil-dev libswresample-dev libusb-1.0-0 libusb-1.0-0-dev && sudo git clone https://github.com/Genymobile/scrcpy /opt/scrcpy && cd /opt/scrcpy && sudo ./install_release.sh
 ```
 
+### SSHRoute
+
+Any Linux with Go (as user):
+
+```bash
+go install github.com/thereisnotime/sshroute@latest
+```
+
+If Go is managed via asdf, reshim afterward:
+
+```bash
+asdf reshim golang
+```
+
 ---
 
 ## Web Browsers
@@ -1505,6 +1543,14 @@ EOF
 chmod +x ~/.local/share/applications/nextcloud-appimage.desktop && echo "Nextcloud installed with .desktop file!"
 ```
 
+### Feishin
+
+Debian, Ubuntu (as user):
+
+```bash
+cd $(mktemp -d) && _owner="jeffvli" && _repo="feishin" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && curl -L "https://github.com/$_owner/$_repo/releases/download/$_version/Feishin-linux-amd64.deb" -o feishin.deb && sudo dpkg -i feishin.deb
+```
+
 ---
 
 ## System Utilities
@@ -1554,7 +1600,7 @@ cd /tmp && git clone https://github.com/thereisnotime/xxToolbelt && mkdir -p "$H
 Linux x86_64 (as user):
 
 ```bash
-cd $(mktemp -d) && wget "https://megatools.megous.com/builds/megatools-1.11.1.20230212-linux-x86_64.tar.gz" && tar -xvzf megatools-*.tar.gz && cd megatools-*/ && sudo install -m 755 megatools /usr/local/bin/megatools
+cd $(mktemp -d) && wget "https://xff.cz/megatools/builds/builds/megatools-1.11.5.20250706-linux-x86_64.tar.gz" && tar -xvzf megatools-*.tar.gz && cd megatools-*/ && sudo install -m 755 megatools /usr/local/bin/megatools
 ```
 
 ---
