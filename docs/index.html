@@ -892,6 +892,12 @@
             h3 {
                 font-size: 1.15rem;
             }
+
+            .copy-btn {
+                padding: 0.5rem 0.85rem;
+                font-size: 0.8rem;
+                min-height: 36px;
+            }
         }
 
         /* Loading state */
@@ -1129,7 +1135,7 @@
                 btn.textContent = 'Copy';
                 btn.onclick = async () => {
                     const code = pre.querySelector('code').textContent;
-                    await navigator.clipboard.writeText(code);
+                    await copyToClipboard(code);
                     btn.textContent = 'Copied!';
                     btn.classList.add('copied');
                     setTimeout(() => {
@@ -1319,12 +1325,31 @@
             });
         }
 
+        // Clipboard helper with execCommand fallback for Android/older browsers
+        async function copyToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                try {
+                    await navigator.clipboard.writeText(text);
+                    return;
+                } catch {}
+            }
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            ta.setSelectionRange(0, 99999);
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+        }
+
         // Add click-to-copy for headings
         function addHeadingLinks() {
             document.querySelectorAll('#content h2, #content h3').forEach(heading => {
                 heading.onclick = async () => {
                     const url = window.location.origin + window.location.pathname + '#' + heading.id;
-                    await navigator.clipboard.writeText(url);
+                    await copyToClipboard(url);
                     showToast();
                 };
             });
