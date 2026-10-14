@@ -553,6 +553,7 @@
             margin-left: 320px;
             padding: 3rem 4rem;
             max-width: 1400px;
+            min-width: 0;
         }
 
         /* Typography */
@@ -770,11 +771,13 @@
             background: rgba(0, 0, 0, 0.5);
             z-index: 99;
             opacity: 0;
+            pointer-events: none;
             transition: opacity 0.3s ease;
         }
 
         .sidebar-backdrop.show {
             opacity: 1;
+            pointer-events: auto;
         }
 
         /* Mobile toggle */
@@ -1133,12 +1136,14 @@
                 const btn = document.createElement('button');
                 btn.className = 'copy-btn';
                 btn.textContent = 'Copy';
+                btn.type = 'button';
                 btn.onclick = async () => {
                     const code = pre.querySelector('code').textContent;
-                    await copyToClipboard(code);
-                    btn.textContent = 'Copied!';
-                    btn.classList.add('copied');
-                    setTimeout(() => {
+                    const ok = await copyToClipboard(code);
+                    clearTimeout(btn._resetTimer);
+                    btn.textContent = ok ? 'Copied!' : 'Copy failed';
+                    btn.classList.toggle('copied', ok);
+                    btn._resetTimer = setTimeout(() => {
                         btn.textContent = 'Copy';
                         btn.classList.remove('copied');
                     }, 2000);
@@ -1330,18 +1335,23 @@
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 try {
                     await navigator.clipboard.writeText(text);
-                    return;
+                    return true;
                 } catch {}
             }
             const ta = document.createElement('textarea');
             ta.value = text;
+            ta.setAttribute('readonly', '');
             ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
             document.body.appendChild(ta);
             ta.focus();
             ta.select();
-            ta.setSelectionRange(0, 99999);
-            document.execCommand('copy');
+            ta.setSelectionRange(0, text.length);
+            let ok = false;
+            try {
+                ok = document.execCommand('copy');
+            } catch {}
             document.body.removeChild(ta);
+            return ok;
         }
 
         // Add click-to-copy for headings
@@ -1349,8 +1359,7 @@
             document.querySelectorAll('#content h2, #content h3').forEach(heading => {
                 heading.onclick = async () => {
                     const url = window.location.origin + window.location.pathname + '#' + heading.id;
-                    await copyToClipboard(url);
-                    showToast();
+                    if (await copyToClipboard(url)) showToast();
                 };
             });
         }
