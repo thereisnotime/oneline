@@ -926,6 +926,37 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        /* Consent bar */
+        .consent-bar {
+            position: fixed;
+            left: 16px;
+            right: 16px;
+            bottom: 16px;
+            z-index: 1000;
+            max-width: 560px;
+            margin: 0 auto;
+            padding: 14px 16px;
+            background: var(--bg-secondary);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            font-size: 14px;
+        }
+        .consent-bar[hidden] { display: none; }
+        .consent-bar p { flex: 1 1 260px; margin: 0; color: var(--text-muted); }
+        .consent-bar button {
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-tertiary);
+            color: var(--text);
+            cursor: pointer;
+        }
+        .consent-bar button.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); }
     </style>
 </head>
 <body>
@@ -1664,5 +1695,12 @@
 
         initWithSearch();
     </script>
+    <div class="consent-bar" id="consentBar" role="dialog" aria-label="Cookie consent" hidden>
+        <p>We use analytics cookies (Google Analytics, Microsoft Clarity) to see how the site is used. Nothing loads unless you accept.</p>
+        <button id="consentDecline" type="button">Decline</button>
+        <button id="consentAccept" type="button" class="primary">Accept</button>
+    </div>
+    <script src="analytics.js"></script>
+
 </body>
 </html>
