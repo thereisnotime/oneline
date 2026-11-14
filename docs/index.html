@@ -1583,7 +1583,7 @@
         function updateScrollProgress() {
             const scrollTop = window.scrollY;
             const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const progress = (scrollTop / docHeight) * 100;
+            const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
             document.getElementById('scrollProgress').style.width = progress + '%';
 
             // Back to top visibility
@@ -1608,23 +1608,10 @@
             backdrop = document.getElementById('sidebarBackdrop');
             mobileToggle = document.getElementById('mobileToggle');
 
-            if (mobileToggle) {
-                mobileToggle.onclick = toggleSidebar;
-                console.log('Mobile toggle initialized');
-            }
-            if (backdrop) {
-                backdrop.onclick = closeSidebar;
-                console.log('Backdrop initialized');
-            }
-
-            // Close sidebar when clicking TOC links on mobile
-            document.querySelectorAll('.toc-item, .toc-section-title').forEach(link => {
-                link.addEventListener('click', () => {
-                    if (window.innerWidth <= 1024) {
-                        closeSidebar();
-                    }
-                });
-            });
+            if (mobileToggle) mobileToggle.onclick = toggleSidebar;
+            if (backdrop) backdrop.onclick = closeSidebar;
+            // TOC item links close the sidebar themselves (see buildTOC); section
+            // titles only expand/collapse and must leave it open.
         }
 
         // Active section tracking
