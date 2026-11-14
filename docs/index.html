@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>oneline</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230d1117'/%3E%3Cpath d='M16 20 L30 32 L16 44' stroke='%2358a6ff' stroke-width='6' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Cline x1='34' y1='44' x2='48' y2='44' stroke='%2358a6ff' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
@@ -199,7 +200,8 @@
         /* Safety badges */
         .safety-badge {
             position: absolute;
-            top: 0.7rem;
+            top: calc(0.7rem + var(--copy-h) / 2);
+            transform: translateY(-50%);
             right: 5rem;
             display: inline-flex;
             align-items: center;
@@ -295,6 +297,13 @@
             pointer-events: none;
         }
 
+        /* No keyboard shortcut to advertise on touch devices */
+        @media (hover: none) {
+            .kbd {
+                display: none;
+            }
+        }
+
         /* Search */
         .search-container {
             padding: 0 1.5rem;
@@ -305,6 +314,9 @@
             width: 100%;
             padding: 0.6rem 1rem;
             padding-left: 2.5rem;
+            padding-right: 3.75rem;
+            -webkit-appearance: none;
+            appearance: none;
             background: var(--bg-tertiary);
             border: 1px solid var(--border);
             border-radius: 8px;
@@ -494,10 +506,16 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            width: 100%;
             padding: 0.6rem 0.75rem;
+            background: none;
+            border: none;
             color: var(--text);
+            font-family: inherit;
             font-weight: 500;
             font-size: 0.9rem;
+            line-height: inherit;
+            text-align: left;
             cursor: pointer;
             border-radius: 6px;
             transition: all 0.15s ease;
@@ -599,11 +617,14 @@
             overflow-x: auto;
             margin: 1rem 0 1.5rem;
             position: relative;
+            /* height of the copy button; the lang label and safety badge centre on it */
+            --copy-h: 26px;
         }
 
         .code-lang {
             position: absolute;
-            top: 0.7rem;
+            top: calc(0.7rem + var(--copy-h) / 2);
+            transform: translateY(-50%);
             left: 0.75rem;
             font-size: 0.65rem;
             text-transform: uppercase;
@@ -620,6 +641,13 @@
             line-height: 1.6;
             background: none;
             padding: 0;
+        }
+
+        /* github-dark ships pre code.hljs with its own box; keep the pre as the only box */
+        pre code.hljs {
+            background: none;
+            padding: 0;
+            overflow-x: visible;
         }
 
         code {
@@ -646,6 +674,7 @@
             transition: all 0.15s ease;
             opacity: 1;
             line-height: 1;
+            min-height: var(--copy-h);
         }
 
         .copy-btn:hover {
@@ -658,6 +687,273 @@
             background: var(--success);
             border-color: var(--success);
             color: var(--bg);
+        }
+
+        /* Tables */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 1rem 0 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0 1.5rem;
+        }
+
+        .table-wrap table {
+            margin: 0;
+        }
+
+        th, td {
+            padding: 0.5rem 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        td { color: var(--text-muted); }
+
+        /* Terminal catalog banner */
+        .tui-banner {
+            position: relative;
+            margin: 0 0 2rem;
+            padding: 14px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .tui-banner[hidden] {
+            display: none;
+        }
+
+        .tui-head {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2px 12px;
+            padding-right: 36px; /* room for the dismiss button */
+        }
+
+        .tui-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            line-height: 24px;
+            color: var(--text);
+        }
+
+        .tui-glyph {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--accent);
+        }
+
+        /* small link, 44px tall tap area without growing the row */
+        .tui-read {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 4px;
+            margin: -12px -4px;
+            font-size: 13px;
+            line-height: 20px;
+            color: var(--text-muted);
+        }
+
+        .tui-read:hover {
+            color: var(--accent);
+        }
+
+        .tui-close,
+        .tui-copy,
+        .tui-tool button {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .tui-close {
+            position: absolute;
+            top: 10px;
+            right: 8px;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .tui-close:hover,
+        .tui-copy:hover {
+            color: var(--text);
+            background: var(--bg-tertiary);
+        }
+
+        .tui-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            padding: 3px 3px 3px 12px;
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            min-width: 0;
+        }
+
+        .tui-prompt {
+            flex-shrink: 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13.5px;
+            color: var(--text-muted);
+            opacity: 0.6;
+            user-select: none;
+        }
+
+        .tui-banner .tui-cmd {
+            flex: 1;
+            min-width: 0;
+            padding: 0;
+            background: none;
+            border-radius: 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13.5px;
+            line-height: 24px;
+            color: var(--text);
+            white-space: nowrap;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .tui-banner .tui-cmd::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tui-tool {
+            display: inline-flex;
+            flex-shrink: 0;
+            padding: 2px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        .tui-tool button {
+            padding: 0 8px;
+            height: 24px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+        }
+
+        .tui-tool button[aria-pressed="true"] {
+            background: var(--bg-tertiary);
+            color: var(--accent);
+        }
+
+        .tui-copy {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .tui-copy.copied {
+            color: var(--success);
+        }
+
+        .tui-copy.failed {
+            color: #f85149;
+        }
+
+        .tui-copy svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .tui-foot {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px 10px;
+            margin-top: 8px;
+        }
+
+        .tui-banner .tui-hint {
+            margin: 0;
+            font-size: 13px;
+            line-height: 18px;
+            color: var(--text-muted);
+            animation: none;
+        }
+
+        @media (max-width: 480px) {
+            .tui-banner {
+                padding: 12px;
+            }
+
+            .tui-close {
+                top: 8px;
+                right: 6px;
+            }
+
+            .tui-bar {
+                padding: 3px 2px 3px 10px;
+                gap: 5px;
+            }
+
+            .tui-prompt,
+            .tui-banner .tui-cmd {
+                font-size: 13px;
+            }
+
+            .tui-foot {
+                flex-wrap: nowrap;
+                align-items: flex-start;
+            }
+        }
+
+        /* the wget variant is one character longer; keep it on one line at 360px too */
+        @media (max-width: 380px) {
+            .tui-prompt,
+            .tui-banner .tui-cmd {
+                font-size: 12.5px;
+            }
+        }
+
+        /* 44px hit areas on touch without making the card bigger */
+        @media (pointer: coarse) {
+            .tui-close::before,
+            .tui-copy::before {
+                content: '';
+                position: absolute;
+                inset: -6px;
+            }
+
+            .tui-tool button::before {
+                content: '';
+                position: absolute;
+                inset: -10px 0;
+            }
         }
 
         /* Lists */
@@ -874,6 +1170,17 @@
             .sidebar-backdrop {
                 display: block;
             }
+
+            /* room so the floating ☰ doesn't sit on the last TOC rows */
+            .sidebar {
+                padding-bottom: 6rem;
+            }
+
+            /* stack above ☰ with a gap, centred on the same vertical axis */
+            .back-to-top {
+                bottom: calc(1.5rem + 56px + 12px);
+                right: calc(1.5rem + 6px);
+            }
         }
 
         @media (max-width: 768px) {
@@ -884,8 +1191,7 @@
             pre {
                 padding-left: 0.75rem;
                 padding-right: 0.75rem;
-                margin-left: -0.5rem;
-                margin-right: -0.5rem;
+                --copy-h: 36px;
             }
 
             h2 {
@@ -899,7 +1205,52 @@
             .copy-btn {
                 padding: 0.5rem 0.85rem;
                 font-size: 0.8rem;
-                min-height: 36px;
+            }
+        }
+
+        /* Touch: give everything tappable at least 44px */
+        @media (pointer: coarse) {
+            .toc-item,
+            .toc-section-title {
+                display: flex;
+                align-items: center;
+                min-height: 44px;
+            }
+
+            .github-btn,
+            .stats-badge {
+                min-height: 44px;
+                padding: 0.3rem 0.9rem;
+            }
+
+            .search-input {
+                min-height: 44px;
+                font-size: 16px; /* also stops iOS zooming on focus */
+            }
+
+            .favorites-toggle {
+                min-height: 44px;
+            }
+
+            .favorites-toggle input {
+                width: 22px;
+                height: 22px;
+            }
+
+            .favorite-btn {
+                width: 44px;
+                height: 44px;
+                margin-top: -8px;
+                margin-bottom: -8px;
+            }
+
+            .privacy-btn,
+            .modal-close {
+                min-height: 44px;
+            }
+
+            .modal-close {
+                width: 44px;
             }
         }
 
@@ -926,6 +1277,30 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        /* Keyboard focus */
+        :focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        .search-input:focus-visible {
+            outline: none; /* has its own border + ring */
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            .main h2, .main h3, .main pre, .main p {
+                animation: none;
+            }
+
+            *, *::before, *::after {
+                transition-duration: 0.01ms !important;
+            }
+        }
+
         /* Consent bar */
         .consent-bar {
             position: fixed;
@@ -949,7 +1324,9 @@
         .consent-bar[hidden] { display: none; }
         .consent-bar p { flex: 1 1 260px; margin: 0; color: var(--text-muted); }
         .consent-bar button {
-            padding: 6px 14px;
+            min-height: 44px;
+            padding: 10px 18px;
+            font: inherit;
             border-radius: 6px;
             border: 1px solid var(--border);
             background: var(--bg-tertiary);
@@ -957,6 +1334,10 @@
             cursor: pointer;
         }
         .consent-bar button.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+        @media (max-width: 1024px) {
+            /* keep the bar clear of the floating ☰ / back-to-top column */
+            .consent-bar { right: calc(1.5rem + 56px + 12px); }
+        }
     </style>
 </head>
 <body>
@@ -970,40 +1351,40 @@
                 <p>Copy-paste ready snippets for Linux & more</p>
                 <div class="sidebar-badges">
                     <div class="stats-badge">
-                        📦 <span id="snippetCount">0</span> snippets
+                        <span aria-hidden="true">📦</span> <span id="snippetCount">0</span> snippets
                     </div>
-                    <a href="https://github.com/thereisnotime/oneline" target="_blank" class="github-btn">
-                        ⭐ Star
+                    <a href="https://github.com/thereisnotime/oneline" target="_blank" rel="noopener" class="github-btn">
+                        <span aria-hidden="true">⭐</span> Star
                     </a>
                 </div>
             </div>
             <div class="search-container">
                 <div class="search-wrapper">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" class="search-input" id="searchInput" placeholder="Search..." autocomplete="off">
-                    <span class="kbd">⌘K</span>
+                    <span class="search-icon" aria-hidden="true">🔍</span>
+                    <input type="search" class="search-input" id="searchInput" placeholder="Search..." autocomplete="off" aria-label="Search snippets">
+                    <span class="kbd" id="searchKbd" aria-hidden="true">Ctrl K</span>
                 </div>
             </div>
             <div class="search-results hidden" id="searchResults"></div>
             <label class="favorites-toggle" id="favoritesToggle">
                 <input type="checkbox" id="favoritesOnly">
-                ❤️ Show favorites only
+                <span aria-hidden="true">❤️</span> Show favorites only
             </label>
-            <button class="privacy-btn" id="privacyBtn">
-                <span class="privacy-icon">🔒</span>
+            <button class="privacy-btn" id="privacyBtn" type="button" aria-haspopup="dialog">
+                <span class="privacy-icon" aria-hidden="true">🔒</span>
                 privacy.sexy
             </button>
-            <nav class="toc" id="toc"></nav>
+            <nav class="toc" id="toc" aria-label="Sections"></nav>
         </aside>
         
         <!-- Privacy.sexy Modal -->
-        <div class="modal-overlay" id="privacyModal">
+        <div class="modal-overlay" id="privacyModal" role="dialog" aria-modal="true" aria-labelledby="privacyTitle">
             <div class="modal-container">
                 <div class="modal-header">
-                    <span>🔒 privacy.sexy</span>
-                    <button class="modal-close" id="modalClose">✕</button>
+                    <span id="privacyTitle"><span aria-hidden="true">🔒</span> privacy.sexy</span>
+                    <button class="modal-close" id="modalClose" type="button" aria-label="Close privacy.sexy">✕</button>
                 </div>
-                <iframe src="" id="privacyFrame" class="modal-iframe" allow="clipboard-write"></iframe>
+                <iframe src="" id="privacyFrame" class="modal-iframe" allow="clipboard-write" title="privacy.sexy"></iframe>
             </div>
         </div>
         
@@ -1011,10 +1392,32 @@
     </div>
 
     <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
-    <button class="back-to-top" id="backToTop">↑</button>
-    <button class="mobile-toggle" id="mobileToggle">☰</button>
-    <div class="link-copied-toast" id="toast">Link copied to clipboard!</div>
-    <div class="tooltip" id="tooltip"></div>
+    <button class="back-to-top" id="backToTop" type="button" aria-label="Back to top">↑</button>
+    <button class="mobile-toggle" id="mobileToggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="sidebar">☰</button>
+    <div class="link-copied-toast" id="toast" role="status" aria-live="polite">Link copied to clipboard!</div>
+    <div class="tooltip" id="tooltip" role="tooltip"></div>
+
+    <template id="tuiBannerTpl">
+        <section class="tui-banner" aria-labelledby="tuiBannerLabel">
+            <div class="tui-head">
+                <span class="tui-title" id="tuiBannerLabel"><span class="tui-glyph" aria-hidden="true">&gt;_</span>Browse from your terminal</span>
+                <a class="tui-read" href="https://github.com/thereisnotime/oneline/blob/master/docs/tui" target="_blank" rel="noopener">read the script ↗</a>
+            </div>
+            <button type="button" class="tui-close" aria-label="Dismiss terminal catalog banner" title="Dismiss">✕</button>
+            <div class="tui-bar">
+                <span class="tui-prompt" aria-hidden="true">$</span>
+                <code class="tui-cmd" tabindex="0"></code>
+                <div class="tui-tool" role="group" aria-label="Download tool">
+                    <button type="button" data-tool="curl">curl</button>
+                    <button type="button" data-tool="wget">wget</button>
+                </div>
+                <button type="button" class="tui-copy" aria-label="Copy command" title="Copy command"></button>
+            </div>
+            <div class="tui-foot">
+                <p class="tui-hint">Search, preview, and nothing runs until you press y.</p>
+            </div>
+        </section>
+    </template>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
@@ -1034,26 +1437,74 @@
         // Mobile sidebar functions (defined early for global access)
         let sidebar, backdrop, mobileToggle;
         
-        function toggleSidebar() {
-            if (sidebar) {
-                sidebar.classList.toggle('open');
-                backdrop.classList.toggle('show');
+        function setSidebarOpen(open) {
+            if (!sidebar) return;
+            sidebar.classList.toggle('open', open);
+            backdrop.classList.toggle('show', open);
+            if (mobileToggle) {
+                mobileToggle.setAttribute('aria-expanded', String(open));
+                mobileToggle.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
             }
+        }
+
+        function toggleSidebar() {
+            if (sidebar) setSidebarOpen(!sidebar.classList.contains('open'));
         }
 
         function closeSidebar() {
-            if (sidebar) {
-                sidebar.classList.remove('open');
-                backdrop.classList.remove('show');
-            }
+            setSidebarOpen(false);
         }
 
-        // Custom renderer for headings with IDs
+        // Headings get their real IDs from rendered textContent after parsing
+        // (assignHeadingIds). Here we only remember the slug the old renderer
+        // built from marked's HTML, so links using it still resolve.
         const renderer = new marked.Renderer();
         renderer.heading = function(text, level) {
-            const slug = slugify(text);
-            return `<h${level} id="${slug}">${text}</h${level}>`;
+            return `<h${level} data-legacy-id="${slugify(text)}">${text}</h${level}>`;
         };
+
+        function assignHeadingIds() {
+            document.querySelectorAll('#content h1, #content h2, #content h3, #content h4, #content h5, #content h6').forEach(h => {
+                h.id = slugify(h.textContent);
+                if (h.dataset.legacyId === h.id) delete h.dataset.legacyId;
+            });
+        }
+
+        // Favorites were stored by heading ID; carry over any saved under an old slug
+        function migrateFavorites() {
+            let favorites = loadFavorites();
+            let changed = false;
+            document.querySelectorAll('#content h3[data-legacy-id]').forEach(h3 => {
+                const i = favorites.indexOf(h3.dataset.legacyId);
+                if (i !== -1) {
+                    favorites[i] = h3.id;
+                    changed = true;
+                }
+            });
+            if (changed) saveFavorites([...new Set(favorites)]);
+        }
+
+        function findHeadingForHash() {
+            let id = location.hash.slice(1);
+            if (!id) return null;
+            try { id = decodeURIComponent(id); } catch {}
+            return document.getElementById(id) ||
+                document.querySelector(`#content [data-legacy-id="${CSS.escape(id)}"]`);
+        }
+
+        function scrollToHash(smooth) {
+            const target = findHeadingForHash();
+            if (!target) return;
+            if (location.hash.slice(1) !== target.id) {
+                history.replaceState(null, '', '#' + target.id);
+            }
+            // offsetTop ignores the fadeInUp transform, getBoundingClientRect doesn't
+            let top = 0;
+            for (let el = target; el; el = el.offsetParent) top += el.offsetTop;
+            window.scrollTo({ top: Math.max(0, top - 16), behavior: smooth ? 'smooth' : 'auto' });
+        }
+
+        window.addEventListener('hashchange', () => scrollToHash(true));
 
         // Configure marked
         marked.setOptions({
@@ -1081,6 +1532,15 @@
                 // Parse and render
                 const html = marked.parse(markdown);
                 document.getElementById('content').innerHTML = html;
+                assignHeadingIds();
+
+                // Let wide tables scroll on their own instead of the page
+                document.querySelectorAll('#content table').forEach(table => {
+                    const wrap = document.createElement('div');
+                    wrap.className = 'table-wrap';
+                    table.parentNode.insertBefore(wrap, table);
+                    wrap.appendChild(table);
+                });
                 
                 // Apply syntax highlighting
                 document.querySelectorAll('pre code').forEach((block) => {
@@ -1092,6 +1552,7 @@
                 
                 // Add copy buttons to code blocks
                 addCopyButtons();
+                addTuiBanner();
                 
                 // Show content
                 document.getElementById('loading').style.display = 'none';
@@ -1113,16 +1574,24 @@
                 section.className = 'toc-section';
                 if (index === 0) section.classList.add('open');
                 
-                // Section title
-                const title = document.createElement('div');
+                // Section title (a real button so it works from the keyboard)
+                const items = document.createElement('div');
+                items.className = 'toc-items';
+                items.id = 'toc-items-' + index;
+
+                const title = document.createElement('button');
+                title.type = 'button';
                 title.className = 'toc-section-title';
                 title.textContent = h2.textContent;
-                title.onclick = () => section.classList.toggle('open');
+                title.setAttribute('aria-controls', items.id);
+                title.setAttribute('aria-expanded', String(index === 0));
+                title.onclick = () => {
+                    const open = section.classList.toggle('open');
+                    title.setAttribute('aria-expanded', String(open));
+                };
                 section.appendChild(title);
                 
                 // Get h3s until next h2
-                const items = document.createElement('div');
-                items.className = 'toc-items';
                 
                 let sibling = h2.nextElementSibling;
                 while (sibling && sibling.tagName !== 'H2') {
@@ -1168,19 +1637,100 @@
                 btn.className = 'copy-btn';
                 btn.textContent = 'Copy';
                 btn.type = 'button';
-                btn.onclick = async () => {
-                    const code = pre.querySelector('code').textContent;
-                    const ok = await copyToClipboard(code);
-                    clearTimeout(btn._resetTimer);
-                    btn.textContent = ok ? 'Copied!' : 'Copy failed';
-                    btn.classList.toggle('copied', ok);
-                    btn._resetTimer = setTimeout(() => {
-                        btn.textContent = 'Copy';
-                        btn.classList.remove('copied');
-                    }, 2000);
-                };
+                btn.onclick = () => copyWithFeedback(btn, pre.querySelector('code').textContent);
                 pre.appendChild(btn);
             });
+        }
+
+        async function copyWithFeedback(btn, text) {
+            const ok = await copyToClipboard(text);
+            clearTimeout(btn._resetTimer);
+            btn.textContent = ok ? 'Copied!' : 'Copy failed';
+            btn.classList.toggle('copied', ok);
+            btn._resetTimer = setTimeout(() => {
+                btn.textContent = 'Copy';
+                btn.classList.remove('copied');
+            }, 2000);
+        }
+
+        // Point people at `curl -sL oneline.sh/tui | bash` above the README content
+        const TUI_COMMANDS = {
+            curl: 'curl -sL oneline.sh/tui | bash',
+            wget: 'wget -qO- oneline.sh/tui | bash'
+        };
+        const ICON_COPY = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 3.5v-.5a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h.5"/></svg>';
+
+        function storageGet(key) {
+            try { return { ok: true, value: localStorage.getItem(key) }; } catch { return { ok: false, value: null }; }
+        }
+
+        function storageSet(key, value) {
+            try { localStorage.setItem(key, value); return true; } catch { return false; }
+        }
+
+        function addTuiBanner() {
+            const dismissed = storageGet('rso-tui-banner-dismissed');
+            if (dismissed.value === '1') return;
+
+            const banner = document.getElementById('tuiBannerTpl').content.firstElementChild.cloneNode(true);
+            const cmd = banner.querySelector('.tui-cmd');
+            const bar = banner.querySelector('.tui-bar');
+            const foot = banner.querySelector('.tui-foot');
+            const toolGroup = banner.querySelector('.tui-tool');
+            const copyBtn = banner.querySelector('.tui-copy');
+            const closeBtn = banner.querySelector('.tui-close');
+
+            let tool = storageGet('rso-dl-tool').value === 'wget' ? 'wget' : 'curl';
+            const setTool = (next) => {
+                tool = next;
+                cmd.textContent = TUI_COMMANDS[tool];
+                toolGroup.querySelectorAll('button').forEach(b => {
+                    b.setAttribute('aria-pressed', String(b.dataset.tool === tool));
+                });
+            };
+            toolGroup.querySelectorAll('button').forEach(b => {
+                b.onclick = () => {
+                    setTool(b.dataset.tool);
+                    storageSet('rso-dl-tool', tool);
+                };
+            });
+            setTool(tool);
+
+            copyBtn.innerHTML = ICON_COPY;
+            copyBtn.onclick = async () => {
+                const ok = await copyToClipboard(TUI_COMMANDS[tool]);
+                clearTimeout(copyBtn._resetTimer);
+                copyBtn.textContent = ok ? '✓' : '✗';
+                copyBtn.classList.toggle('copied', ok);
+                copyBtn.classList.toggle('failed', !ok);
+                copyBtn.title = ok ? 'Copied' : 'Copy failed';
+                copyBtn._resetTimer = setTimeout(() => {
+                    copyBtn.innerHTML = ICON_COPY;
+                    copyBtn.classList.remove('copied', 'failed');
+                    copyBtn.title = 'Copy command';
+                }, 1500);
+            };
+
+            // No storage means a dismiss couldn't stick, so don't offer one
+            if (dismissed.ok) {
+                closeBtn.onclick = () => {
+                    storageSet('rso-tui-banner-dismissed', '1');
+                    banner.hidden = true;
+                };
+            } else {
+                closeBtn.remove();
+            }
+
+            // On phones the toggle leaves the bar so the command fits on one line
+            const narrow = window.matchMedia('(max-width: 480px)');
+            const placeToggle = () => {
+                if (narrow.matches) foot.prepend(toolGroup);
+                else bar.insertBefore(toolGroup, copyBtn);
+            };
+            narrow.addEventListener('change', placeToggle);
+            placeToggle();
+
+            document.getElementById('content').prepend(banner);
         }
 
         // Favorites system
@@ -1210,20 +1760,23 @@
         function addFavoriteButtons() {
             const favorites = loadFavorites();
             document.querySelectorAll('#content h3').forEach(h3 => {
+                const name = h3.textContent.trim();
                 const btn = document.createElement('button');
-                btn.className = 'favorite-btn' + (favorites.includes(h3.id) ? ' active' : '');
-                btn.innerHTML = '♡';
-                btn.title = 'Add to favorites';
+                btn.type = 'button';
+                const setState = (isActive) => {
+                    btn.classList.toggle('active', isActive);
+                    btn.textContent = isActive ? '♥' : '♡';
+                    btn.title = isActive ? 'Remove from favorites' : 'Add to favorites';
+                    btn.setAttribute('aria-label', `Favorite: ${name}`);
+                    btn.setAttribute('aria-pressed', String(isActive));
+                };
+                btn.className = 'favorite-btn';
+                setState(favorites.includes(h3.id));
                 btn.onclick = (e) => {
                     e.stopPropagation();
-                    const isActive = toggleFavorite(h3.id);
-                    btn.classList.toggle('active', isActive);
-                    btn.innerHTML = isActive ? '♥' : '♡';
+                    setState(toggleFavorite(h3.id));
                     updateFavoritesCount();
                 };
-                if (favorites.includes(h3.id)) {
-                    btn.innerHTML = '♥';
-                }
                 h3.appendChild(btn);
             });
             updateFavoritesCount();
@@ -1353,9 +1906,7 @@
                     tooltipText = 'One-time: May fail, duplicate, or append data if re-run.';
                 }
 
-                // Add tooltip on hover
-                badge.onmouseenter = (e) => showTooltip(badge, tooltipText);
-                badge.onmouseleave = hideTooltip;
+                attachTooltip(badge, () => tooltipText);
 
                 pre.appendChild(badge);
             });
@@ -1390,15 +1941,20 @@
             document.querySelectorAll('#content h2, #content h3').forEach(heading => {
                 heading.onclick = async () => {
                     const url = window.location.origin + window.location.pathname + '#' + heading.id;
-                    if (await copyToClipboard(url)) showToast();
+                    const ok = await copyToClipboard(url);
+                    showToast(ok ? 'Link copied to clipboard!' : 'Could not copy the link', ok);
                 };
             });
         }
 
-        function showToast() {
+        let toastTimer;
+        function showToast(message, ok = true) {
             const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.background = ok ? '' : '#f85149';
             toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
         }
 
         // Tooltip helper functions
@@ -1427,10 +1983,55 @@
             tooltip.style.top = top + 'px';
         }
         
+        let tooltipOwner = null;
+
         function hideTooltip() {
             if (!tooltip) tooltip = document.getElementById('tooltip');
             tooltip.classList.remove('show');
+            if (tooltipOwner) tooltipOwner.removeAttribute('aria-describedby');
+            tooltipOwner = null;
         }
+
+        function openTooltip(el, getContent) {
+            if (tooltipOwner && tooltipOwner !== el) tooltipOwner.removeAttribute('aria-describedby');
+            showTooltip(el, getContent());
+            tooltipOwner = el;
+            el.setAttribute('aria-describedby', 'tooltip');
+        }
+
+        // Hover on mouse, tap/Enter to toggle on touch and keyboard
+        function attachTooltip(el, getContent) {
+            let lastPointer = '';
+            el.tabIndex = 0;
+            el.setAttribute('role', 'button');
+            el.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') openTooltip(el, getContent); });
+            el.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse' && tooltipOwner === el) hideTooltip(); });
+            el.addEventListener('pointerdown', (e) => { lastPointer = e.pointerType; });
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (lastPointer === 'mouse') { lastPointer = ''; return; }
+                lastPointer = '';
+                if (tooltipOwner === el) hideTooltip();
+                else openTooltip(el, getContent);
+            });
+            el.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    if (tooltipOwner === el) hideTooltip();
+                    else openTooltip(el, getContent);
+                }
+            });
+            el.addEventListener('blur', () => { if (tooltipOwner === el) hideTooltip(); });
+        }
+
+        document.addEventListener('click', (e) => {
+            if (tooltipOwner && !tooltipOwner.contains(e.target)) hideTooltip();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && tooltipOwner) hideTooltip();
+        });
+        // The tooltip is position:fixed, so it would drift away from its owner
+        window.addEventListener('scroll', () => { if (tooltipOwner) hideTooltip(); }, { passive: true });
 
         // Update snippet count with language breakdown
         let languageStats = {};
@@ -1454,15 +2055,15 @@
             
             // Add tooltip to stats badge
             const statsBadge = document.querySelector('.stats-badge');
-            if (statsBadge) {
-                statsBadge.onmouseenter = (e) => {
+            if (statsBadge && !statsBadge.dataset.tooltip) {
+                statsBadge.dataset.tooltip = '1';
+                attachTooltip(statsBadge, () => {
                     const breakdown = Object.entries(languageStats)
                         .sort((a, b) => b[1] - a[1])
                         .map(([lang, count]) => `<div style="display: flex; justify-content: space-between; gap: 1rem;"><span>${lang}</span><span style="color: var(--accent); font-weight: 600;">${count}</span></div>`)
                         .join('');
-                    showTooltip(statsBadge, `<div style="font-size: 0.75rem;"><div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--accent);">Snippets by Language:</div>${breakdown}</div>`);
-                };
-                statsBadge.onmouseleave = hideTooltip;
+                    return `<div style="font-size: 0.75rem;"><div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--accent);">Snippets by Language:</div>${breakdown}</div>`;
+                });
             }
         }
 
@@ -1470,7 +2071,7 @@
         function updateScrollProgress() {
             const scrollTop = window.scrollY;
             const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const progress = (scrollTop / docHeight) * 100;
+            const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
             document.getElementById('scrollProgress').style.width = progress + '%';
 
             // Back to top visibility
@@ -1495,23 +2096,10 @@
             backdrop = document.getElementById('sidebarBackdrop');
             mobileToggle = document.getElementById('mobileToggle');
 
-            if (mobileToggle) {
-                mobileToggle.onclick = toggleSidebar;
-                console.log('Mobile toggle initialized');
-            }
-            if (backdrop) {
-                backdrop.onclick = closeSidebar;
-                console.log('Backdrop initialized');
-            }
-
-            // Close sidebar when clicking TOC links on mobile
-            document.querySelectorAll('.toc-item, .toc-section-title').forEach(link => {
-                link.addEventListener('click', () => {
-                    if (window.innerWidth <= 1024) {
-                        closeSidebar();
-                    }
-                });
-            });
+            if (mobileToggle) mobileToggle.onclick = toggleSidebar;
+            if (backdrop) backdrop.onclick = closeSidebar;
+            // TOC item links close the sidebar themselves (see buildTOC); section
+            // titles only expand/collapse and must leave it open.
         }
 
         // Active section tracking
@@ -1635,6 +2223,20 @@
                 }
             });
 
+            // Show the modifier people actually have
+            const platform = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || '';
+            if (/mac|iphone|ipad|ipod/i.test(platform)) {
+                document.getElementById('searchKbd').textContent = '⌘K';
+            }
+
+            // Escape closes the mobile sidebar
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && sidebar && sidebar.classList.contains('open')) {
+                    closeSidebar();
+                    if (mobileToggle) mobileToggle.focus();
+                }
+            });
+
             // Keyboard shortcut: Cmd/Ctrl + K to focus search
             document.addEventListener('keydown', (e) => {
                 if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -1658,11 +2260,13 @@
                 privacyFrame.src = 'https://privacy.sexy/';
                 privacyModal.classList.add('open');
                 document.body.style.overflow = 'hidden';
+                modalClose.focus();
             });
 
             modalClose.addEventListener('click', () => {
                 privacyModal.classList.remove('open');
                 document.body.style.overflow = '';
+                privacyBtn.focus();
                 // Clear iframe after animation
                 setTimeout(() => { privacyFrame.src = ''; }, 300);
             });
@@ -1685,12 +2289,20 @@
         const originalInit = init;
         async function initWithSearch() {
             await originalInit();
+            document.querySelectorAll('a[target="_blank"]').forEach(a => {
+                const rel = new Set((a.getAttribute('rel') || '').split(/\s+/).filter(Boolean));
+                rel.add('noopener');
+                a.setAttribute('rel', [...rel].join(' '));
+            });
             buildSearchIndex();
             addHeadingLinks();
+            migrateFavorites();
             addFavoriteButtons();
             addSafetyBadges();
             updateStats();
             initMobileMenu(); // Initialize mobile sidebar after DOM is ready
+            // Content was injected after the browser tried to jump to the hash
+            requestAnimationFrame(() => scrollToHash(false));
         }
 
         initWithSearch();
