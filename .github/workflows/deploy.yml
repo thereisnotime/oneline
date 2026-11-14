@@ -8,6 +8,7 @@ on:
     paths:
       - 'README.md'
       - 'docs/**'
+      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 permissions:
@@ -31,6 +32,14 @@ jobs:
 
       - name: Copy README to docs
         run: cp README.md docs/
+
+      - name: Inject build info into index.html
+        run: |
+          SHA=$(git rev-parse --short HEAD)
+          TIME=$(date -u +"%Y-%m-%d %H:%M UTC")
+          COMMIT_URL="${{ github.server_url }}/${{ github.repository }}/commit/$(git rev-parse HEAD)"
+          sed -i "s|<!-- BUILD_SHA -->|<a href=\"${COMMIT_URL}\">${SHA}</a>|g" docs/index.html
+          sed -i "s|<!-- BUILD_TIME -->|${TIME}|g" docs/index.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
