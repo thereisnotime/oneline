@@ -912,6 +912,22 @@
             .sidebar-backdrop {
                 display: block;
             }
+
+            /* room so the floating ☰ doesn't sit on the last TOC rows */
+            .sidebar {
+                padding-bottom: 6rem;
+            }
+
+            /* stack above ☰ with a gap, centred on the same vertical axis */
+            .back-to-top {
+                bottom: calc(1.5rem + 56px + 12px);
+                right: calc(1.5rem + 6px);
+            }
+
+            /* keep the consent bar clear of the floating buttons column */
+            .consent-bar {
+                right: calc(1.5rem + 56px + 12px);
+            }
         }
 
         @media (max-width: 768px) {
@@ -985,7 +1001,9 @@
         .consent-bar[hidden] { display: none; }
         .consent-bar p { flex: 1 1 260px; margin: 0; color: var(--text-muted); }
         .consent-bar button {
-            padding: 6px 14px;
+            min-height: 44px;
+            padding: 10px 18px;
+            font: inherit;
             border-radius: 6px;
             border: 1px solid var(--border);
             background: var(--bg-tertiary);
