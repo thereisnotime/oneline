@@ -1153,12 +1153,53 @@
             }
         }
 
-        // Custom renderer for headings with IDs
+        // Headings get their real IDs from rendered textContent after parsing
+        // (assignHeadingIds). Here we only remember the slug the old renderer
+        // built from marked's HTML, so links using it still resolve.
         const renderer = new marked.Renderer();
         renderer.heading = function(text, level) {
-            const slug = slugify(text);
-            return `<h${level} id="${slug}">${text}</h${level}>`;
+            return `<h${level} data-legacy-id="${slugify(text)}">${text}</h${level}>`;
         };
+
+        function assignHeadingIds() {
+            document.querySelectorAll('#content h1, #content h2, #content h3, #content h4').forEach(h => {
+                h.id = slugify(h.textContent);
+                if (h.dataset.legacyId === h.id) delete h.dataset.legacyId;
+            });
+        }
+
+        // Favorites were stored by heading ID; carry over any saved under an old slug
+        function migrateFavorites() {
+            let favorites = loadFavorites();
+            let changed = false;
+            document.querySelectorAll('#content h3[data-legacy-id]').forEach(h3 => {
+                const i = favorites.indexOf(h3.dataset.legacyId);
+                if (i !== -1) {
+                    favorites[i] = h3.id;
+                    changed = true;
+                }
+            });
+            if (changed) saveFavorites([...new Set(favorites)]);
+        }
+
+        function findHeadingForHash() {
+            let id = location.hash.slice(1);
+            if (!id) return null;
+            try { id = decodeURIComponent(id); } catch {}
+            return document.getElementById(id) ||
+                document.querySelector(`#content [data-legacy-id="${CSS.escape(id)}"]`);
+        }
+
+        function scrollToHash(smooth) {
+            const target = findHeadingForHash();
+            if (!target) return;
+            if (location.hash.slice(1) !== target.id) {
+                history.replaceState(null, '', '#' + target.id);
+            }
+            target.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+        }
+
+        window.addEventListener('hashchange', () => scrollToHash(true));
 
         // Configure marked
         marked.setOptions({
@@ -1186,6 +1227,7 @@
                 // Parse and render
                 const html = marked.parse(markdown);
                 document.getElementById('content').innerHTML = html;
+                assignHeadingIds();
 
                 // Let wide tables scroll on their own instead of the page
                 document.querySelectorAll('#content table').forEach(table => {
@@ -1787,10 +1829,13 @@
             await originalInit();
             buildSearchIndex();
             addHeadingLinks();
+            migrateFavorites();
             addFavoriteButtons();
             addSafetyBadges();
             updateStats();
             initMobileMenu(); // Initialize mobile sidebar after DOM is ready
+            // Content was injected after the browser tried to jump to the hash
+            requestAnimationFrame(() => scrollToHash(false));
         }
 
         initWithSearch();
