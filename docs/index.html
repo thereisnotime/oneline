@@ -199,7 +199,8 @@
         /* Safety badges */
         .safety-badge {
             position: absolute;
-            top: 0.7rem;
+            top: calc(0.7rem + var(--copy-h) / 2);
+            transform: translateY(-50%);
             right: 5rem;
             display: inline-flex;
             align-items: center;
@@ -599,11 +600,14 @@
             overflow-x: auto;
             margin: 1rem 0 1.5rem;
             position: relative;
+            /* height of the copy button; the lang label and safety badge centre on it */
+            --copy-h: 26px;
         }
 
         .code-lang {
             position: absolute;
-            top: 0.7rem;
+            top: calc(0.7rem + var(--copy-h) / 2);
+            transform: translateY(-50%);
             left: 0.75rem;
             font-size: 0.65rem;
             text-transform: uppercase;
@@ -653,6 +657,7 @@
             transition: all 0.15s ease;
             opacity: 1;
             line-height: 1;
+            min-height: var(--copy-h);
         }
 
         .copy-btn:hover {
@@ -938,6 +943,7 @@
             pre {
                 padding-left: 0.75rem;
                 padding-right: 0.75rem;
+                --copy-h: 36px;
             }
 
             h2 {
@@ -951,7 +957,52 @@
             .copy-btn {
                 padding: 0.5rem 0.85rem;
                 font-size: 0.8rem;
-                min-height: 36px;
+            }
+        }
+
+        /* Touch: give everything tappable at least 44px */
+        @media (pointer: coarse) {
+            .toc-item,
+            .toc-section-title {
+                display: flex;
+                align-items: center;
+                min-height: 44px;
+            }
+
+            .github-btn,
+            .stats-badge {
+                min-height: 44px;
+                padding: 0.3rem 0.9rem;
+            }
+
+            .search-input {
+                min-height: 44px;
+                font-size: 16px; /* also stops iOS zooming on focus */
+            }
+
+            .favorites-toggle {
+                min-height: 44px;
+            }
+
+            .favorites-toggle input {
+                width: 22px;
+                height: 22px;
+            }
+
+            .favorite-btn {
+                width: 44px;
+                height: 44px;
+                margin-top: -8px;
+                margin-bottom: -8px;
+            }
+
+            .privacy-btn,
+            .modal-close {
+                min-height: 44px;
+            }
+
+            .modal-close {
+                width: 44px;
             }
         }
 
