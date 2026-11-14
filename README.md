@@ -171,18 +171,10 @@ curl https://raw.githubusercontent.com/scopatz/nanorc/master/install.sh | sh
 
 ### Tmate
 
-Linux x86_64 (as root):
+Linux x86_64, arm64, armv7 (as root):
 
 ```bash
-apt install -y curl && cd $(mktemp -d) && _version=$(curl --silent "https://api.github.com/repos/tmate-io/tmate/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && curl --silent -L "https://github.com/tmate-io/tmate/releases/download/$_version/tmate-$_version-static-linux-amd64.tar.xz" -o tmate.tar.xz && tar -xvf tmate.tar.xz && install ./tmate-$_version-static-linux-amd64/tmate /usr/bin
-```
-
-#### Tmate ARM 32v7 (RPi 3)
-
-Linux armv7 (as root):
-
-```bash
-apt install -y sudo wget curl && cd $(mktemp -d) && _version=$(curl --silent "https://api.github.com/repos/tmate-io/tmate/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && wget "https://github.com/tmate-io/tmate/releases/download/$_version/tmate-$_version-static-linux-arm32v7.tar.xz" -O tmate.tar.xz && tar -xf tmate.tar.xz && install ./tmate-$_version-static-linux-arm32v7/tmate /usr/bin
+apt install -y curl xz-utils && cd $(mktemp -d) && _a=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64v8/;s/armv7l/arm32v7/') && _version=$(curl --silent "https://api.github.com/repos/tmate-io/tmate/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && curl --silent -L "https://github.com/tmate-io/tmate/releases/download/$_version/tmate-$_version-static-linux-$_a.tar.xz" -o tmate.tar.xz && tar -xf tmate.tar.xz && install ./tmate-$_version-static-linux-$_a/tmate /usr/bin
 ```
 
 ### Tilix
@@ -195,10 +187,10 @@ sudo apt-get install -y tilix && sudo ln -sf /etc/profile.d/vte-2.91.sh /etc/pro
 
 ### TermShot
 
-Linux x86_64 (as user):
+Linux x86_64, arm64 (as user):
 
 ```bash
-cd $(mktemp -d) && _owner="homeport" && _repo="termshot" && _version=$(curl -s "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && _url="https://github.com/$_owner/$_repo/releases/download/$_version/termshot_${_version#v}_linux_amd64.tar.gz" && wget -q "$_url" && tar -xzf termshot_*_linux_amd64.tar.gz && sudo install -m 0755 termshot /usr/local/bin/termshot && termshot --version
+cd $(mktemp -d) && _a=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') && _owner="homeport" && _repo="termshot" && _version=$(curl -s "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && _url="https://github.com/$_owner/$_repo/releases/download/$_version/termshot_${_version#v}_linux_$_a.tar.gz" && wget -q "$_url" && tar -xzf termshot_*_linux_$_a.tar.gz && sudo install -m 0755 termshot /usr/local/bin/termshot && termshot --version
 ```
 
 ### Asciinema
@@ -211,10 +203,10 @@ sudo apt-get install -y asciinema
 
 ### Agg
 
-Linux x86_64 (as user):
+Linux x86_64, arm64 (as user):
 
 ```bash
-cd $(mktemp -d) && _owner="asciinema" && _repo="agg" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && wget "https://github.com/$_owner/$_repo/releases/download/$_version/agg-x86_64-unknown-linux-gnu" -O agg && sudo install -m 755 agg /usr/local/bin/agg && agg --version
+cd $(mktemp -d) && _owner="asciinema" && _repo="agg" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && wget "https://github.com/$_owner/$_repo/releases/download/$_version/agg-$(uname -m)-unknown-linux-gnu" -O agg && sudo install -m 755 agg /usr/local/bin/agg && agg --version
 ```
 
 ### Dynmotd
@@ -237,10 +229,10 @@ yum install -y bc bind-utils redhat-lsb-core git && cd $HOME && git clone https:
 
 ### asdf
 
-Linux x86_64 (as user):
+Linux x86_64, arm64 (as user):
 
 ```bash
-cd $(mktemp -d) && _owner="asdf-vm" && _repo="asdf" && _version="v0.18.0" && _version_no_v=$(echo $_version | sed 's/v//g') && wget "https://github.com/$_owner/$_repo/releases/download/$_version/asdf-$_version-linux-amd64.tar.gz" && tar -xvzf "asdf-$_version-linux-amd64.tar.gz" asdf && sudo install -m 755 asdf /usr/local/bin/asdf
+cd $(mktemp -d) && _a=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') && _owner="asdf-vm" && _repo="asdf" && _version="v0.18.0" && _version_no_v=$(echo $_version | sed 's/v//g') && wget "https://github.com/$_owner/$_repo/releases/download/$_version/asdf-$_version-linux-$_a.tar.gz" && tar -xvzf "asdf-$_version-linux-$_a.tar.gz" asdf && sudo install -m 755 asdf /usr/local/bin/asdf
 ```
 
 Add shell completions and paths to your rc file (as user):
@@ -315,7 +307,7 @@ curl -sL https://github.com/shyiko/jabba/raw/master/install.sh | bash && . ~/.ja
 Debian, Ubuntu (as user):
 
 ```bash
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/Miniconda.sh && bash /tmp/Miniconda.sh
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-$(uname -m).sh -O /tmp/Miniconda.sh && bash /tmp/Miniconda.sh
 ```
 
 ---
@@ -355,7 +347,7 @@ apt-get install -y golang
 Update Golang (as user):
 
 ```bash
-cd $(mktemp -d) && _version=$(curl -s https://go.dev/dl/ | grep "linux-amd64.tar.gz" | head -n1 | cut -d/ -f3 | cut -d\" -f1) && wget "https://go.dev/dl/$_version" && sudo rm -rf /usr/local/go && sudo rm -rf /usr/bin/go && sudo tar -C /usr/local -xzf "$_version" && sudo ln -s /usr/local/go/bin/go /usr/bin/go
+cd $(mktemp -d) && _a=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/;s/armv7l/armv6l/') && _version=$(curl -s https://go.dev/dl/ | grep "linux-$_a.tar.gz" | head -n1 | cut -d/ -f3 | cut -d\" -f1) && wget "https://go.dev/dl/$_version" && sudo rm -rf /usr/local/go && sudo rm -rf /usr/bin/go && sudo tar -C /usr/local -xzf "$_version" && sudo ln -s /usr/local/go/bin/go /usr/bin/go
 ```
 
 ---
@@ -364,7 +356,7 @@ cd $(mktemp -d) && _version=$(curl -s https://go.dev/dl/ | grep "linux-amd64.tar
 
 ### Docker
 
-Debian, Ubuntu, popOS (as user):
+Debian, Ubuntu, popOS, Raspberry Pi OS; x86_64, arm64, armv7 (as user):
 
 ```bash
 curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh && rm get-docker.sh && sudo usermod -aG docker $USER && newgrp docker && docker info
@@ -376,36 +368,12 @@ Linux Mint 22 (as user):
 sudo apt update && sudo apt install -y apt-transport-https ca-certificates curl gnupg && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker.gpg && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu noble stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null && sudo apt update && sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin && sudo usermod -aG docker ${USER}
 ```
 
-#### Docker arm64/aarch64
-
-Debian, Ubuntu (as user):
-
-```bash
-curl -fsSL test.docker.com -o get-docker.sh && sh get-docker.sh && sudo usermod -aG docker "$USER" && sudo systemctl enable docker && sudo systemctl start docker
-```
-
 ### Docker-Compose
 
-Linux x86_64 (as root):
+Linux x86_64, arm64, armv7 (as root):
 
 ```bash
-apt install -y sudo curl && cd $(mktemp -d) && _version=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && curl -L "https://github.com/docker/compose/releases/download/$_version/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose && docker-compose --version
-```
-
-#### Docker-Compose ARM 32v7 (RPi 3)
-
-Linux armv7 (as root):
-
-```bash
-apt install -y sudo curl && cd $(mktemp -d) && _version=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && curl -L "https://github.com/docker/compose/releases/download/$_version/docker-compose-armv7" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose && docker-compose --version
-```
-
-#### Docker-Compose arm64/aarch64
-
-Linux arm64 (as root):
-
-```bash
-apt install -y sudo curl && cd $(mktemp -d) && _version=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && curl -L "https://github.com/docker/compose/releases/download/$_version/docker-compose-linux-aarch64" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose && docker-compose --version
+apt install -y sudo curl && cd $(mktemp -d) && _a=$(uname -m | sed 's/armv7l/armv7/') && _version=$(curl --silent "https://api.github.com/repos/docker/compose/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && curl -L "https://github.com/docker/compose/releases/download/$_version/docker-compose-linux-$_a" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose && docker-compose --version
 ```
 
 ### Podman
@@ -418,18 +386,16 @@ sudo apt-get install podman -y && flatpak install -y flathub io.podman_desktop.P
 
 ### Minikube
 
-Debian, Ubuntu (as user):
+Debian, Ubuntu; x86_64, arm64, armv7 (as user):
 
 ```bash
-cd $(mktemp -d) && curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb && sudo dpkg -i minikube_latest_amd64.deb
+cd $(mktemp -d) && _a=$(dpkg --print-architecture) && curl -LO "https://storage.googleapis.com/minikube/releases/latest/minikube_latest_$_a.deb" && sudo dpkg -i "minikube_latest_$_a.deb"
 ```
 
-#### Minikube arm64/aarch64
-
-Linux arm64 (as user):
+Any Linux, binary; x86_64, arm64, armv7 (as user):
 
 ```bash
-cd $(mktemp -d) && curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-arm64 && sudo install minikube-linux-arm64 /usr/local/bin/minikube && rm minikube-linux-arm64
+cd $(mktemp -d) && _a=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/;s/armv7l/arm/') && curl -Lo minikube "https://storage.googleapis.com/minikube/releases/latest/minikube-linux-$_a" && sudo install minikube /usr/local/bin/minikube
 ```
 
 ### K3s
@@ -526,28 +492,24 @@ Via Homebrew (as user):
 brew install kubectl
 ```
 
-#### Kubectl arm64/aarch64
-
-Linux arm64 (as user):
+Any Linux, binary; x86_64, arm64, armv7 (as user):
 
 ```bash
-cd $(mktemp -d) && curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/arm64/kubectl" && sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl && rm -rf ./kubectl
+cd $(mktemp -d) && _a=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/;s/armv7l/arm/') && curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/$_a/kubectl" && sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl && rm -rf ./kubectl
 ```
 
 ### K9s
 
-Linux x86_64 (as user):
+Linux x86_64, arm64 (as user):
 
 ```bash
 curl -sS https://webinstall.dev/k9s | bash
 ```
 
-#### K9s arm64/aarch64
-
-Linux arm64 (as user):
+From the GitHub release; x86_64, arm64, armv7 (as user):
 
 ```bash
-cd $(mktemp -d) && _owner="derailed" && _repo="k9s" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && wget "https://github.com/$_owner/$_repo/releases/download/$_version/k9s_Linux_arm64.tar.gz" && tar -xvzf k9s_Linux_arm64.tar.gz && sudo install -m 755 k9s /usr/local/bin/k9s
+cd $(mktemp -d) && _a=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/;s/armv7l/armv7/') && _owner="derailed" && _repo="k9s" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && wget "https://github.com/$_owner/$_repo/releases/download/$_version/k9s_Linux_$_a.tar.gz" && tar -xvzf "k9s_Linux_$_a.tar.gz" && sudo install -m 755 k9s /usr/local/bin/k9s
 ```
 
 ### Helm
@@ -569,7 +531,7 @@ curl -fsSL https://downloads.k8slens.dev/keys/gpg | gpg --dearmor | sudo tee /us
 OpenLens (as user):
 
 ```bash
-cd $(mktemp -d) && _owner="MuhammedKalkan" && _repo="OpenLens" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && _version_no_v=$(echo $_version | sed 's/v//g') && wget "https://github.com/$_owner/$_repo/releases/download/$_version/OpenLens-$_version_no_v.amd64.deb" && sudo apt install -y "./OpenLens-$_version_no_v.amd64.deb"
+cd $(mktemp -d) && _owner="MuhammedKalkan" && _repo="OpenLens" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && _version_no_v=$(echo $_version | sed 's/v//g') && wget "https://github.com/$_owner/$_repo/releases/download/$_version/OpenLens-$_version_no_v.$(dpkg --print-architecture).deb" && sudo apt install -y ./OpenLens-*.deb
 ```
 
 Via Homebrew (as user):
@@ -580,10 +542,10 @@ brew install --cask lens
 
 ### Kompose
 
-Linux x86_64 (as user):
+Linux x86_64, arm64 (as user):
 
 ```bash
-cd $(mktemp -d) && _v=$(curl -s "https://api.github.com/repos/kubernetes/kompose/releases/latest" | grep html_url.*tag | grep -o 'v[0-9.]\+') && curl -L "https://github.com/kubernetes/kompose/releases/download/$_v/kompose-linux-amd64" -o kompose && chmod +x kompose && sudo mv ./kompose /usr/local/bin/kompose
+cd $(mktemp -d) && _a=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') && _v=$(curl -s "https://api.github.com/repos/kubernetes/kompose/releases/latest" | grep html_url.*tag | grep -o 'v[0-9.]\+') && curl -L "https://github.com/kubernetes/kompose/releases/download/$_v/kompose-linux-$_a" -o kompose && chmod +x kompose && sudo mv ./kompose /usr/local/bin/kompose
 ```
 
 ### Stern
@@ -648,18 +610,18 @@ kubectl krew install access-matrix kurt popeye datree view-allocations view-util
 
 ### eksctl
 
-Linux x86_64 (as user):
+Linux x86_64, arm64 (as user):
 
 ```bash
-cd $(mktemp -d) && ARCH=amd64 && PLATFORM=$(uname -s)_$ARCH && curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz" && curl -sL "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_checksums.txt" | grep $PLATFORM | sha256sum --check && tar -xzf eksctl_$PLATFORM.tar.gz && sudo mv eksctl /usr/local/bin
+cd $(mktemp -d) && ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') && PLATFORM=$(uname -s)_$ARCH && curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz" && curl -sL "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_checksums.txt" | grep $PLATFORM | sha256sum --check && tar -xzf eksctl_$PLATFORM.tar.gz && sudo mv eksctl /usr/local/bin
 ```
 
 ### Kubeseal
 
-Linux x86_64 (as user):
+Linux x86_64, arm64 (as user):
 
 ```bash
-cd $(mktemp -d) && _owner="bitnami-labs" && _repo="sealed-secrets" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && _version_no_v=$(echo $_version | sed 's/v//g') && wget "https://github.com/$_owner/$_repo/releases/download/$_version/kubeseal-$_version_no_v-linux-amd64.tar.gz" && tar -xvzf "kubeseal-$_version_no_v-linux-amd64.tar.gz" kubeseal && sudo install -m 755 kubeseal /usr/local/bin/kubeseal
+cd $(mktemp -d) && _a=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') && _owner="bitnami-labs" && _repo="sealed-secrets" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && _version_no_v=$(echo $_version | sed 's/v//g') && wget "https://github.com/$_owner/$_repo/releases/download/$_version/kubeseal-$_version_no_v-linux-$_a.tar.gz" && tar -xvzf "kubeseal-$_version_no_v-linux-$_a.tar.gz" kubeseal && sudo install -m 755 kubeseal /usr/local/bin/kubeseal
 ```
 
 Via Homebrew (as user):
@@ -670,26 +632,26 @@ brew install kubeseal
 
 ### ArgoCD CLI
 
-Linux x86_64 (as user):
+Linux x86_64, arm64 (as user):
 
 ```bash
-cd $(mktemp -d) && _repo="argo-cd" && _owner="argoproj" && _version=$(curl --silent https://api.github.com/repos/$_owner/$_repo/releases/latest | grep -Po '"tag_name": "\K.*?(?=")') && curl -L --silent "https://github.com/$_owner/$_repo/releases/download/$_version/argocd-linux-amd64" -o "argocd" && sudo install argocd /usr/local/bin/ && argocd version
+cd $(mktemp -d) && _a=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') && _repo="argo-cd" && _owner="argoproj" && _version=$(curl --silent https://api.github.com/repos/$_owner/$_repo/releases/latest | grep -Po '"tag_name": "\K.*?(?=")') && curl -L --silent "https://github.com/$_owner/$_repo/releases/download/$_version/argocd-linux-$_a" -o "argocd" && sudo install argocd /usr/local/bin/ && argocd version
 ```
 
 ### Skaffold
 
-Linux x86_64 (as user):
+Linux x86_64, arm64 (as user):
 
 ```bash
-cd $(mktemp -d) && curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && sudo install skaffold /usr/local/bin/
+cd $(mktemp -d) && _a=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') && curl -Lo skaffold "https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-$_a" && sudo install skaffold /usr/local/bin/
 ```
 
 ### Tilt and ctlptl
 
-ctlptl (as user):
+ctlptl; x86_64, arm64 (as user):
 
 ```bash
-cd $(mktemp -d) && _owner="tilt-dev" && _repo="ctlptl" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && _version_no_v=$(echo $_version | sed 's/v//g') && wget "https://github.com/$_owner/$_repo/releases/download/$_version/ctlptl.${_version_no_v}.linux.x86_64.tar.gz" -O ctlptl.tar.gz && tar -xf ctlptl.tar.gz && sudo install ./ctlptl /usr/bin
+cd $(mktemp -d) && _a=$(uname -m | sed 's/aarch64/arm64/') && _owner="tilt-dev" && _repo="ctlptl" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && _version_no_v=$(echo $_version | sed 's/v//g') && wget "https://github.com/$_owner/$_repo/releases/download/$_version/ctlptl.${_version_no_v}.linux.$_a.tar.gz" -O ctlptl.tar.gz && tar -xf ctlptl.tar.gz && sudo install ./ctlptl /usr/bin
 ```
 
 Tilt - Debian, Ubuntu, PopOS (as user):
@@ -732,18 +694,18 @@ sudo apt-get install -y apt-transport-https ca-certificates gnupg && echo "deb [
 
 ### Google Cloud SQL Proxy
 
-Linux x86_64 (as user):
+Linux x86_64, arm64, armv7 (as user):
 
 ```bash
-cd $(mktemp -d) && wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy && sudo install ./cloud_sql_proxy /usr/bin
+cd $(mktemp -d) && _a=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/;s/armv7l/arm/') && wget "https://dl.google.com/cloudsql/cloud_sql_proxy.linux.$_a" -O cloud_sql_proxy && sudo install ./cloud_sql_proxy /usr/bin
 ```
 
 ### AWS CLI
 
-Linux x86_64 (as user):
+Linux x86_64, arm64 (as user):
 
 ```bash
-cd $(mktemp -d) && curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && sudo ./aws/install
+cd $(mktemp -d) && curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "awscliv2.zip" && unzip awscliv2.zip && sudo ./aws/install
 ```
 
 Debian, Ubuntu (as root):
@@ -768,10 +730,10 @@ sudo dnf install -y azure-cli
 
 ### DO CLI
 
-Debian, Ubuntu, PopOS (as user):
+Debian, Ubuntu, PopOS; x86_64, arm64 (as user):
 
 ```bash
-cd $(mktemp -d) && _owner="digitalocean" && _repo="doctl" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && _version_no_v=$(echo $_version | sed 's/v//g') && curl -L --silent "https://github.com/$_owner/$_repo/releases/download/$_version/doctl-$_version_no_v-linux-amd64.tar.gz" -o "doctl.tar.gz" && tar -xvzf "doctl.tar.gz" doctl && sudo install -m 755 doctl /usr/local/bin/doctl
+cd $(mktemp -d) && _a=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') && _owner="digitalocean" && _repo="doctl" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && _version_no_v=$(echo $_version | sed 's/v//g') && curl -L --silent "https://github.com/$_owner/$_repo/releases/download/$_version/doctl-$_version_no_v-linux-$_a.tar.gz" -o "doctl.tar.gz" && tar -xvzf "doctl.tar.gz" doctl && sudo install -m 755 doctl /usr/local/bin/doctl
 ```
 
 ### Hetzner Cloud CLI
@@ -904,18 +866,18 @@ cd $(mktemp -d) && curl https://getmic.ro | bash && sudo install ./micro /usr/bi
 
 ### yq
 
-Linux x86_64 (as user):
+Linux x86_64, arm64 (as user):
 
 ```bash
-_owner="mikefarah" && _repo="yq" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && sudo curl -L --silent "https://github.com/$_owner/$_repo/releases/download/$_version/yq_linux_amd64" -o /tmp/yq && sudo install /tmp/yq /usr/bin/yq
+_a=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') && _owner="mikefarah" && _repo="yq" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && sudo curl -L --silent "https://github.com/$_owner/$_repo/releases/download/$_version/yq_linux_$_a" -o /tmp/yq && sudo install /tmp/yq /usr/bin/yq
 ```
 
 ### Upterm
 
-Linux x86_64 (as user):
+Linux x86_64, arm64 (as user):
 
 ```bash
-cd $(mktemp -d) && _owner="owenthereal" && _repo="upterm" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && curl -L --silent "https://github.com/$_owner/$_repo/releases/download/$_version/upterm_linux_amd64.tar.gz" -o upterm.tar.gz && tar -xf upterm.tar.gz && sudo install ./upterm /usr/bin/upterm
+cd $(mktemp -d) && _a=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') && _owner="owenthereal" && _repo="upterm" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && curl -L --silent "https://github.com/$_owner/$_repo/releases/download/$_version/upterm_linux_$_a.tar.gz" -o upterm.tar.gz && tar -xf upterm.tar.gz && sudo install ./upterm /usr/bin/upterm
 ```
 
 ---
@@ -960,10 +922,10 @@ cd $(mktemp -d) && _owner="AGWA" && _repo="git-crypt" && _version=$(curl --silen
 
 ### Ghorg
 
-Linux x86_64 (as user):
+Linux x86_64, arm64 (as user):
 
 ```bash
-cd $(mktemp -d) && _owner="gabrie30" && _repo="ghorg" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && _version_no_v=$(echo $_version | sed 's/v//g') && wget "https://github.com/$_owner/$_repo/releases/download/$_version/ghorg_${_version_no_v}_Linux_x86_64.tar.gz" && tar -xvzf "ghorg_${_version_no_v}_Linux_x86_64.tar.gz" ghorg && sudo install -m 755 ghorg /usr/local/bin/ghorg
+cd $(mktemp -d) && _a=$(uname -m | sed 's/aarch64/arm64/') && _owner="gabrie30" && _repo="ghorg" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && _version_no_v=$(echo $_version | sed 's/v//g') && wget "https://github.com/$_owner/$_repo/releases/download/$_version/ghorg_${_version_no_v}_Linux_$_a.tar.gz" && tar -xvzf "ghorg_${_version_no_v}_Linux_$_a.tar.gz" ghorg && sudo install -m 755 ghorg /usr/local/bin/ghorg
 ```
 
 ### Gitpack
@@ -1229,7 +1191,7 @@ apt install -y libfido2-1 libfido2-dev libfido2-doc fido2-tools libpam-u2f
 Debian, Ubuntu, popOS (as user):
 
 ```bash
-cd $(mktemp -d) && _owner="rustdesk" && _repo="rustdesk" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && curl -L --silent "https://github.com/$_owner/$_repo/releases/download/$_version/rustdesk-$_version-x86_64.deb" -o rustdesk.deb && sudo dpkg -i rustdesk.deb && sudo apt-get -f install -y
+cd $(mktemp -d) && _owner="rustdesk" && _repo="rustdesk" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && curl -L --silent "https://github.com/$_owner/$_repo/releases/download/$_version/rustdesk-$_version-$(uname -m).deb" -o rustdesk.deb && sudo dpkg -i rustdesk.deb && sudo apt-get -f install -y
 ```
 
 Fedora, CentOS, RHEL (as user):
@@ -1292,7 +1254,7 @@ curl https://teleport.example.com/webapi/find | jq '.server_version'
 Install same version (as user):
 
 ```bash
-TSH_VERSION="16.1.4" && cd $(mktemp -d) && curl -O https://cdn.teleport.dev/teleport-v$TSH_VERSION-linux-amd64-bin.tar.gz && tar -xzf teleport-v$TSH_VERSION-linux-amd64-bin.tar.gz && cd teleport && sudo ./install
+TSH_VERSION="16.1.4" && cd $(mktemp -d) && _a=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/;s/armv7l/arm/') && curl -O "https://cdn.teleport.dev/teleport-v$TSH_VERSION-linux-$_a-bin.tar.gz" && tar -xzf "teleport-v$TSH_VERSION-linux-$_a-bin.tar.gz" && cd teleport && sudo ./install
 ```
 
 ### Scrcpy
@@ -1438,10 +1400,10 @@ brew install --cask slack
 
 ### Slackdump
 
-Debian, Ubuntu, PopOS x64 (as user):
+Linux x86_64, arm64 (as user):
 
 ```bash
-cd $(mktemp -d) && _owner="rusq" && _repo="slackdump" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && wget "https://github.com/$_owner/$_repo/releases/download/$_version/slackdump_Linux_x86_64.tar.gz" -O slackdump.tar.gz && tar -xf slackdump.tar.gz && sudo install ./slackdump /usr/bin
+cd $(mktemp -d) && _a=$(uname -m | sed 's/aarch64/arm64/') && _owner="rusq" && _repo="slackdump" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && wget "https://github.com/$_owner/$_repo/releases/download/$_version/slackdump_Linux_$_a.tar.gz" -O slackdump.tar.gz && tar -xf slackdump.tar.gz && sudo install ./slackdump /usr/bin
 ```
 
 ### Skype
@@ -1550,7 +1512,7 @@ chmod +x ~/.local/share/applications/nextcloud-appimage.desktop && echo "Nextclo
 Debian, Ubuntu (as user):
 
 ```bash
-cd $(mktemp -d) && _owner="jeffvli" && _repo="feishin" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && curl -L "https://github.com/$_owner/$_repo/releases/download/$_version/Feishin-linux-amd64.deb" -o feishin.deb && sudo dpkg -i feishin.deb
+cd $(mktemp -d) && _owner="jeffvli" && _repo="feishin" && _version=$(curl --silent "https://api.github.com/repos/$_owner/$_repo/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && curl -L "https://github.com/$_owner/$_repo/releases/download/$_version/Feishin-linux-$(dpkg --print-architecture).deb" -o feishin.deb && sudo dpkg -i feishin.deb
 ```
 
 ---
@@ -1559,18 +1521,10 @@ cd $(mktemp -d) && _owner="jeffvli" && _repo="feishin" && _version=$(curl --sile
 
 ### Btop
 
-Linux x86_64 (as user):
+Linux x86_64, arm64, armv7 (as user):
 
 ```bash
-cd $(mktemp -d) && _version=$(curl --silent "https://api.github.com/repos/aristocratos/btop/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && wget "https://github.com/aristocratos/btop/releases/download/$_version/btop-x86_64-linux-musl.tbz" -O btop.tbz && tar -xvjf btop.tbz && cd btop && sudo sh install.sh && sudo sh setuid.sh
-```
-
-#### Btop arm64
-
-Linux arm64 (as user):
-
-```bash
-cd $(mktemp -d) && _version=$(curl --silent "https://api.github.com/repos/aristocratos/btop/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && wget "https://github.com/aristocratos/btop/releases/download/$_version/btop-aarch64-linux-musl.tbz" -O btop.tbz && tar -xvjf btop.tbz && cd btop && sudo sh install.sh && sudo sh setuid.sh
+cd $(mktemp -d) && _t=$(uname -m | sed 's/^armv7l$/armv7-unknown-linux-musleabi/;s/^\(x86_64\|aarch64\)$/\1-unknown-linux-musl/') && _version=$(curl --silent "https://api.github.com/repos/aristocratos/btop/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")') && wget "https://github.com/aristocratos/btop/releases/download/$_version/btop-$_t.tar.gz" -O btop.tar.gz && tar -xzf btop.tar.gz && sudo install -Dm755 btop/bin/btop /usr/local/bin/btop && sudo mkdir -p /usr/local/share/btop && sudo cp -r btop/themes /usr/local/share/btop/ && btop --version
 ```
 
 ### Sniffnet
@@ -1578,7 +1532,7 @@ cd $(mktemp -d) && _version=$(curl --silent "https://api.github.com/repos/aristo
 Debian, Ubuntu (as user):
 
 ```bash
-cd $(mktemp -d) && _owner="GyulyVGC" && _repo="sniffnet" && curl -LJ "https://github.com/$_owner/$_repo/releases/latest/download/Sniffnet_LinuxDEB_amd64.deb" -o sniffnet.deb && sudo dpkg -i sniffnet.deb
+cd $(mktemp -d) && _owner="GyulyVGC" && _repo="sniffnet" && curl -LJ "https://github.com/$_owner/$_repo/releases/latest/download/Sniffnet_LinuxDEB_$(dpkg --print-architecture).deb" -o sniffnet.deb && sudo dpkg -i sniffnet.deb
 ```
 
 ### Tempmail
@@ -1599,10 +1553,10 @@ cd /tmp && git clone https://github.com/thereisnotime/xxToolbelt && mkdir -p "$H
 
 ### Megatools
 
-Linux x86_64 (as user):
+Linux x86_64, arm64, armv7 (as user):
 
 ```bash
-cd $(mktemp -d) && wget "https://xff.cz/megatools/builds/builds/megatools-1.11.5.20250706-linux-x86_64.tar.gz" && tar -xvzf megatools-*.tar.gz && cd megatools-*/ && sudo install -m 755 megatools /usr/local/bin/megatools
+cd $(mktemp -d) && wget "https://xff.cz/megatools/builds/builds/megatools-1.11.5.20250706-linux-$(uname -m | sed 's/armv7l/arm/').tar.gz" && tar -xvzf megatools-*.tar.gz && cd megatools-*/ && sudo install -m 755 megatools /usr/local/bin/megatools
 ```
 
 ---
