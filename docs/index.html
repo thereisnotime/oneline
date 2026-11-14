@@ -622,6 +622,13 @@
             padding: 0;
         }
 
+        /* github-dark ships pre code.hljs with its own box; keep the pre as the only box */
+        pre code.hljs {
+            background: none;
+            padding: 0;
+            overflow-x: visible;
+        }
+
         code {
             font-family: 'JetBrains Mono', monospace;
             background: var(--bg-tertiary);
@@ -659,6 +666,37 @@
             border-color: var(--success);
             color: var(--bg);
         }
+
+        /* Tables */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 1rem 0 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0 1.5rem;
+        }
+
+        .table-wrap table {
+            margin: 0;
+        }
+
+        th, td {
+            padding: 0.5rem 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        td { color: var(--text-muted); }
 
         /* Lists */
         ul, ol {
@@ -884,8 +922,6 @@
             pre {
                 padding-left: 0.75rem;
                 padding-right: 0.75rem;
-                margin-left: -0.5rem;
-                margin-right: -0.5rem;
             }
 
             h2 {
@@ -1081,6 +1117,14 @@
                 // Parse and render
                 const html = marked.parse(markdown);
                 document.getElementById('content').innerHTML = html;
+
+                // Let wide tables scroll on their own instead of the page
+                document.querySelectorAll('#content table').forEach(table => {
+                    const wrap = document.createElement('div');
+                    wrap.className = 'table-wrap';
+                    table.parentNode.insertBefore(wrap, table);
+                    wrap.appendChild(table);
+                });
                 
                 // Apply syntax highlighting
                 document.querySelectorAll('pre code').forEach((block) => {
