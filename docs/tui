@@ -1,0 +1,815 @@
+#!/usr/bin/env bash
+# =============================================================================
+# tui — Browse, search and run the get.rso.dev and oneline.sh catalogs
+#          from a terminal, in one pure-bash file you can read before running.
+# Usage: curl -sL oneline.sh/tui | bash
+#        wget -qO- oneline.sh/tui | bash
+# Canonical copy: github.com/theorigamicorporation/get.rso.dev/blob/main/sh/tui.sh
+# (identical apart from DEFAULT_SOURCE)
+#        bash tui.sh [--source=get|oneline|all] [--help]
+# =============================================================================
+# @description Interactive terminal catalog of every get.rso.dev and oneline.sh snippet
+# @category System Utilities
+# @tags tui, catalog, menu, search, browse, oneline, interactive
+# @supported Ubuntu, Debian, Mint, RHEL, Rocky, Amazon Linux, Fedora, Arch, macOS
+# @verify true
+# =============================================================================
+#
+# How it works, in reading order:
+#   1. fetch_sources  downloads catalog.md and README.md (curl or wget).
+#   2. parse_catalog  turns the markdown into one record per entry (awk).
+#   3. main_loop      draws three panes and reacts to keys read from /dev/tty.
+#   4. run_selected   shows the exact command, waits for "y", then runs it.
+# Nothing is executed without that confirmation, nothing is written to disk
+# except a temp dir that is removed on exit.
+#
+# Environment overrides (URLs or local file paths):
+#   RSO_GET_URL       default https://get.rso.dev/catalog.md
+#   RSO_ONELINE_URL   default https://oneline.sh/README.md
+#   RSO_SOURCE        get | oneline | all   (initial filter)
+#   RSO_ASCII=1       ASCII borders instead of box drawing characters
+#   NO_COLOR=1        no colours
+#
+# Requires bash >= 3.2, stty, awk and curl or wget. Everything lives in
+# functions and the last line calls main, so it is safe with `curl | bash`.
+
+DEFAULT_SOURCE="oneline"
+
+RSO_GET_URL="${RSO_GET_URL:-https://get.rso.dev/catalog.md}"
+RSO_ONELINE_URL="${RSO_ONELINE_URL:-https://oneline.sh/README.md}"
+
+# Field separators used inside records (ASCII control chars, never in markdown)
+E=$'\033'          # escape
+FS_REC=$'\x1c'   # between fields
+NL=$'\x1f'       # newline inside a field
+VS=$'\x1e'       # between command variants
+LS=$'\x1d'       # between a variant's label and its command
+
+# --------------------------------------------------------------------------- #
+# Records: parallel arrays, one index per catalog entry
+# --------------------------------------------------------------------------- #
+R_SRC=() R_CAT=() R_TITLE=() R_DESC=() R_META=() R_BODY=() R_VARS=() R_HAY=()
+
+# UI state
+SRC_FILTER="all"     # get | oneline | all
+QUERY=""             # current search string
+SEARCHING=0          # 1 while typing in the search box
+FOCUS=1              # 0 = categories, 1 = items, 2 = preview
+CATS=() CAT_N=()     # categories visible under the current filters
+CAT_SEL=0 CAT_TOP=0
+VIS=()               # record indexes visible in the item list
+SEL=0 TOP=0
+VAR_SEL=0            # selected command variant of the current item
+PV_TOP=0             # preview scroll offset
+STATUS=""            # one-shot message in the footer
+ROWS=24 COLS=80
+TMP=""
+SAVED_STTY=""
+
+# --------------------------------------------------------------------------- #
+# Terminal helpers
+# --------------------------------------------------------------------------- #
+die() { printf 'tui: %s\n' "$*" >&2; exit 1; }
+
+usage() {
+    cat <<'EOF'
+Interactive catalog for get.rso.dev and oneline.sh
+
+Usage: curl -sL get.rso.dev/tui | bash
+       bash tui.sh [--source=get|oneline|all]
+
+Keys:  up/down j/k   move          tab left/right  switch pane
+       /             search        esc             clear search
+       1 2 0         get.rso.dev / oneline.sh / both
+       enter         run (asks first)  n/N  next/previous command variant
+       e             edit command, then run   c  copy command
+       s             read the script source in a pager (get.rso.dev entries)
+       pgup/pgdn     page          g/G             top/bottom
+       ?             help          q               quit
+EOF
+}
+
+term_size() {
+    local s
+    s=$(stty size <&4 2>/dev/null) || s="24 80"
+    ROWS=${s% *} COLS=${s#* }
+    [ "$ROWS" -ge 10 ] 2>/dev/null || ROWS=24
+    [ "$COLS" -ge 40 ] 2>/dev/null || COLS=80
+}
+
+term_enter() {
+    SAVED_STTY=$(stty -g <&4 2>/dev/null)
+    stty -echo -icanon min 1 time 0 <&4 2>/dev/null
+    # alternate screen, hide cursor, no autowrap
+    printf '\033[?1049h\033[?25l\033[?7l' >&3
+}
+
+term_leave() {
+    printf '\033[?7h\033[?25h\033[0m\033[?1049l' >&3
+    [ -n "$SAVED_STTY" ] && stty "$SAVED_STTY" <&4 2>/dev/null
+}
+
+cleanup() {
+    term_leave
+    [ -n "$TMP" ] && rm -rf "$TMP"
+}
+
+setup_style() {
+    if [ -n "${NO_COLOR:-}" ]; then
+        C_RST="" C_BOR="" C_FOC="" C_TTL="" C_DIM="" C_SEL="" C_ACC="" C_KEY="" C_GET="" C_ONE="" C_WRN=""
+    else
+        C_RST=$'\033[0m'
+        C_BOR=$'\033[38;5;240m'          # idle border
+        C_FOC=$'\033[38;5;75m'           # focused border
+        C_TTL=$'\033[1;38;5;255m'        # titles
+        C_DIM=$'\033[38;5;245m'          # secondary text
+        C_SEL=$'\033[48;5;24;38;5;255m'  # selected row
+        C_ACC=$'\033[38;5;214m'          # accent (commands, search)
+        C_KEY=$'\033[1;38;5;75m'         # key hints
+        C_GET=$'\033[38;5;114m'          # get.rso.dev tag
+        C_ONE=$'\033[38;5;177m'          # oneline.sh tag
+        C_WRN=$'\033[1;38;5;203m'        # warnings
+    fi
+    # Box drawing only when the locale is UTF-8, otherwise lengths go wrong
+    case "${LC_ALL:-${LC_CTYPE:-${LANG:-}}}" in
+        *[Uu][Tt][Ff]-8*|*[Uu][Tt][Ff]8*) UTF=1 ;;
+        *) UTF=0 ;;
+    esac
+    [ -n "${RSO_ASCII:-}" ] && UTF=0
+    if [ "$UTF" = 1 ]; then
+        B_H="─" B_V="│" B_TL="╭" B_TR="╮" B_BL="╰" B_BR="╯" ELL="…" MARK="›"
+    else
+        B_H="-" B_V="|" B_TL="+" B_TR="+" B_BL="+" B_BR="+" ELL="~" MARK=">"
+    fi
+    SPACES="$(printf '%*s' 400 '')"
+    HLINE=""
+    local i
+    for ((i = 0; i < 400; i++)); do HLINE+="$B_H"; done
+}
+
+# fit TEXT WIDTH -> FIT: TEXT cut or padded to exactly WIDTH characters
+fit() {
+    local s=$1 w=$2
+    [ "$w" -le 0 ] && { FIT=""; return; }
+    if [ "${#s}" -gt "$w" ]; then
+        FIT="${s:0:$((w - 1))}$ELL"
+    else
+        FIT="$s${SPACES:0:$((w - ${#s}))}"
+    fi
+}
+
+# --------------------------------------------------------------------------- #
+# Fetching and parsing
+# --------------------------------------------------------------------------- #
+fetch() {
+    local src=$1 out=$2
+    if [ -f "$src" ]; then
+        cat "$src" >"$out"
+    elif command -v curl >/dev/null 2>&1; then
+        curl -fsSL --max-time 20 "$src" -o "$out"
+    elif command -v wget >/dev/null 2>&1; then
+        wget -qO "$out" -T 20 "$src"
+    else
+        return 1
+    fi
+}
+
+# Markdown -> one line per entry:
+#   src FS cat FS title FS desc FS meta FS body FS vars FS haystack
+# get.rso.dev: every command line in a code block is its own variant, and a
+#   "# alt: ..." line becomes a variant too. Other comments label the next line.
+# oneline.sh: each code block is one variant, labelled by the text above it.
+parse_catalog() {
+    local src=$1 file=$2
+    awk -v SRC="$src" -v FS_REC="$FS_REC" -v NL="$NL" -v VS="$VS" -v LS="$LS" '
+    function clean(s) {
+        gsub(/\t/, "    ", s); gsub(/\*\*/, "", s); gsub(/`/, "", s)
+        return s
+    }
+    function link(s,   out, m) {           # [text](url) -> text (url)
+        while (match(s, /\[[^]]*\]\([^)]*\)/)) {
+            m = substr(s, RSTART, RLENGTH)
+            sub(/^\[/, "", m); sub(/\]\(/, " (", m)
+            s = substr(s, 1, RSTART - 1) m substr(s, RSTART + RLENGTH)
+        }
+        return s
+    }
+    function add(field, line) { return field == "" ? line : field NL line }
+    function addvar(label, cmd) {
+        if (cmd == "") return
+        vars = (vars == "" ? "" : vars VS) label LS cmd
+    }
+    function flush(   hay) {
+        if (title != "") {
+            if (desc == "") desc = "-"
+            hay = tolower(title " " cat " " desc " " meta)
+            gsub(NL, " ", hay)
+            printf "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n", SRC, FS_REC, cat, FS_REC, title, FS_REC, desc, FS_REC, meta, FS_REC, body, FS_REC, vars, FS_REC, hay
+        }
+        title = ""; desc = ""; meta = ""; body = ""; vars = ""; para = ""; label = ""
+    }
+    BEGIN { incode = 0; platform = ""; cat = "General" }
+    /^```/ {
+        if (!incode) { incode = 1; block = ""; label = ""; next }
+        incode = 0
+        if (title != "" && SRC == "oneline") addvar(para == "" ? "command" : para, block)
+        if (title != "") body = add(body, "")
+        next
+    }
+    incode {
+        if (title == "") next
+        line = $0; gsub(/\t/, "    ", line)
+        if (SRC == "oneline") { block = add(block, line); body = add(body, "  " line); next }
+        if (line ~ /^[ ]*$/) { label = ""; next }
+        if (line ~ /^# alt: /) { sub(/^# alt: /, "", line); addvar("alt" (label == "" ? "" : ": " label), line); next }
+        if (line ~ /^#/) { sub(/^#[ ]*/, "", line); label = line; next }
+        addvar(label == "" ? "default" : label, line)
+        next
+    }
+    /^# / {
+        flush(); platform = substr($0, 3)
+        if (SRC == "oneline") platform = ""
+        next
+    }
+    /^## / {
+        flush(); cat = substr($0, 4)
+        if (platform != "" && platform != "Linux") cat = platform " / " cat
+        next
+    }
+    /^###+ / { flush(); title = $0; sub(/^#+ /, "", title); next }
+    title == "" { next }
+    /^<!--/ { next }
+    /^---+[ ]*$/ { next }
+    /^[ ]*$/ { next }
+    /^\|[ :-]*\|[ :|-]*$/ { next }                 # table separator row
+    /^\*\*Options:\*\*/ { body = add(body, ""); body = add(body, "Options:"); next }
+    /^\*\*[A-Za-z ]+:\*\*/ { meta = add(meta, clean($0)); next }
+    {
+        line = link(clean($0))
+        if (line ~ /^\|/) {                       # table row -> columns
+            sub(/^\|[ ]*/, "", line); sub(/[ ]*\|[ ]*$/, "", line)
+            gsub(/[ ]*\|[ ]*/, "   ", line)
+            body = add(body, "  " line); next
+        }
+        if (SRC == "get" && desc == "") { desc = line; next }
+        if (SRC == "oneline") { para = line; sub(/:[ ]*$/, "", para); if (desc == "") desc = line }
+        body = add(body, line)
+    }
+    END { flush() }
+    ' "$file"
+}
+
+load_records() {
+    local f src cat title desc meta body vars hay
+    for f in "$@"; do
+        while IFS="$FS_REC" read -r src cat title desc meta body vars hay; do
+            [ -n "$title" ] || continue
+            R_SRC+=("$src") R_CAT+=("$cat") R_TITLE+=("$title") R_DESC+=("$desc")
+            R_META+=("$meta") R_BODY+=("$body") R_VARS+=("$vars") R_HAY+=("$hay")
+        done <"$f"
+    done
+}
+
+fetch_sources() {
+    printf '\033[2J\033[H%sLoading catalogs...%s\n' "$C_DIM" "$C_RST" >&3
+    local ok=0
+    if fetch "$RSO_GET_URL" "$TMP/get.md"; then
+        parse_catalog get "$TMP/get.md" >"$TMP/get.rec"; ok=1
+    else
+        STATUS="could not load $RSO_GET_URL"
+        : >"$TMP/get.rec"
+    fi
+    if fetch "$RSO_ONELINE_URL" "$TMP/oneline.md"; then
+        parse_catalog oneline "$TMP/oneline.md" >"$TMP/oneline.rec"; ok=1
+    else
+        STATUS="could not load $RSO_ONELINE_URL"
+        : >"$TMP/oneline.rec"
+    fi
+    [ "$ok" = 1 ] || { cleanup; die "could not download either catalog (need curl or wget and network)"; }
+    load_records "$TMP/get.rec" "$TMP/oneline.rec"
+    [ "${#R_TITLE[@]}" -gt 0 ] || { cleanup; die "catalogs downloaded but no entries found"; }
+}
+
+# --------------------------------------------------------------------------- #
+# Filtering
+# --------------------------------------------------------------------------- #
+lower() { printf '%s' "$1" | tr '[:upper:]' '[:lower:]'; }
+
+# matches IDX -> 0 if the record passes source + search filters
+matches() {
+    local i=$1 w
+    [ "$SRC_FILTER" = all ] || [ "${R_SRC[$i]}" = "$SRC_FILTER" ] || return 1
+    [ -z "$QUERY" ] && return 0
+    for w in $QLOW; do
+        case "${R_HAY[$i]}" in *"$w"*) ;; *) return 1 ;; esac
+    done
+    return 0
+}
+
+# Rebuild CATS from the records passing the filters, keep the selection by name
+rebuild() {
+    local keep="${CATS[$CAT_SEL]:-All}" i j c found n_all=0
+    QLOW=$(lower "$QUERY")
+    set -f
+    CATS=("All") CAT_N=(0)
+    for ((i = 0; i < ${#R_TITLE[@]}; i++)); do
+        matches "$i" || continue
+        n_all=$((n_all + 1))
+        c="${R_SRC[$i]}: ${R_CAT[$i]}"
+        found=0
+        for ((j = 1; j < ${#CATS[@]}; j++)); do
+            if [ "${CATS[$j]}" = "$c" ]; then CAT_N[j]=$((CAT_N[j] + 1)); found=1; break; fi
+        done
+        [ "$found" = 1 ] || { CATS+=("$c"); CAT_N+=(1); }
+    done
+    set +f
+    CAT_N[0]=$n_all
+    CAT_SEL=0
+    for ((j = 0; j < ${#CATS[@]}; j++)); do
+        [ "${CATS[$j]}" = "$keep" ] && { CAT_SEL=$j; break; }
+    done
+    rebuild_items
+}
+
+rebuild_items() {
+    local i c want="${CATS[$CAT_SEL]}"
+    set -f
+    VIS=()
+    for ((i = 0; i < ${#R_TITLE[@]}; i++)); do
+        matches "$i" || continue
+        if [ "$CAT_SEL" -ne 0 ]; then
+            c="${R_SRC[$i]}: ${R_CAT[$i]}"
+            [ "$c" = "$want" ] || continue
+        fi
+        VIS+=("$i")
+    done
+    set +f
+    SEL=0 TOP=0 VAR_SEL=0 PV_TOP=0
+}
+
+# --------------------------------------------------------------------------- #
+# Current item helpers
+# --------------------------------------------------------------------------- #
+cur() { CUR="${VIS[$SEL]:-}"; }
+
+# variants IDX -> V_LABEL[] V_CMD[]
+variants() {
+    local all="${R_VARS[$1]}" v
+    V_LABEL=() V_CMD=()
+    [ -n "$all" ] || return
+    local IFS="$VS"
+    set -f
+    for v in $all; do
+        V_LABEL+=("${v%%"$LS"*}")
+        V_CMD+=("${v#*"$LS"}")
+    done
+    set +f
+}
+
+current_cmd() {
+    cur; CMD=""
+    [ -n "$CUR" ] || return 1
+    variants "$CUR"
+    [ "${#V_CMD[@]}" -gt 0 ] || return 1
+    [ "$VAR_SEL" -lt "${#V_CMD[@]}" ] || VAR_SEL=0
+    CMD="${V_CMD[$VAR_SEL]//$NL/$'\n'}"
+}
+
+# --------------------------------------------------------------------------- #
+# Drawing
+# --------------------------------------------------------------------------- #
+# box TOP LEFT HEIGHT WIDTH TITLE FOCUSED -> appends to FRAME
+box() {
+    local t=$1 l=$2 h=$3 w=$4 title=$5 col=$C_BOR r
+    [ "$6" = 1 ] && col=$C_FOC
+    local inner=$((w - 2))
+    fit " $title " $((inner - 2))
+    local tl="${FIT%"${FIT##*[! ]}"}"
+    local rest=$((inner - 1 - ${#tl}))
+    [ "$rest" -lt 0 ] && rest=0
+    FRAME+="${E}[${t};${l}H${col}${B_TL}${B_H}${C_TTL}${tl}${col}${HLINE:0:$rest}${B_TR}"
+    for ((r = 1; r < h - 1; r++)); do
+        FRAME+="${E}[$((t + r));${l}H${col}${B_V}${E}[$((t + r));$((l + w - 1))H${B_V}"
+    done
+    FRAME+="${E}[$((t + h - 1));${l}H${B_BL}${HLINE:0:$inner}${B_BR}${C_RST}"
+}
+
+# put ROW COL WIDTH TEXT [STYLE]
+put() {
+    fit "$4" "$3"
+    FRAME+="${E}[${1};${2}H${5}${FIT}${C_RST}"
+}
+
+src_tag() {
+    if [ "$1" = get ]; then TAG="${C_GET}get${C_RST}"; else TAG="${C_ONE}one${C_RST}"; fi
+}
+
+draw_header() {
+    local tabs="" s
+    for s in get oneline all; do
+        local name=$s key
+        case $s in get) name="get.rso.dev" key=1 ;; oneline) name="oneline.sh" key=2 ;; all) name="both" key=0 ;; esac
+        if [ "$SRC_FILTER" = "$s" ]; then
+            tabs+="${C_SEL} ${key} ${name} ${C_RST} "
+        else
+            tabs+="${C_DIM} ${key} ${name} ${C_RST} "
+        fi
+    done
+    FRAME+="${E}[1;1H${E}[2K${C_TTL} rso catalog ${C_RST} ${tabs}"
+    local q="/ search"
+    local qcol=$C_DIM
+    if [ "$SEARCHING" = 1 ] || [ -n "$QUERY" ]; then q="/ $QUERY"; qcol=$C_ACC; fi
+    [ "$SEARCHING" = 1 ] && q+="_"
+    local qw=$((COLS / 3))
+    [ "$qw" -gt 40 ] && qw=40
+    fit "$q" "$qw"
+    FRAME+="${E}[1;$((COLS - qw))H${qcol}${FIT}${C_RST}"
+}
+
+draw_footer() {
+    local text
+    if [ -n "$STATUS" ]; then
+        text="${C_ACC} ${STATUS}${C_RST}"
+        STATUS=""
+    elif [ "$SEARCHING" = 1 ]; then
+        text=" ${C_KEY}type${C_RST} filter  ${C_KEY}enter${C_RST} keep  ${C_KEY}esc${C_RST} clear"
+    else
+        text=" ${C_KEY}↑↓${C_RST} move ${C_KEY}tab${C_RST} pane ${C_KEY}/${C_RST} search ${C_KEY}enter${C_RST} run ${C_KEY}n${C_RST} variant ${C_KEY}e${C_RST} edit ${C_KEY}c${C_RST} copy ${C_KEY}s${C_RST} source ${C_KEY}?${C_RST} help ${C_KEY}q${C_RST} quit"
+        [ "$UTF" = 1 ] || text="${text//↑↓/j\/k}"
+    fi
+    FRAME+="${E}[${ROWS};1H${E}[2K${text}"
+}
+
+draw_categories() {
+    local t=$1 l=$2 h=$3 w=$4 inner=$(($4 - 2)) rows=$(($3 - 2)) r i
+    box "$t" "$l" "$h" "$w" "Categories" $((FOCUS == 0))
+    [ "$CAT_SEL" -lt "$CAT_TOP" ] && CAT_TOP=$CAT_SEL
+    [ "$CAT_SEL" -ge $((CAT_TOP + rows)) ] && CAT_TOP=$((CAT_SEL - rows + 1))
+    for ((r = 0; r < rows; r++)); do
+        i=$((CAT_TOP + r))
+        if [ "$i" -lt "${#CATS[@]}" ]; then
+            local name="${CATS[$i]}" n="${CAT_N[$i]}" style=""
+            [ "$SRC_FILTER" != all ] && name="${name#*: }"
+            [ "$i" = "$CAT_SEL" ] && style=$C_SEL
+            fit " $name" $((inner - ${#n} - 1))
+            local line="$FIT$n "
+            FRAME+="${E}[$((t + 1 + r));$((l + 1))H${style}${line}${C_RST}"
+        else
+            put $((t + 1 + r)) $((l + 1)) "$inner" ""
+        fi
+    done
+}
+
+draw_items() {
+    local t=$1 l=$2 h=$3 w=$4 inner=$(($4 - 2)) rows=$(($3 - 2)) r i idx
+    box "$t" "$l" "$h" "$w" "Items ${#VIS[@]}" $((FOCUS == 1))
+    [ "$SEL" -lt "$TOP" ] && TOP=$SEL
+    [ "$SEL" -ge $((TOP + rows)) ] && TOP=$((SEL - rows + 1))
+    for ((r = 0; r < rows; r++)); do
+        i=$((TOP + r))
+        if [ "$i" -lt "${#VIS[@]}" ]; then
+            idx=${VIS[$i]}
+            fit " ${R_TITLE[$idx]}" $((inner - 4))
+            local name="$FIT"
+            if [ "$i" = "$SEL" ]; then
+                FRAME+="${E}[$((t + 1 + r));$((l + 1))H${C_SEL}${name}"
+                if [ "${R_SRC[$idx]}" = get ]; then FRAME+=" get"; else FRAME+=" one"; fi
+                FRAME+="${C_RST}"
+            else
+                src_tag "${R_SRC[$idx]}"
+                FRAME+="${E}[$((t + 1 + r));$((l + 1))H${name} ${TAG}"
+            fi
+        else
+            put $((t + 1 + r)) $((l + 1)) "$inner" ""
+        fi
+    done
+    if [ "${#VIS[@]}" -eq 0 ]; then
+        put $((t + 2)) $((l + 2)) $((inner - 2)) "no matches" "$C_DIM"
+    fi
+}
+
+# wrap TEXT WIDTH STYLE -> appends to PV_LINES / PV_STYLE (word wrap, keeps indent)
+wrap() {
+    local s=$1 w=$2 st=$3 cut before ind
+    ind="${s%%[! ]*}"
+    [ "${#ind}" -gt $((w / 2)) ] && ind=""
+    while [ "${#s}" -gt "$w" ]; do
+        cut="${s:0:$w}"
+        before="${cut% *}"
+        [ "$before" != "$cut" ] && [ "${#before}" -gt "${#ind}" ] && cut="$before"
+        PV_LINES+=("$cut"); PV_STYLE+=("$st")
+        s="${s:${#cut}}"
+        s="${ind}${s# }"
+    done
+    PV_LINES+=("$s"); PV_STYLE+=("$st")
+}
+
+build_preview() {
+    local w=$1 line i
+    PV_LINES=() PV_STYLE=()
+    cur
+    [ -n "$CUR" ] || return
+    local IFS="$NL"
+    set -f
+    wrap "${R_TITLE[$CUR]}" "$w" "$C_TTL"
+    wrap "${R_SRC[$CUR]} / ${R_CAT[$CUR]}" "$w" "$C_DIM"
+    wrap "" "$w" ""
+    [ "${R_DESC[$CUR]}" != "-" ] && wrap "${R_DESC[$CUR]}" "$w" ""
+    for line in ${R_META[$CUR]}; do wrap "$line" "$w" "$C_DIM"; done
+    variants "$CUR"
+    if [ "${#V_CMD[@]}" -gt 0 ]; then
+        wrap "" "$w" ""
+        wrap "Commands (n/N to switch, enter to run):" "$w" "$C_TTL"
+        for ((i = 0; i < ${#V_CMD[@]}; i++)); do
+            local mark="  " st="$C_DIM"
+            [ "$i" = "$VAR_SEL" ] && { mark="$MARK "; st="$C_ACC"; }
+            wrap "${mark}[${V_LABEL[$i]}]" "$w" "$st"
+            for line in ${V_CMD[$i]}; do wrap "    $line" "$w" "$st"; done
+        done
+    else
+        wrap "" "$w" ""
+        wrap "No runnable command in this entry." "$w" "$C_WRN"
+    fi
+    if [ "${R_SRC[$CUR]}" = get ] && [ -n "${R_BODY[$CUR]}" ]; then
+        wrap "" "$w" ""
+        for line in ${R_BODY[$CUR]}; do wrap "$line" "$w" "$C_DIM"; done
+    fi
+    set +f
+}
+
+draw_preview() {
+    local t=$1 l=$2 h=$3 w=$4 inner=$(($4 - 2)) rows=$(($3 - 2)) r i
+    box "$t" "$l" "$h" "$w" "Preview" $((FOCUS == 2))
+    build_preview $((inner - 2))
+    local max=$((${#PV_LINES[@]} - rows))
+    [ "$max" -lt 0 ] && max=0
+    [ "$PV_TOP" -gt "$max" ] && PV_TOP=$max
+    for ((r = 0; r < rows; r++)); do
+        i=$((PV_TOP + r))
+        put $((t + 1 + r)) $((l + 1)) "$inner" " ${PV_LINES[$i]:-}" "${PV_STYLE[$i]:-}"
+    done
+}
+
+# Layout: wide = 3 panes, medium = items + preview, narrow = items only
+LAYOUT=3
+draw() {
+    term_size
+    FRAME=""
+    local top=2 h=$((ROWS - 2)) cw iw pw
+    if [ "$COLS" -ge 110 ]; then
+        LAYOUT=3; cw=$((COLS / 5)); [ "$cw" -gt 34 ] && cw=34
+        iw=$(((COLS - cw) * 2 / 5)); pw=$((COLS - cw - iw))
+    elif [ "$COLS" -ge 70 ]; then
+        LAYOUT=2; cw=0; iw=$((COLS * 2 / 5)); pw=$((COLS - iw))
+    else
+        LAYOUT=1; cw=0; iw=$COLS; pw=0
+    fi
+    [ "$LAYOUT" -lt 3 ] && [ "$FOCUS" = 0 ] && FOCUS=1
+    [ "$LAYOUT" -lt 2 ] && [ "$FOCUS" = 2 ] && FOCUS=1
+    draw_header
+    [ "$cw" -gt 0 ] && draw_categories "$top" 1 "$h" "$cw"
+    draw_items "$top" $((cw + 1)) "$h" "$iw"
+    [ "$pw" -gt 0 ] && draw_preview "$top" $((cw + iw + 1)) "$h" "$pw"
+    draw_footer
+    printf '%s' "$FRAME" >&3
+}
+
+# --------------------------------------------------------------------------- #
+# Actions
+# --------------------------------------------------------------------------- #
+pause_tui() { term_leave; }
+resume_tui() { term_enter; }
+
+press_key() {
+    printf '\n%spress any key to return%s' "$C_DIM" "$C_RST" >&3
+    IFS= read -rsn1 -u 4 _ || true
+}
+
+run_selected() {
+    local edit=$1 ans
+    if ! current_cmd; then STATUS="nothing to run here"; return; fi
+    pause_tui
+    if [ "$edit" = 1 ]; then
+        local f="$TMP/edit.sh"
+        printf '%s\n' "$CMD" >"$f"
+        "${VISUAL:-${EDITOR:-vi}}" "$f" <&4 >&3 2>&3
+        CMD=$(cat "$f")
+    fi
+    printf '\n%s%s%s  [%s]\n\n' "$C_TTL" "${R_TITLE[$CUR]}" "$C_RST" "${V_LABEL[$VAR_SEL]}" >&3
+    printf '%s\n' "$CMD" | sed "s/^/  ${C_ACC}/; s/\$/${C_RST}/" >&3
+    printf '\n%sRun this? [y/N] %s' "$C_WRN" "$C_RST" >&3
+    stty -echo -icanon min 1 time 0 <&4 2>/dev/null
+    IFS= read -rsn1 -u 4 ans || ans=n
+    [ -n "$SAVED_STTY" ] && stty "$SAVED_STTY" <&4 2>/dev/null
+    if [ "$ans" = y ] || [ "$ans" = Y ]; then
+        printf 'y\n\n' >&3
+        trap ':' INT
+        bash -c "$CMD" <&4 >&3 2>&3
+        local rc=$?
+        trap 'exit 130' INT
+        if [ "$rc" = 0 ]; then
+            printf '\n%sdone%s\n' "$C_GET" "$C_RST" >&3
+        else
+            printf '\n%sexit code %s%s\n' "$C_WRN" "$rc" "$C_RST" >&3
+        fi
+        stty -echo -icanon min 1 time 0 <&4 2>/dev/null
+        press_key
+        STATUS="ran: ${R_TITLE[$CUR]} (exit $rc)"
+    else
+        STATUS="cancelled, nothing ran"
+    fi
+    resume_tui
+}
+
+copy_cmd() {
+    if ! current_cmd; then STATUS="nothing to copy"; return; fi
+    local b64 tool=""
+    if command -v base64 >/dev/null 2>&1; then
+        b64=$(printf '%s' "$CMD" | base64 | tr -d '\n')
+        printf '\033]52;c;%s\a' "$b64" >&3        # OSC 52, works over SSH in most terminals
+        tool="terminal clipboard"
+    fi
+    if [ -n "${WAYLAND_DISPLAY:-}" ] && command -v wl-copy >/dev/null 2>&1; then
+        printf '%s' "$CMD" | wl-copy 2>/dev/null && tool="wl-copy"
+    elif [ -n "${DISPLAY:-}" ] && command -v xclip >/dev/null 2>&1; then
+        printf '%s' "$CMD" | xclip -selection clipboard 2>/dev/null && tool="xclip"
+    elif command -v pbcopy >/dev/null 2>&1; then
+        printf '%s' "$CMD" | pbcopy 2>/dev/null && tool="pbcopy"
+    fi
+    if [ -n "$tool" ]; then STATUS="copied via $tool"; else STATUS="no clipboard available"; fi
+}
+
+view_source() {
+    if ! current_cmd; then STATUS="nothing to show"; return; fi
+    local name url pager="${PAGER:-less}"
+    name=$(printf '%s' "$CMD" | grep -o 'get\.rso\.dev/[A-Za-z0-9._/-]*' | head -n1)
+    if [ -z "$name" ]; then
+        # oneline entries are their own source: show the full command
+        printf '%s\n' "$CMD" >"$TMP/src.txt"
+    else
+        url="https://${name}"
+        printf '\033[2J\033[H%sfetching %s...%s' "$C_DIM" "$url" "$C_RST" >&3
+        if ! fetch "$url" "$TMP/src.txt"; then STATUS="could not fetch $url"; return; fi
+    fi
+    command -v "$pager" >/dev/null 2>&1 || pager="more"
+    pause_tui
+    if [ "$pager" = less ]; then less -R "$TMP/src.txt" <&4 >&3; else "$pager" "$TMP/src.txt" <&4 >&3; fi
+    resume_tui
+}
+
+show_help() {
+    pause_tui
+    { usage; printf '\n'; } >&3
+    stty -echo -icanon min 1 time 0 <&4 2>/dev/null
+    press_key
+    resume_tui
+}
+
+# --------------------------------------------------------------------------- #
+# Input
+# --------------------------------------------------------------------------- #
+ESC_T=1
+[ "${BASH_VERSINFO[0]}" -ge 4 ] && ESC_T=0.05
+
+# read_key -> KEY: a char or up/down/left/right/pgup/pgdn/home/end/esc/enter/tab/bs
+read_key() {
+    local c rest=""
+    KEY=""
+    IFS= read -rsn1 -u 4 -t 1 c || { KEY=timeout; return; }
+    case "$c" in
+        $'\033')
+            IFS= read -rsn1 -u 4 -t "$ESC_T" rest || { KEY=esc; return; }
+            if [ "$rest" = "[" ] || [ "$rest" = "O" ]; then
+                local seq="" ch
+                while IFS= read -rsn1 -u 4 -t "$ESC_T" ch; do
+                    seq+="$ch"
+                    case "$ch" in [A-Za-z~]) break ;; esac
+                done
+                case "$seq" in
+                    A) KEY=up ;; B) KEY=down ;; C) KEY=right ;; D) KEY=left ;;
+                    5~) KEY=pgup ;; 6~) KEY=pgdn ;;
+                    H|1~|7~) KEY=home ;; F|4~|8~) KEY=end ;;
+                    Z) KEY=btab ;;
+                    *) KEY=ignore ;;
+                esac
+            else
+                KEY=esc
+            fi ;;
+        "") KEY=enter ;;
+        $'\t') KEY=tab ;;
+        $'\177'|$'\010') KEY=bs ;;
+        *) KEY="$c" ;;
+    esac
+}
+
+move() {   # move DELTA within the focused list
+    local d=$1 n
+    case "$FOCUS" in
+        0)  n=${#CATS[@]}; CAT_SEL=$((CAT_SEL + d))
+            [ "$CAT_SEL" -lt 0 ] && CAT_SEL=0
+            [ "$CAT_SEL" -ge "$n" ] && CAT_SEL=$((n - 1))
+            rebuild_items ;;
+        1)  n=${#VIS[@]}; SEL=$((SEL + d))
+            [ "$SEL" -ge "$n" ] && SEL=$((n - 1))
+            [ "$SEL" -lt 0 ] && SEL=0
+            VAR_SEL=0 PV_TOP=0 ;;
+        2)  PV_TOP=$((PV_TOP + d)); [ "$PV_TOP" -lt 0 ] && PV_TOP=0 ;;
+    esac
+}
+
+handle_search_key() {
+    case "$KEY" in
+        enter) SEARCHING=0 ;;
+        esc) SEARCHING=0 QUERY=""; rebuild ;;
+        bs) QUERY="${QUERY%?}"; rebuild ;;
+        up|down|pgup|pgdn) SEARCHING=0; handle_key ;;
+        timeout|ignore|left|right|home|end|tab|btab) ;;
+        *) QUERY+="$KEY"; rebuild ;;
+    esac
+}
+
+handle_key() {
+    local page
+    page=$((ROWS - 4))
+    case "$KEY" in
+        q|Q) return 1 ;;
+        up|k) move -1 ;;
+        down|j) move 1 ;;
+        pgup) move "-$page" ;;
+        pgdn|" ") move "$page" ;;
+        home|g) move -100000 ;;
+        end|G) move 100000 ;;
+        tab|right|l)
+            FOCUS=$((FOCUS + 1)); [ "$FOCUS" -gt 2 ] && FOCUS=0
+            [ "$LAYOUT" -lt 3 ] && [ "$FOCUS" = 0 ] && FOCUS=1
+            [ "$LAYOUT" -lt 2 ] && FOCUS=1 ;;
+        btab|left|h)
+            FOCUS=$((FOCUS - 1)); [ "$FOCUS" -lt 0 ] && FOCUS=2
+            [ "$LAYOUT" -lt 3 ] && [ "$FOCUS" = 0 ] && FOCUS=2
+            [ "$LAYOUT" -lt 2 ] && FOCUS=1 ;;
+        /) SEARCHING=1 FOCUS=1 ;;
+        esc) [ -n "$QUERY" ] && { QUERY=""; rebuild; } ;;
+        1) SRC_FILTER="get"; CAT_SEL=0; rebuild ;;
+        2) SRC_FILTER="oneline"; CAT_SEL=0; rebuild ;;
+        0) SRC_FILTER="all"; CAT_SEL=0; rebuild ;;
+        n) cur; [ -n "$CUR" ] && { variants "$CUR"; VAR_SEL=$(((VAR_SEL + 1) % (${#V_CMD[@]} > 0 ? ${#V_CMD[@]} : 1))); } ;;
+        N) cur; [ -n "$CUR" ] && { variants "$CUR"; local n=${#V_CMD[@]}; [ "$n" -gt 0 ] && VAR_SEL=$(((VAR_SEL + n - 1) % n)); } ;;
+        enter)
+            if [ "$FOCUS" = 0 ]; then FOCUS=1; else run_selected 0; fi ;;
+        e) run_selected 1 ;;
+        c|y) copy_cmd ;;
+        s|v) view_source ;;
+        "?") show_help ;;
+    esac
+    return 0
+}
+
+main_loop() {
+    local last_size="" size
+    draw
+    while :; do
+        read_key
+        if [ "$KEY" = timeout ]; then
+            size=$(stty size <&4 2>/dev/null)
+            [ "$size" = "$last_size" ] && continue
+            last_size=$size
+        elif [ "$SEARCHING" = 1 ]; then
+            handle_search_key
+        else
+            handle_key || break
+        fi
+        draw
+    done
+}
+
+main() {
+    local a
+    for a in "$@"; do
+        case "$a" in
+            -h|--help) usage; exit 0 ;;
+            --source=*) RSO_SOURCE="${a#--source=}" ;;
+            *) die "unknown option: $a (try --help)" ;;
+        esac
+    done
+    SRC_FILTER="${RSO_SOURCE:-$DEFAULT_SOURCE}"
+    case "$SRC_FILTER" in get|oneline|all) ;; *) die "--source must be get, oneline or all" ;; esac
+
+    # Keys come from the terminal, never from stdin (stdin is this script under curl | bash)
+    ( : </dev/tty ) 2>/dev/null || die "no terminal available; run it from an interactive shell"
+    exec 4</dev/tty
+    exec 3>/dev/tty
+    command -v stty >/dev/null 2>&1 || die "stty is required"
+    command -v awk >/dev/null 2>&1 || die "awk is required"
+
+    TMP=$(mktemp -d 2>/dev/null || mktemp -d -t rso-tui) || die "cannot create a temp dir"
+    trap cleanup EXIT
+    trap 'exit 130' INT TERM HUP
+
+    setup_style
+    term_enter
+    fetch_sources
+    rebuild
+    main_loop
+}
+
+main "$@"; exit

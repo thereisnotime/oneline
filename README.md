@@ -2,6 +2,8 @@
 
 Frequently used one-liners in real life for your copy-pasting needs.
 
+Browse and run them from a terminal: `curl -sL oneline.sh/tui | bash` (one bash file, read it first with `curl -sL oneline.sh/tui | less`).
+
 ---
 
 ## System & Package Management
