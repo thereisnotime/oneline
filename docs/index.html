@@ -720,6 +720,105 @@
 
         td { color: var(--text-muted); }
 
+        /* Terminal catalog banner */
+        .tui-banner {
+            margin: 0 0 2rem;
+            padding: 1rem 1.25rem;
+            background: linear-gradient(135deg, rgba(88, 166, 255, 0.08) 0%, rgba(163, 113, 247, 0.08) 100%);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: 8px;
+        }
+
+        .tui-banner-head {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 0.25rem 1rem;
+        }
+
+        .tui-banner-label {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .tui-banner .tui-banner-desc {
+            margin: 0.25rem 0 0.75rem;
+            font-size: 0.85rem;
+            animation: none;
+        }
+
+        .tui-read {
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .tui-cmd {
+            display: flex;
+            align-items: stretch;
+            gap: 0.5rem;
+            min-width: 0;
+        }
+
+        .tui-cmd + .tui-cmd {
+            margin-top: 0.5rem;
+        }
+
+        .tui-cmd-or {
+            align-self: center;
+            flex-shrink: 0;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .tui-cmd code {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 0.5rem 0.75rem;
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: var(--text);
+        }
+
+        .tui-cmd .copy-btn {
+            position: static;
+            flex-shrink: 0;
+            min-height: 36px;
+        }
+
+        /* short command, so on phones wrap it at the spaces instead of scrolling */
+        @media (max-width: 480px) {
+            .tui-cmd {
+                flex-wrap: wrap;
+                align-items: center;
+            }
+
+            .tui-cmd-or {
+                flex-basis: 100%;
+            }
+
+            .tui-cmd code {
+                align-self: stretch;
+                white-space: normal;
+                overflow-wrap: anywhere;
+            }
+        }
+
+        @media (pointer: coarse) {
+            .tui-cmd .copy-btn,
+            .tui-read {
+                min-height: 44px;
+            }
+        }
+
         /* Lists */
         ul, ol {
             margin: 1rem 0;
@@ -1161,6 +1260,25 @@
     <div class="link-copied-toast" id="toast" role="status" aria-live="polite">Link copied to clipboard!</div>
     <div class="tooltip" id="tooltip" role="tooltip"></div>
 
+    <template id="tuiBannerTpl">
+        <section class="tui-banner" aria-labelledby="tuiBannerLabel">
+            <div class="tui-banner-head">
+                <span class="tui-banner-label" id="tuiBannerLabel">Browse from your terminal</span>
+                <a class="tui-read" href="https://github.com/thereisnotime/oneline/blob/master/docs/tui" target="_blank" rel="noopener">read it first</a>
+            </div>
+            <p class="tui-banner-desc">An interactive catalog of these snippets with search, a preview pane and a confirm step before anything runs.</p>
+            <div class="tui-cmd">
+                <code>curl -sL oneline.sh/tui | bash</code>
+                <button type="button" class="copy-btn" aria-label="Copy curl command">Copy</button>
+            </div>
+            <div class="tui-cmd">
+                <span class="tui-cmd-or">or</span>
+                <code>wget -qO- oneline.sh/tui | bash</code>
+                <button type="button" class="copy-btn" aria-label="Copy wget command">Copy</button>
+            </div>
+        </section>
+    </template>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
@@ -1294,6 +1412,7 @@
                 
                 // Add copy buttons to code blocks
                 addCopyButtons();
+                addTuiBanner();
                 
                 // Show content
                 document.getElementById('loading').style.display = 'none';
@@ -1378,19 +1497,31 @@
                 btn.className = 'copy-btn';
                 btn.textContent = 'Copy';
                 btn.type = 'button';
-                btn.onclick = async () => {
-                    const code = pre.querySelector('code').textContent;
-                    const ok = await copyToClipboard(code);
-                    clearTimeout(btn._resetTimer);
-                    btn.textContent = ok ? 'Copied!' : 'Copy failed';
-                    btn.classList.toggle('copied', ok);
-                    btn._resetTimer = setTimeout(() => {
-                        btn.textContent = 'Copy';
-                        btn.classList.remove('copied');
-                    }, 2000);
-                };
+                btn.onclick = () => copyWithFeedback(btn, pre.querySelector('code').textContent);
                 pre.appendChild(btn);
             });
+        }
+
+        async function copyWithFeedback(btn, text) {
+            const ok = await copyToClipboard(text);
+            clearTimeout(btn._resetTimer);
+            btn.textContent = ok ? 'Copied!' : 'Copy failed';
+            btn.classList.toggle('copied', ok);
+            btn._resetTimer = setTimeout(() => {
+                btn.textContent = 'Copy';
+                btn.classList.remove('copied');
+            }, 2000);
+        }
+
+        // Point people at `curl -sL oneline.sh/tui | bash` above the README content
+        function addTuiBanner() {
+            const tpl = document.getElementById('tuiBannerTpl');
+            const banner = tpl.content.firstElementChild.cloneNode(true);
+            banner.querySelectorAll('.tui-cmd').forEach(row => {
+                const btn = row.querySelector('.copy-btn');
+                btn.onclick = () => copyWithFeedback(btn, row.querySelector('code').textContent);
+            });
+            document.getElementById('content').prepend(banner);
         }
 
         // Favorites system
