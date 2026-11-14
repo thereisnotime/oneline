@@ -1631,6 +1631,146 @@
         @media (prefers-reduced-motion: reduce) {
             .builder-drawer { transition: none; }
         }
+
+        /* Filters (distro / privilege / cpu), parsed from the label above each block */
+        .filter-details {
+            margin: 0 1.5rem 0.75rem;
+        }
+
+        .filter-summary {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 0;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            list-style: none;
+            transition: color 0.15s ease;
+        }
+
+        .filter-summary::-webkit-details-marker { display: none; }
+
+        .filter-summary::before {
+            content: '▸';
+            font-size: 0.7rem;
+            transition: transform 0.2s ease;
+        }
+
+        .filter-details[open] .filter-summary::before { transform: rotate(90deg); }
+        .filter-summary:hover { color: var(--text); }
+        .filter-summary.active { color: var(--accent); }
+
+        .filter-bar {
+            padding: 0.4rem 0 0;
+        }
+
+        .filter-group {
+            margin-bottom: 0.5rem;
+        }
+
+        .filter-group-label {
+            display: block;
+            margin-bottom: 0.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        .filter-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        .filter-pill,
+        .filter-clear {
+            padding: 0.15rem 0.45rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            line-height: 1.4;
+            border-radius: 3px;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-muted);
+            transition: all 0.15s ease;
+        }
+
+        .filter-pill:hover {
+            border-color: var(--text-muted);
+            color: var(--text);
+        }
+
+        .filter-pill[aria-pressed="true"] {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(88, 166, 255, 0.08);
+        }
+
+        .filter-pill.privilege-filter[aria-pressed="true"] {
+            border-color: var(--purple);
+            color: var(--purple);
+            background: rgba(163, 113, 247, 0.08);
+        }
+
+        .filter-clear {
+            border-color: transparent;
+            opacity: 0.6;
+        }
+
+        .filter-clear:hover:not(:disabled) {
+            opacity: 1;
+            color: #f85149;
+        }
+
+        .filter-clear:disabled {
+            opacity: 0.3;
+            cursor: default;
+        }
+
+        .toc-count {
+            margin-left: auto;
+            font-size: 0.7rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
+        .filter-empty {
+            padding: 2rem 0;
+            color: var(--text-muted);
+        }
+
+        .filter-empty[hidden] { display: none; }
+
+        .filter-empty button {
+            margin-left: 0.25rem;
+            padding: 0.3rem 0.7rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font: inherit;
+            cursor: pointer;
+        }
+
+        @media (pointer: coarse) {
+            .filter-summary { min-height: 44px; }
+            .filter-pills { gap: 0.35rem; }
+            .filter-pill,
+            .filter-clear {
+                min-height: 44px;
+                min-width: 44px;
+                padding: 0 0.75rem;
+                font-size: 0.75rem;
+            }
+            .filter-empty button { min-height: 44px; }
+        }
     </style>
 </head>
 <body>
@@ -1663,6 +1803,10 @@
                 <input type="checkbox" id="favoritesOnly">
                 <span aria-hidden="true">❤️</span> Show favorites only
             </label>
+            <details class="filter-details" id="filterDetails">
+                <summary class="filter-summary" id="filterSummary">Filters</summary>
+                <div class="filter-bar" id="filterBar" role="group" aria-label="Filter snippets"></div>
+            </details>
             <button class="privacy-btn" id="privacyBtn" type="button" aria-haspopup="dialog">
                 <span class="privacy-icon" aria-hidden="true">🔒</span>
                 privacy.sexy
@@ -1898,6 +2042,9 @@
                 title.type = 'button';
                 title.className = 'toc-section-title';
                 title.textContent = h2.textContent;
+                const count = document.createElement('span');
+                count.className = 'toc-count';
+                title.appendChild(count);
                 title.setAttribute('aria-controls', items.id);
                 title.setAttribute('aria-expanded', String(index === 0));
                 title.onclick = () => {
@@ -2103,27 +2250,6 @@
             const count = loadFavorites().length;
             const toggle = document.getElementById('favoritesToggle');
             toggle.classList.toggle('active', count > 0);
-        }
-
-        function filterFavorites(showOnlyFavorites) {
-            const favorites = loadFavorites();
-            const content = document.getElementById('content');
-            
-            // Get all h3s and their associated content
-            content.querySelectorAll('h3').forEach(h3 => {
-                const isFavorite = favorites.includes(h3.id);
-                const shouldHide = showOnlyFavorites && !isFavorite;
-                
-                // Hide/show the h3
-                h3.classList.toggle('snippet-hidden', shouldHide);
-                
-                // Hide/show content until next heading
-                let sibling = h3.nextElementSibling;
-                while (sibling && !['H2', 'H3'].includes(sibling.tagName)) {
-                    sibling.classList.toggle('snippet-hidden', shouldHide);
-                    sibling = sibling.nextElementSibling;
-                }
-            });
         }
 
         // Command safety detection
@@ -2424,8 +2550,8 @@
             const items = document.querySelectorAll('.toc-item');
             let current = '';
             
-            document.querySelectorAll('h3').forEach(h3 => {
-                if (h3.getBoundingClientRect().top < 150) {
+            document.querySelectorAll('#content h3').forEach(h3 => {
+                if (h3.offsetParent !== null && h3.getBoundingClientRect().top < 150) {
                     current = h3.id;
                 }
             });
@@ -2496,9 +2622,11 @@
             searchResults.classList.remove('hidden');
             toc.classList.add('hidden');
 
-            const results = searchIndex.filter(item => 
-                item.title.toLowerCase().includes(q) || 
-                item.content.includes(q)
+            const results = searchIndex.filter(item =>
+                isHeadingShown(item.id) && (
+                    item.title.toLowerCase().includes(q) ||
+                    item.content.includes(q)
+                )
             );
 
             if (results.length === 0) {
@@ -2563,9 +2691,7 @@
             });
 
             // Favorites toggle
-            document.getElementById('favoritesOnly').addEventListener('change', (e) => {
-                filterFavorites(e.target.checked);
-            });
+            document.getElementById('favoritesOnly').addEventListener('change', applyVisibility);
 
             // Privacy.sexy modal
             const privacyBtn = document.getElementById('privacyBtn');
@@ -2903,6 +3029,206 @@
         });
         renderBuilder();
 
+        // Label lines such as "Debian, Ubuntu; x86_64, arm64 (as root):" -> facets
+        const FAMILY_ORDER = ['Debian/Ubuntu', 'Fedora/RHEL', 'Arch', 'Any Linux', 'macOS/Homebrew', 'Windows'];
+        const LINUX_FAMILIES = ['Debian/Ubuntu', 'Fedora/RHEL', 'Arch'];
+        const CPU_ORDER = ['x86_64', 'arm64', 'armv7'];
+
+        function parseLabel(label, lang, inherit) {
+            // ignore quoted error messages and inline code, they mention arches and paths
+            const t = ' ' + label.toLowerCase()
+                .replace(/"[^"]*"/g, ' ')
+                .replace(/`[^`]*`/g, ' ') + ' ';
+            const family = new Set();
+            if (/\b(debian|ubuntu|pop!?_?os|mint|raspberry pi os|raspbian)\b/.test(t)) family.add('Debian/Ubuntu');
+            if (/\b(fedora|centos|rhel|red ?hat|rocky|alma(linux)?)\b/.test(t)) family.add('Fedora/RHEL');
+            if (/\b(arch linux|manjaro|endeavouros|pacman)\b|\barch\b/.test(t)) family.add('Arch');
+            if (/\b(macos|mac os|homebrew|brew)\b/.test(t)) family.add('macOS/Homebrew');
+            if (/\bwindows\b/.test(t) || lang === 'powershell') family.add('Windows');
+            const specific = LINUX_FAMILIES.some(f => family.has(f));
+            if (!specific && (/\blinux\b/.test(t) ||
+                /\b(via (asdf|npm|go|flatpak)|flatpak|appimage|with (curl|wget)|binary|github release)\b/.test(t))) {
+                family.add('Any Linux');
+            }
+            let privilege = /\bas root\b/.test(t) ? 'root' : /\bas user\b/.test(t) ? 'user' : null;
+            const cpu = new Set();
+            if (/\b(x86_64|x64|amd64)\b/.test(t)) cpu.add('x86_64');
+            if (/\b(arm64|aarch64)\b/.test(t)) cpu.add('arm64');
+            if (/\b(armv7|armhf)\b/.test(t)) cpu.add('armv7');
+
+            const inherited = [];
+            if (family.size === 0) {
+                (inherit ? inherit.family : ['Any Linux']).forEach(f => family.add(f));
+                inherited.push(inherit ? 'family' : 'family:default');
+            }
+            if (!privilege) {
+                privilege = inherit ? inherit.privilege : 'user';
+                inherited.push(inherit ? 'privilege' : 'privilege:default');
+            }
+            return {
+                family: FAMILY_ORDER.filter(f => family.has(f)),
+                privilege,
+                cpu: CPU_ORDER.filter(c => cpu.has(c)), // empty = every CPU
+                inherited
+            };
+        }
+
+        const FACETS = [
+            { key: 'family', label: 'distro', values: FAMILY_ORDER },
+            { key: 'privilege', label: 'privilege', values: ['root', 'user'] },
+            { key: 'cpu', label: 'cpu', values: CPU_ORDER }
+        ];
+        const activeFilters = { family: new Set(), privilege: new Set(), cpu: new Set() };
+
+        function assignFacets() {
+            // a block without its own distro or "as ..." takes it from the block above it
+            sections.forEach(sec => sec.h3s.forEach(h => {
+                let prev = null;
+                h.blocks.forEach(b => {
+                    b.facets = parseLabel(b.label, b.lang, prev);
+                    prev = b.facets;
+                });
+            }));
+        }
+
+        function activeFilterCount() {
+            return FACETS.reduce((n, f) => n + activeFilters[f.key].size, 0);
+        }
+
+        // OR inside a facet, AND across facets. "Any Linux" fits every Linux
+        // distro and a block that names no CPU fits every CPU.
+        function blockMatches(f) {
+            const fam = activeFilters.family;
+            if (fam.size && !f.family.some(x => fam.has(x) ||
+                (x === 'Any Linux' && LINUX_FAMILIES.some(l => fam.has(l))))) return false;
+            if (activeFilters.privilege.size && !activeFilters.privilege.has(f.privilege)) return false;
+            if (activeFilters.cpu.size && f.cpu.length && !f.cpu.some(c => activeFilters.cpu.has(c))) return false;
+            return true;
+        }
+
+        function isHeadingShown(id) {
+            const el = document.getElementById(id);
+            return !el || !el.classList.contains('snippet-hidden');
+        }
+
+        // One pass for favorites-only and the filter pills
+        function applyVisibility() {
+            const favOnly = document.getElementById('favoritesOnly').checked;
+            const favorites = new Set(loadFavorites());
+            const filtering = activeFilterCount() > 0;
+            const tocSections = document.querySelectorAll('#toc .toc-section');
+            let total = 0;
+
+            sections.forEach((sec, i) => {
+                let visible = 0;
+                sec.h3s.forEach(h => {
+                    let show = !favOnly || favorites.has(h.el.id);
+                    const inBlock = new Set();
+                    let anyBlock = false;
+                    h.blocks.forEach(b => {
+                        const bShow = show && (!filtering || blockMatches(b.facets));
+                        b.els.forEach(el => { el.classList.toggle('snippet-hidden', !bShow); inBlock.add(el); });
+                        anyBlock = anyBlock || bShow;
+                    });
+                    if (filtering) show = show && anyBlock;
+                    h.el.classList.toggle('snippet-hidden', !show);
+                    h.els.forEach(el => { if (!inBlock.has(el)) el.classList.toggle('snippet-hidden', !show); });
+                    if (show) visible++;
+                });
+                const showSec = visible > 0 || (!favOnly && !filtering);
+                sec.el.classList.toggle('snippet-hidden', !showSec);
+                sec.intro.forEach(el => el.classList.toggle('snippet-hidden', !showSec));
+                total += visible;
+
+                const tocSec = tocSections[i];
+                if (tocSec) {
+                    tocSec.classList.toggle('hidden', !showSec);
+                    tocSec.querySelector('.toc-count').textContent = visible;
+                    tocSec.querySelectorAll('.toc-item').forEach(a => {
+                        a.classList.toggle('hidden', !isHeadingShown(a.getAttribute('href').slice(1)));
+                    });
+                }
+            });
+
+            const n = activeFilterCount();
+            const summary = document.getElementById('filterSummary');
+            summary.textContent = n ? `Filters (${n} active)` : 'Filters';
+            summary.classList.toggle('active', n > 0);
+            const clear = document.querySelector('#filterBar .filter-clear');
+            if (clear) clear.disabled = n === 0;
+
+            const empty = document.getElementById('filterEmpty');
+            if (empty) empty.hidden = total > 0 || (!favOnly && !filtering);
+
+            const q = document.getElementById('searchInput').value;
+            if (q.trim()) performSearch(q);
+        }
+
+        function clearFilters() {
+            FACETS.forEach(f => activeFilters[f.key].clear());
+            document.querySelectorAll('#filterBar .filter-pill').forEach(p => p.setAttribute('aria-pressed', 'false'));
+            applyVisibility();
+        }
+
+        function buildFilters() {
+            assignFacets();
+            const bar = document.getElementById('filterBar');
+            bar.textContent = '';
+            FACETS.forEach(facet => {
+                const group = document.createElement('div');
+                group.className = 'filter-group';
+                const label = document.createElement('span');
+                label.className = 'filter-group-label';
+                label.id = 'filter-label-' + facet.key;
+                label.textContent = facet.label;
+                group.appendChild(label);
+                const pills = document.createElement('div');
+                pills.className = 'filter-pills';
+                pills.setAttribute('role', 'group');
+                pills.setAttribute('aria-labelledby', label.id);
+                facet.values.forEach(value => {
+                    const pill = document.createElement('button');
+                    pill.type = 'button';
+                    pill.className = 'filter-pill ' + facet.key + '-filter';
+                    pill.textContent = value;
+                    pill.setAttribute('aria-pressed', 'false');
+                    pill.onclick = () => {
+                        const set = activeFilters[facet.key];
+                        set.has(value) ? set.delete(value) : set.add(value);
+                        pill.setAttribute('aria-pressed', String(set.has(value)));
+                        applyVisibility();
+                    };
+                    pills.appendChild(pill);
+                });
+                group.appendChild(pills);
+                bar.appendChild(group);
+            });
+            const clear = document.createElement('button');
+            clear.type = 'button';
+            clear.className = 'filter-clear';
+            clear.textContent = 'clear filters';
+            clear.disabled = true;
+            clear.onclick = clearFilters;
+            bar.appendChild(clear);
+
+            const empty = document.createElement('p');
+            empty.className = 'filter-empty';
+            empty.id = 'filterEmpty';
+            empty.hidden = true;
+            empty.setAttribute('role', 'status');
+            empty.textContent = 'No snippets match.';
+            const reset = document.createElement('button');
+            reset.type = 'button';
+            reset.textContent = 'Show everything';
+            reset.onclick = () => {
+                document.getElementById('favoritesOnly').checked = false;
+                clearFilters();
+            };
+            empty.appendChild(reset);
+            document.getElementById('content').appendChild(empty);
+            applyVisibility();
+        }
+
         // The deploy workflow swaps the placeholders for a commit link and a time
         function initBuildFooter() {
             const footer = document.getElementById('buildFooter');
@@ -2926,6 +3252,7 @@
             addSafetyBadges();
             buildSnippetModel();
             addBuilderButtons();
+            buildFilters();
             updateStats();
             initMobileMenu(); // Initialize mobile sidebar after DOM is ready
             // Content was injected after the browser tried to jump to the hash
