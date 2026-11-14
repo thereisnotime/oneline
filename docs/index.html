@@ -1391,6 +1391,246 @@
             /* keep the page end clear of the fixed footer and the floating buttons */
             .main { padding-bottom: calc(var(--footer-h) + 7rem); }
         }
+
+        /* Script builder */
+        .builder-toggle {
+            position: fixed;
+            bottom: calc(var(--footer-h) + 12px);
+            right: 1.5rem;
+            width: 44px;
+            height: 44px;
+            background: var(--purple);
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 1.3rem;
+            line-height: 1;
+            cursor: pointer;
+            z-index: 150;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(163, 113, 247, 0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .builder-toggle:hover { transform: scale(1.1); box-shadow: 0 4px 20px rgba(163, 113, 247, 0.5); }
+        .builder-toggle .builder-count {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
+            background: var(--accent);
+            color: var(--bg);
+            font-size: 0.65rem;
+            font-weight: 700;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .builder-toggle .builder-count:empty { display: none; }
+
+        .builder-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+        }
+        .builder-backdrop.show { display: block; }
+
+        .builder-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 440px;
+            max-width: 90vw;
+            height: 100vh;
+            height: 100dvh;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border);
+            z-index: 1002;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .builder-drawer.open { transform: translateX(0); }
+
+        .builder-header {
+            padding: 1rem 1rem 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .builder-header h2 {
+            margin: 0;
+            padding: 0;
+            border: none;
+            font-size: 1rem;
+            color: var(--purple);
+            cursor: default;
+            animation: none;
+        }
+        .builder-header h2:hover::after { content: none; }
+        .builder-close {
+            width: 36px;
+            height: 36px;
+            background: none;
+            border: none;
+            border-radius: 6px;
+            color: var(--text-muted);
+            font-size: 1.3rem;
+            cursor: pointer;
+        }
+        .builder-close:hover { color: var(--text); background: var(--bg-tertiary); }
+
+        .builder-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.75rem 1rem;
+            margin: 0;
+            list-style: none;
+        }
+        .builder-empty {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-align: center;
+            padding: 3rem 1rem;
+            line-height: 1.8;
+        }
+        .builder-empty code { font-size: 0.8rem; color: var(--purple); }
+
+        .builder-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.4rem 0.4rem 0.4rem 0.75rem;
+            margin: 0 0 0.4rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+        }
+        .builder-item-text { flex: 1; min-width: 0; line-height: 1.35; }
+        .builder-item-name { display: block; font-size: 0.85rem; font-weight: 500; overflow-wrap: anywhere; }
+        .builder-item-label { display: block; font-size: 0.72rem; color: var(--text-muted); overflow-wrap: anywhere; }
+        .builder-item-label.root { color: var(--warning); }
+        .builder-item button {
+            flex-shrink: 0;
+            width: 30px;
+            height: 30px;
+            background: none;
+            border: none;
+            border-radius: 4px;
+            color: var(--text-muted);
+            font: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .builder-item button:hover:not(:disabled) { color: var(--text); background: var(--bg-secondary); }
+        .builder-item button.builder-item-remove:hover { color: #f85149; }
+        .builder-item button:disabled { opacity: 0.3; cursor: default; }
+
+        .builder-preview {
+            margin: 0 1rem 0.75rem;
+            padding: 0.75rem;
+            max-height: 35vh;
+            overflow: auto;
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            line-height: 1.5;
+            color: var(--text-muted);
+            white-space: pre;
+        }
+        .builder-preview[hidden] { display: none; }
+
+        .builder-footer {
+            padding: 1rem 1.5rem;
+            padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .builder-footer[hidden] { display: none; }
+        .builder-actions { display: flex; gap: 0.5rem; }
+        .builder-btn {
+            flex: 1;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--bg-tertiary);
+            color: var(--text);
+            text-align: center;
+        }
+        .builder-btn:hover { border-color: var(--text-muted); }
+        .builder-btn-primary { background: var(--purple); border-color: var(--purple); color: #fff; }
+        .builder-btn-primary:hover { opacity: 0.9; border-color: var(--purple); }
+        .builder-btn-primary.copied { background: var(--success); border-color: var(--success); color: var(--bg); }
+        .builder-btn-danger { background: transparent; border-color: transparent; color: var(--text-muted); font-size: 0.75rem; }
+        .builder-btn-danger:hover { color: #f85149; border-color: transparent; }
+
+        /* "+ Add to bundle" sits under its code block, clear of Copy, the badge and the lang label */
+        .add-builder-wrap {
+            display: flex;
+            justify-content: flex-end;
+            margin: -1rem 0 1.25rem;
+        }
+        .add-builder-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--purple);
+            padding: 0.4rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-family: 'Space Grotesk', sans-serif;
+            line-height: 1;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .add-builder-btn:hover,
+        .add-builder-btn.added { background: var(--purple); color: #fff; border-color: var(--purple); }
+
+        @media (max-width: 1024px) {
+            /* left of the 56px menu button, 12px apart and centred on it */
+            .builder-toggle {
+                bottom: calc(1.5rem + 6px);
+                right: calc(1.5rem + 56px + 12px);
+            }
+            /* while the consent bar is up it owns that row, so stack above back-to-top instead */
+            body:has(#consentBar:not([hidden])) .builder-toggle {
+                bottom: calc(1.5rem + 56px + 12px + 44px + 12px);
+                right: calc(1.5rem + 6px);
+            }
+            .builder-drawer { width: 100%; max-width: 100%; }
+            /* the open sidebar would otherwise have the button floating over its rows */
+            body:has(.sidebar.open) .builder-toggle {
+                visibility: hidden;
+                opacity: 0;
+            }
+        }
+
+        @media (pointer: coarse) {
+            .add-builder-btn { min-height: 44px; padding: 0 1rem; }
+            .builder-close,
+            .builder-item button { width: 44px; height: 44px; }
+            .builder-btn { min-height: 44px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .builder-drawer { transition: none; }
+        }
     </style>
 </head>
 <body>
@@ -1449,6 +1689,27 @@
     <button class="mobile-toggle" id="mobileToggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="sidebar">☰</button>
     <div class="link-copied-toast" id="toast" role="status" aria-live="polite">Link copied to clipboard!</div>
     <div class="tooltip" id="tooltip" role="tooltip"></div>
+    <button type="button" class="builder-toggle" id="builderToggle" title="Script builder" aria-label="Script builder" aria-controls="builderDrawer" aria-expanded="false">
+        <span aria-hidden="true">+</span>
+        <span class="builder-count" id="builderCount"></span>
+    </button>
+    <div class="builder-backdrop" id="builderBackdrop"></div>
+    <aside class="builder-drawer" id="builderDrawer" role="dialog" aria-modal="true" aria-labelledby="builderTitle" inert>
+        <div class="builder-header">
+            <h2 id="builderTitle">Script builder</h2>
+            <button type="button" class="builder-close" id="builderClose" aria-label="Close script builder">&times;</button>
+        </div>
+        <ul class="builder-list" id="builderList" aria-label="Snippets in the bundle"></ul>
+        <pre class="builder-preview" id="builderPreview" tabindex="0" aria-label="Bundle preview" hidden></pre>
+        <div class="builder-footer" id="builderFooter" hidden>
+            <div class="builder-actions">
+                <button type="button" class="builder-btn builder-btn-primary" id="builderCopy">Copy script</button>
+                <button type="button" class="builder-btn" id="builderDownload">Download .sh</button>
+            </div>
+            <button type="button" class="builder-btn" id="builderPreviewToggle" aria-controls="builderPreview" aria-expanded="false">Preview</button>
+            <button type="button" class="builder-btn builder-btn-danger" id="builderClear">Clear all</button>
+        </div>
+    </aside>
     <footer class="build-footer" id="buildFooter">build <!-- BUILD_SHA --> &middot; <!-- BUILD_TIME --></footer>
 
     <template id="tuiBannerTpl">
@@ -1697,12 +1958,14 @@
         }
 
         async function copyWithFeedback(btn, text) {
+            // remember the resting label the first time, so a second click mid-feedback keeps it
+            if (!btn.dataset.label) btn.dataset.label = btn.textContent;
             const ok = await copyToClipboard(text);
             clearTimeout(btn._resetTimer);
             btn.textContent = ok ? 'Copied!' : 'Copy failed';
             btn.classList.toggle('copied', ok);
             btn._resetTimer = setTimeout(() => {
-                btn.textContent = 'Copy';
+                btn.textContent = btn.dataset.label;
                 btn.classList.remove('copied');
             }, 2000);
         }
@@ -2339,6 +2602,307 @@
             });
         });
 
+        // Snippet model: each h2 with its h3s, each h3 with its code blocks and
+        // the label line above each block ("Debian, Ubuntu (as root):")
+        function isLabelText(text) {
+            return /\(as (root|user)\b/i.test(text) || /:\s*$/.test(text);
+        }
+
+        function headingText(h) {
+            const c = h.cloneNode(true);
+            c.querySelectorAll('button').forEach(b => b.remove());
+            return c.textContent.trim();
+        }
+
+        let sections = [];
+
+        function buildSnippetModel() {
+            sections = [];
+            let h2 = null, h3 = null, separators = [];
+            for (const el of document.getElementById('content').children) {
+                if (el.tagName === 'H2') {
+                    // the --- before a section goes away with it
+                    h2 = { el, intro: separators, h3s: [], toc: null };
+                    separators = [];
+                    h3 = null;
+                    sections.push(h2);
+                    continue;
+                }
+                if (el.tagName === 'HR') { separators.push(el); continue; }
+                if (!h2) { separators = []; continue; } // title, intro and banner stay put
+                const bucket = h3 ? h3.els : h2.intro;
+                bucket.push(...separators, ...(el.tagName === 'H3' ? [] : [el]));
+                separators = [];
+                if (el.tagName === 'H3') {
+                    h3 = { el, h2, els: [], blocks: [] };
+                    h2.h3s.push(h3);
+                }
+            }
+
+            sections.forEach(sec => sec.h3s.forEach(h => {
+                let pending = [];
+                h.els.forEach(el => {
+                    if (el.tagName !== 'PRE') { pending.push(el); return; }
+                    let start = -1;
+                    for (let i = pending.length - 1; i >= 0; i--) {
+                        if (pending[i].tagName === 'P' && isLabelText(pending[i].textContent.trim())) { start = i; break; }
+                    }
+                    const code = el.querySelector('code');
+                    const lang = ((code && code.className.match(/language-(\w+)/)) || [])[1] || '';
+                    h.blocks.push({
+                        key: h.el.id + ':' + h.blocks.length,
+                        h3: h,
+                        pre: el,
+                        lang,
+                        label: start >= 0 ? pending[start].textContent.trim().replace(/\s+/g, ' ') : '',
+                        // label, anything between it and the code, and the code itself
+                        els: (start >= 0 ? pending.slice(start) : []).concat(el)
+                    });
+                    pending = [];
+                });
+            }));
+        }
+
+        // Script builder: collect bash snippets into one script
+        const BUNDLE_KEY = 'oneline-bundle';
+        const BUNDLE_FILE = 'oneline-bundle.sh';
+        const blockByKey = new Map();
+        let bundle = [];
+        try {
+            const saved = JSON.parse(storageGet(BUNDLE_KEY).value || '[]');
+            if (Array.isArray(saved)) {
+                bundle = saved.filter(i => i && typeof i.key === 'string' && typeof i.code === 'string');
+            }
+        } catch {}
+
+        const builderDrawer = document.getElementById('builderDrawer');
+        const builderToggle = document.getElementById('builderToggle');
+        const builderBackdrop = document.getElementById('builderBackdrop');
+
+        function openBuilder() {
+            if (typeof sidebar !== 'undefined' && sidebar && sidebar.classList.contains('open')) closeSidebar();
+            builderDrawer.inert = false;
+            builderDrawer.classList.add('open');
+            builderBackdrop.classList.add('show');
+            builderToggle.setAttribute('aria-expanded', 'true');
+            document.getElementById('builderClose').focus();
+        }
+
+        function closeBuilder() {
+            if (!builderDrawer.classList.contains('open')) return;
+            builderDrawer.classList.remove('open');
+            builderBackdrop.classList.remove('show');
+            builderToggle.setAttribute('aria-expanded', 'false');
+            builderDrawer.inert = true;
+            builderToggle.focus();
+        }
+
+        function snippetFromBlock(b) {
+            return {
+                key: b.key,
+                heading: headingText(b.h3.el),
+                label: b.label.replace(/:\s*$/, ''),
+                code: b.pre.querySelector('code').textContent
+            };
+        }
+
+        function saveBundle() {
+            storageSet(BUNDLE_KEY, JSON.stringify(bundle));
+            renderBuilder();
+            updateAddButtons();
+        }
+
+        function toggleInBundle(b) {
+            const i = bundle.findIndex(item => item.key === b.key);
+            if (i !== -1) {
+                bundle.splice(i, 1);
+                saveBundle();
+                return;
+            }
+            bundle.push(snippetFromBlock(b));
+            saveBundle();
+            if (bundle.length === 1) openBuilder();
+        }
+
+        function moveInBundle(i, delta) {
+            const j = i + delta;
+            if (j < 0 || j >= bundle.length) return;
+            [bundle[i], bundle[j]] = [bundle[j], bundle[i]];
+            saveBundle();
+            // keep focus on the same arrow so repeated presses keep moving the item
+            const row = document.querySelectorAll('#builderList .builder-item')[j];
+            const btn = row && row.querySelector(delta < 0 ? '.builder-item-up' : '.builder-item-down');
+            if (btn && !btn.disabled) btn.focus();
+            else if (row) row.querySelector('.builder-item-remove').focus();
+        }
+
+        function removeFromBundle(i) {
+            bundle.splice(i, 1);
+            saveBundle();
+            const rows = document.querySelectorAll('#builderList .builder-item-remove');
+            if (rows.length) rows[Math.min(i, rows.length - 1)].focus();
+            else document.getElementById('builderClose').focus();
+        }
+
+        function isRootSnippet(item) {
+            return /\bas root\b/i.test(item.label);
+        }
+
+        function generateBundleScript() {
+            const lines = [
+                '#!/usr/bin/env bash',
+                '# Bundle of ' + bundle.length + ' snippet' + (bundle.length === 1 ? '' : 's') + ' from https://oneline.sh/',
+                '# Read it before you run it.'
+            ];
+            if (bundle.some(isRootSnippet)) {
+                lines.push(
+                    '#',
+                    '# WARNING: some snippets below are labelled "as root" and expect a root',
+                    '# shell. Run the whole thing as root (sudo bash ' + BUNDLE_FILE + ') or',
+                    '# those steps will fail.'
+                );
+            }
+            lines.push('set -e', '');
+            bundle.forEach(item => {
+                lines.push('# ' + item.heading + (item.label ? ' - ' + item.label : ''));
+                lines.push(item.code.replace(/\s+$/, ''), '');
+            });
+            return lines.join('\n');
+        }
+
+        function renderBuilder() {
+            const list = document.getElementById('builderList');
+            const footer = document.getElementById('builderFooter');
+            const preview = document.getElementById('builderPreview');
+            const count = document.getElementById('builderCount');
+
+            count.textContent = bundle.length || '';
+            builderToggle.setAttribute('aria-label', bundle.length
+                ? `Script builder, ${bundle.length} snippet${bundle.length === 1 ? '' : 's'}`
+                : 'Script builder');
+            list.textContent = '';
+
+            if (!bundle.length) {
+                const empty = document.createElement('li');
+                empty.className = 'builder-empty';
+                empty.innerHTML = 'Press <code>+ Add to bundle</code> under any bash snippet<br>to build one script out of several';
+                list.appendChild(empty);
+                footer.hidden = true;
+                preview.hidden = true;
+                document.getElementById('builderPreviewToggle').setAttribute('aria-expanded', 'false');
+                return;
+            }
+
+            footer.hidden = false;
+            bundle.forEach((item, i) => {
+                const li = document.createElement('li');
+                li.className = 'builder-item';
+
+                const text = document.createElement('span');
+                text.className = 'builder-item-text';
+                const name = document.createElement('span');
+                name.className = 'builder-item-name';
+                name.textContent = item.heading;
+                text.appendChild(name);
+                if (item.label) {
+                    const label = document.createElement('span');
+                    label.className = 'builder-item-label' + (isRootSnippet(item) ? ' root' : '');
+                    label.textContent = item.label;
+                    text.appendChild(label);
+                }
+                li.appendChild(text);
+
+                const title = item.heading + (item.label ? ', ' + item.label : '');
+                const mk = (cls, glyph, aria, onClick, disabled) => {
+                    const b = document.createElement('button');
+                    b.type = 'button';
+                    b.className = cls;
+                    b.textContent = glyph;
+                    b.title = aria;
+                    b.setAttribute('aria-label', `${aria}: ${title}`);
+                    b.disabled = disabled;
+                    b.onclick = onClick;
+                    li.appendChild(b);
+                };
+                mk('builder-item-up', '↑', 'Move up', () => moveInBundle(i, -1), i === 0);
+                mk('builder-item-down', '↓', 'Move down', () => moveInBundle(i, 1), i === bundle.length - 1);
+                mk('builder-item-remove', '✕', 'Remove', () => removeFromBundle(i), false);
+                list.appendChild(li);
+            });
+
+            preview.textContent = generateBundleScript();
+        }
+
+        function downloadBundle() {
+            const blob = new Blob([generateBundleScript()], { type: 'text/x-shellscript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = BUNDLE_FILE;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+
+        function updateAddButtons() {
+            document.querySelectorAll('.add-builder-btn').forEach(btn => {
+                const added = bundle.some(item => item.key === btn.dataset.key);
+                btn.textContent = added ? '✓ Added' : '+ Add to bundle';
+                btn.classList.toggle('added', added);
+                btn.setAttribute('aria-pressed', String(added));
+            });
+        }
+
+        // "+ Add to bundle" under bash blocks only; PowerShell can't go in a bash script
+        function addBuilderButtons() {
+            sections.forEach(sec => sec.h3s.forEach(h => h.blocks.forEach(b => {
+                blockByKey.set(b.key, b);
+                if (b.lang !== 'bash') return;
+                const wrap = document.createElement('div');
+                wrap.className = 'add-builder-wrap';
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'add-builder-btn';
+                btn.dataset.key = b.key;
+                const label = b.label.replace(/:\s*$/, '');
+                btn.title = 'Add to the script builder: ' + headingText(h.el) + (label ? ' - ' + label : '');
+                btn.onclick = () => toggleInBundle(b);
+                wrap.appendChild(btn);
+                b.pre.after(wrap);
+                b.els.push(wrap);
+            })));
+            // pick up README edits for snippets that are still there
+            bundle = bundle.map(item => blockByKey.has(item.key) ? snippetFromBlock(blockByKey.get(item.key)) : item);
+            storageSet(BUNDLE_KEY, JSON.stringify(bundle));
+            renderBuilder();
+            updateAddButtons();
+        }
+
+        builderToggle.onclick = () => builderDrawer.classList.contains('open') ? closeBuilder() : openBuilder();
+        builderBackdrop.onclick = closeBuilder;
+        document.getElementById('builderClose').onclick = closeBuilder;
+        document.getElementById('builderCopy').onclick = (e) => copyWithFeedback(e.currentTarget, generateBundleScript());
+        document.getElementById('builderDownload').onclick = downloadBundle;
+        document.getElementById('builderClear').onclick = () => {
+            bundle = [];
+            saveBundle();
+            document.getElementById('builderClose').focus();
+        };
+        document.getElementById('builderPreviewToggle').onclick = (e) => {
+            const preview = document.getElementById('builderPreview');
+            preview.hidden = !preview.hidden;
+            e.currentTarget.setAttribute('aria-expanded', String(!preview.hidden));
+        };
+        // Escape closes the drawer first, before anything underneath reacts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && builderDrawer.classList.contains('open')) {
+                e.stopImmediatePropagation();
+                closeBuilder();
+            }
+        });
+        renderBuilder();
+
         // The deploy workflow swaps the placeholders for a commit link and a time
         function initBuildFooter() {
             const footer = document.getElementById('buildFooter');
@@ -2360,6 +2924,8 @@
             migrateFavorites();
             addFavoriteButtons();
             addSafetyBadges();
+            buildSnippetModel();
+            addBuilderButtons();
             updateStats();
             initMobileMenu(); // Initialize mobile sidebar after DOM is ready
             // Content was injected after the browser tried to jump to the hash
