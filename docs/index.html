@@ -297,6 +297,13 @@
             pointer-events: none;
         }
 
+        /* No keyboard shortcut to advertise on touch devices */
+        @media (hover: none) {
+            .kbd {
+                display: none;
+            }
+        }
+
         /* Search */
         .search-container {
             padding: 0 1.5rem;
@@ -307,6 +314,9 @@
             width: 100%;
             padding: 0.6rem 1rem;
             padding-left: 2.5rem;
+            padding-right: 3.75rem;
+            -webkit-appearance: none;
+            appearance: none;
             background: var(--bg-tertiary);
             border: 1px solid var(--border);
             border-radius: 8px;
@@ -496,10 +506,16 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            width: 100%;
             padding: 0.6rem 0.75rem;
+            background: none;
+            border: none;
             color: var(--text);
+            font-family: inherit;
             font-weight: 500;
             font-size: 0.9rem;
+            line-height: inherit;
+            text-align: left;
             cursor: pointer;
             border-radius: 6px;
             transition: all 0.15s ease;
@@ -929,11 +945,6 @@
                 bottom: calc(1.5rem + 56px + 12px);
                 right: calc(1.5rem + 6px);
             }
-
-            /* keep the consent bar clear of the floating buttons column */
-            .consent-bar {
-                right: calc(1.5rem + 56px + 12px);
-            }
         }
 
         @media (max-width: 768px) {
@@ -1030,6 +1041,30 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        /* Keyboard focus */
+        :focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        .search-input:focus-visible {
+            outline: none; /* has its own border + ring */
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            .main h2, .main h3, .main pre, .main p {
+                animation: none;
+            }
+
+            *, *::before, *::after {
+                transition-duration: 0.01ms !important;
+            }
+        }
+
         /* Consent bar */
         .consent-bar {
             position: fixed;
@@ -1063,6 +1098,10 @@
             cursor: pointer;
         }
         .consent-bar button.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+        @media (max-width: 1024px) {
+            /* keep the bar clear of the floating ☰ / back-to-top column */
+            .consent-bar { right: calc(1.5rem + 56px + 12px); }
+        }
     </style>
 </head>
 <body>
@@ -1076,40 +1115,40 @@
                 <p>Copy-paste ready snippets for Linux & more</p>
                 <div class="sidebar-badges">
                     <div class="stats-badge">
-                        📦 <span id="snippetCount">0</span> snippets
+                        <span aria-hidden="true">📦</span> <span id="snippetCount">0</span> snippets
                     </div>
-                    <a href="https://github.com/thereisnotime/oneline" target="_blank" class="github-btn">
-                        ⭐ Star
+                    <a href="https://github.com/thereisnotime/oneline" target="_blank" rel="noopener" class="github-btn">
+                        <span aria-hidden="true">⭐</span> Star
                     </a>
                 </div>
             </div>
             <div class="search-container">
                 <div class="search-wrapper">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" class="search-input" id="searchInput" placeholder="Search..." autocomplete="off">
-                    <span class="kbd">⌘K</span>
+                    <span class="search-icon" aria-hidden="true">🔍</span>
+                    <input type="search" class="search-input" id="searchInput" placeholder="Search..." autocomplete="off" aria-label="Search snippets">
+                    <span class="kbd" id="searchKbd" aria-hidden="true">Ctrl K</span>
                 </div>
             </div>
             <div class="search-results hidden" id="searchResults"></div>
             <label class="favorites-toggle" id="favoritesToggle">
                 <input type="checkbox" id="favoritesOnly">
-                ❤️ Show favorites only
+                <span aria-hidden="true">❤️</span> Show favorites only
             </label>
-            <button class="privacy-btn" id="privacyBtn">
-                <span class="privacy-icon">🔒</span>
+            <button class="privacy-btn" id="privacyBtn" type="button" aria-haspopup="dialog">
+                <span class="privacy-icon" aria-hidden="true">🔒</span>
                 privacy.sexy
             </button>
-            <nav class="toc" id="toc"></nav>
+            <nav class="toc" id="toc" aria-label="Sections"></nav>
         </aside>
         
         <!-- Privacy.sexy Modal -->
-        <div class="modal-overlay" id="privacyModal">
+        <div class="modal-overlay" id="privacyModal" role="dialog" aria-modal="true" aria-labelledby="privacyTitle">
             <div class="modal-container">
                 <div class="modal-header">
-                    <span>🔒 privacy.sexy</span>
-                    <button class="modal-close" id="modalClose">✕</button>
+                    <span id="privacyTitle"><span aria-hidden="true">🔒</span> privacy.sexy</span>
+                    <button class="modal-close" id="modalClose" type="button" aria-label="Close privacy.sexy">✕</button>
                 </div>
-                <iframe src="" id="privacyFrame" class="modal-iframe" allow="clipboard-write"></iframe>
+                <iframe src="" id="privacyFrame" class="modal-iframe" allow="clipboard-write" title="privacy.sexy"></iframe>
             </div>
         </div>
         
@@ -1117,10 +1156,10 @@
     </div>
 
     <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
-    <button class="back-to-top" id="backToTop">↑</button>
-    <button class="mobile-toggle" id="mobileToggle">☰</button>
-    <div class="link-copied-toast" id="toast">Link copied to clipboard!</div>
-    <div class="tooltip" id="tooltip"></div>
+    <button class="back-to-top" id="backToTop" type="button" aria-label="Back to top">↑</button>
+    <button class="mobile-toggle" id="mobileToggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="sidebar">☰</button>
+    <div class="link-copied-toast" id="toast" role="status" aria-live="polite">Link copied to clipboard!</div>
+    <div class="tooltip" id="tooltip" role="tooltip"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
@@ -1140,18 +1179,22 @@
         // Mobile sidebar functions (defined early for global access)
         let sidebar, backdrop, mobileToggle;
         
-        function toggleSidebar() {
-            if (sidebar) {
-                sidebar.classList.toggle('open');
-                backdrop.classList.toggle('show');
+        function setSidebarOpen(open) {
+            if (!sidebar) return;
+            sidebar.classList.toggle('open', open);
+            backdrop.classList.toggle('show', open);
+            if (mobileToggle) {
+                mobileToggle.setAttribute('aria-expanded', String(open));
+                mobileToggle.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
             }
         }
 
+        function toggleSidebar() {
+            if (sidebar) setSidebarOpen(!sidebar.classList.contains('open'));
+        }
+
         function closeSidebar() {
-            if (sidebar) {
-                sidebar.classList.remove('open');
-                backdrop.classList.remove('show');
-            }
+            setSidebarOpen(false);
         }
 
         // Headings get their real IDs from rendered textContent after parsing
@@ -1163,7 +1206,7 @@
         };
 
         function assignHeadingIds() {
-            document.querySelectorAll('#content h1, #content h2, #content h3, #content h4').forEach(h => {
+            document.querySelectorAll('#content h1, #content h2, #content h3, #content h4, #content h5, #content h6').forEach(h => {
                 h.id = slugify(h.textContent);
                 if (h.dataset.legacyId === h.id) delete h.dataset.legacyId;
             });
@@ -1197,7 +1240,10 @@
             if (location.hash.slice(1) !== target.id) {
                 history.replaceState(null, '', '#' + target.id);
             }
-            target.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+            // offsetTop ignores the fadeInUp transform, getBoundingClientRect doesn't
+            let top = 0;
+            for (let el = target; el; el = el.offsetParent) top += el.offsetTop;
+            window.scrollTo({ top: Math.max(0, top - 16), behavior: smooth ? 'smooth' : 'auto' });
         }
 
         window.addEventListener('hashchange', () => scrollToHash(true));
@@ -1269,16 +1315,24 @@
                 section.className = 'toc-section';
                 if (index === 0) section.classList.add('open');
                 
-                // Section title
-                const title = document.createElement('div');
+                // Section title (a real button so it works from the keyboard)
+                const items = document.createElement('div');
+                items.className = 'toc-items';
+                items.id = 'toc-items-' + index;
+
+                const title = document.createElement('button');
+                title.type = 'button';
                 title.className = 'toc-section-title';
                 title.textContent = h2.textContent;
-                title.onclick = () => section.classList.toggle('open');
+                title.setAttribute('aria-controls', items.id);
+                title.setAttribute('aria-expanded', String(index === 0));
+                title.onclick = () => {
+                    const open = section.classList.toggle('open');
+                    title.setAttribute('aria-expanded', String(open));
+                };
                 section.appendChild(title);
                 
                 // Get h3s until next h2
-                const items = document.createElement('div');
-                items.className = 'toc-items';
                 
                 let sibling = h2.nextElementSibling;
                 while (sibling && sibling.tagName !== 'H2') {
@@ -1366,20 +1420,23 @@
         function addFavoriteButtons() {
             const favorites = loadFavorites();
             document.querySelectorAll('#content h3').forEach(h3 => {
+                const name = h3.textContent.trim();
                 const btn = document.createElement('button');
-                btn.className = 'favorite-btn' + (favorites.includes(h3.id) ? ' active' : '');
-                btn.innerHTML = '♡';
-                btn.title = 'Add to favorites';
+                btn.type = 'button';
+                const setState = (isActive) => {
+                    btn.classList.toggle('active', isActive);
+                    btn.textContent = isActive ? '♥' : '♡';
+                    btn.title = isActive ? 'Remove from favorites' : 'Add to favorites';
+                    btn.setAttribute('aria-label', `Favorite: ${name}`);
+                    btn.setAttribute('aria-pressed', String(isActive));
+                };
+                btn.className = 'favorite-btn';
+                setState(favorites.includes(h3.id));
                 btn.onclick = (e) => {
                     e.stopPropagation();
-                    const isActive = toggleFavorite(h3.id);
-                    btn.classList.toggle('active', isActive);
-                    btn.innerHTML = isActive ? '♥' : '♡';
+                    setState(toggleFavorite(h3.id));
                     updateFavoritesCount();
                 };
-                if (favorites.includes(h3.id)) {
-                    btn.innerHTML = '♥';
-                }
                 h3.appendChild(btn);
             });
             updateFavoritesCount();
@@ -1509,9 +1566,7 @@
                     tooltipText = 'One-time: May fail, duplicate, or append data if re-run.';
                 }
 
-                // Add tooltip on hover
-                badge.onmouseenter = (e) => showTooltip(badge, tooltipText);
-                badge.onmouseleave = hideTooltip;
+                attachTooltip(badge, () => tooltipText);
 
                 pre.appendChild(badge);
             });
@@ -1546,15 +1601,20 @@
             document.querySelectorAll('#content h2, #content h3').forEach(heading => {
                 heading.onclick = async () => {
                     const url = window.location.origin + window.location.pathname + '#' + heading.id;
-                    if (await copyToClipboard(url)) showToast();
+                    const ok = await copyToClipboard(url);
+                    showToast(ok ? 'Link copied to clipboard!' : 'Could not copy the link', ok);
                 };
             });
         }
 
-        function showToast() {
+        let toastTimer;
+        function showToast(message, ok = true) {
             const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.background = ok ? '' : '#f85149';
             toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
         }
 
         // Tooltip helper functions
@@ -1583,10 +1643,55 @@
             tooltip.style.top = top + 'px';
         }
         
+        let tooltipOwner = null;
+
         function hideTooltip() {
             if (!tooltip) tooltip = document.getElementById('tooltip');
             tooltip.classList.remove('show');
+            if (tooltipOwner) tooltipOwner.removeAttribute('aria-describedby');
+            tooltipOwner = null;
         }
+
+        function openTooltip(el, getContent) {
+            if (tooltipOwner && tooltipOwner !== el) tooltipOwner.removeAttribute('aria-describedby');
+            showTooltip(el, getContent());
+            tooltipOwner = el;
+            el.setAttribute('aria-describedby', 'tooltip');
+        }
+
+        // Hover on mouse, tap/Enter to toggle on touch and keyboard
+        function attachTooltip(el, getContent) {
+            let lastPointer = '';
+            el.tabIndex = 0;
+            el.setAttribute('role', 'button');
+            el.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') openTooltip(el, getContent); });
+            el.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse' && tooltipOwner === el) hideTooltip(); });
+            el.addEventListener('pointerdown', (e) => { lastPointer = e.pointerType; });
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (lastPointer === 'mouse') { lastPointer = ''; return; }
+                lastPointer = '';
+                if (tooltipOwner === el) hideTooltip();
+                else openTooltip(el, getContent);
+            });
+            el.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    if (tooltipOwner === el) hideTooltip();
+                    else openTooltip(el, getContent);
+                }
+            });
+            el.addEventListener('blur', () => { if (tooltipOwner === el) hideTooltip(); });
+        }
+
+        document.addEventListener('click', (e) => {
+            if (tooltipOwner && !tooltipOwner.contains(e.target)) hideTooltip();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && tooltipOwner) hideTooltip();
+        });
+        // The tooltip is position:fixed, so it would drift away from its owner
+        window.addEventListener('scroll', () => { if (tooltipOwner) hideTooltip(); }, { passive: true });
 
         // Update snippet count with language breakdown
         let languageStats = {};
@@ -1610,15 +1715,15 @@
             
             // Add tooltip to stats badge
             const statsBadge = document.querySelector('.stats-badge');
-            if (statsBadge) {
-                statsBadge.onmouseenter = (e) => {
+            if (statsBadge && !statsBadge.dataset.tooltip) {
+                statsBadge.dataset.tooltip = '1';
+                attachTooltip(statsBadge, () => {
                     const breakdown = Object.entries(languageStats)
                         .sort((a, b) => b[1] - a[1])
                         .map(([lang, count]) => `<div style="display: flex; justify-content: space-between; gap: 1rem;"><span>${lang}</span><span style="color: var(--accent); font-weight: 600;">${count}</span></div>`)
                         .join('');
-                    showTooltip(statsBadge, `<div style="font-size: 0.75rem;"><div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--accent);">Snippets by Language:</div>${breakdown}</div>`);
-                };
-                statsBadge.onmouseleave = hideTooltip;
+                    return `<div style="font-size: 0.75rem;"><div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--accent);">Snippets by Language:</div>${breakdown}</div>`;
+                });
             }
         }
 
@@ -1778,6 +1883,20 @@
                 }
             });
 
+            // Show the modifier people actually have
+            const platform = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || '';
+            if (/mac|iphone|ipad|ipod/i.test(platform)) {
+                document.getElementById('searchKbd').textContent = '⌘K';
+            }
+
+            // Escape closes the mobile sidebar
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && sidebar && sidebar.classList.contains('open')) {
+                    closeSidebar();
+                    if (mobileToggle) mobileToggle.focus();
+                }
+            });
+
             // Keyboard shortcut: Cmd/Ctrl + K to focus search
             document.addEventListener('keydown', (e) => {
                 if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -1801,11 +1920,13 @@
                 privacyFrame.src = 'https://privacy.sexy/';
                 privacyModal.classList.add('open');
                 document.body.style.overflow = 'hidden';
+                modalClose.focus();
             });
 
             modalClose.addEventListener('click', () => {
                 privacyModal.classList.remove('open');
                 document.body.style.overflow = '';
+                privacyBtn.focus();
                 // Clear iframe after animation
                 setTimeout(() => { privacyFrame.src = ''; }, 300);
             });
@@ -1828,6 +1949,11 @@
         const originalInit = init;
         async function initWithSearch() {
             await originalInit();
+            document.querySelectorAll('a[target="_blank"]').forEach(a => {
+                const rel = new Set((a.getAttribute('rel') || '').split(/\s+/).filter(Boolean));
+                rel.add('noopener');
+                a.setAttribute('rel', [...rel].join(' '));
+            });
             buildSearchIndex();
             addHeadingLinks();
             migrateFavorites();
