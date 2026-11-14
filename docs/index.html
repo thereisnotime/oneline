@@ -722,100 +722,237 @@
 
         /* Terminal catalog banner */
         .tui-banner {
+            position: relative;
             margin: 0 0 2rem;
-            padding: 1rem 1.25rem;
-            background: linear-gradient(135deg, rgba(88, 166, 255, 0.08) 0%, rgba(163, 113, 247, 0.08) 100%);
+            padding: 14px 16px;
+            background: var(--bg-secondary);
             border: 1px solid var(--border);
             border-left: 3px solid var(--accent);
             border-radius: 8px;
+            font-size: 13px;
         }
 
-        .tui-banner-head {
+        .tui-banner[hidden] {
+            display: none;
+        }
+
+        .tui-head {
             display: flex;
             flex-wrap: wrap;
-            align-items: baseline;
+            align-items: center;
             justify-content: space-between;
-            gap: 0.25rem 1rem;
+            gap: 2px 12px;
+            padding-right: 36px; /* room for the dismiss button */
         }
 
-        .tui-banner-label {
+        .tui-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
             font-weight: 600;
+            line-height: 24px;
             color: var(--text);
         }
 
-        .tui-banner .tui-banner-desc {
-            margin: 0.25rem 0 0.75rem;
-            font-size: 0.85rem;
-            animation: none;
+        .tui-glyph {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--accent);
         }
 
+        /* small link, 44px tall tap area without growing the row */
         .tui-read {
-            font-size: 0.85rem;
             display: inline-flex;
             align-items: center;
-        }
-
-        .tui-cmd {
-            display: flex;
-            align-items: stretch;
-            gap: 0.5rem;
-            min-width: 0;
-        }
-
-        .tui-cmd + .tui-cmd {
-            margin-top: 0.5rem;
-        }
-
-        .tui-cmd-or {
-            align-self: center;
-            flex-shrink: 0;
-            font-size: 0.8rem;
+            padding: 12px 4px;
+            margin: -12px -4px;
+            font-size: 13px;
+            line-height: 20px;
             color: var(--text-muted);
         }
 
-        .tui-cmd code {
-            flex: 1;
-            min-width: 0;
+        .tui-read:hover {
+            color: var(--accent);
+        }
+
+        .tui-close,
+        .tui-copy,
+        .tui-tool button {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .tui-close {
+            position: absolute;
+            top: 10px;
+            right: 8px;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .tui-close:hover,
+        .tui-copy:hover {
+            color: var(--text);
+            background: var(--bg-tertiary);
+        }
+
+        .tui-bar {
             display: flex;
             align-items: center;
-            overflow-x: auto;
-            white-space: nowrap;
-            padding: 0.5rem 0.75rem;
+            gap: 8px;
+            margin-top: 8px;
+            padding: 3px 3px 3px 12px;
             background: var(--code-bg);
             border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 0.85rem;
-            color: var(--text);
+            border-radius: 8px;
+            min-width: 0;
         }
 
-        .tui-cmd .copy-btn {
-            position: static;
+        .tui-prompt {
             flex-shrink: 0;
-            min-height: 36px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13.5px;
+            color: var(--text-muted);
+            opacity: 0.6;
+            user-select: none;
         }
 
-        /* short command, so on phones wrap it at the spaces instead of scrolling */
+        .tui-banner .tui-cmd {
+            flex: 1;
+            min-width: 0;
+            padding: 0;
+            background: none;
+            border-radius: 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13.5px;
+            line-height: 24px;
+            color: var(--text);
+            white-space: nowrap;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .tui-banner .tui-cmd::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tui-tool {
+            display: inline-flex;
+            flex-shrink: 0;
+            padding: 2px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        .tui-tool button {
+            padding: 0 8px;
+            height: 24px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+        }
+
+        .tui-tool button[aria-pressed="true"] {
+            background: var(--bg-tertiary);
+            color: var(--accent);
+        }
+
+        .tui-copy {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .tui-copy.copied {
+            color: var(--success);
+        }
+
+        .tui-copy.failed {
+            color: #f85149;
+        }
+
+        .tui-copy svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .tui-foot {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px 10px;
+            margin-top: 8px;
+        }
+
+        .tui-banner .tui-hint {
+            margin: 0;
+            font-size: 13px;
+            line-height: 18px;
+            color: var(--text-muted);
+            animation: none;
+        }
+
         @media (max-width: 480px) {
-            .tui-cmd {
-                flex-wrap: wrap;
-                align-items: center;
+            .tui-banner {
+                padding: 12px;
             }
 
-            .tui-cmd-or {
-                flex-basis: 100%;
+            .tui-close {
+                top: 8px;
+                right: 6px;
             }
 
-            .tui-cmd code {
-                align-self: stretch;
-                white-space: normal;
-                overflow-wrap: anywhere;
+            .tui-bar {
+                padding: 3px 2px 3px 10px;
+                gap: 5px;
+            }
+
+            .tui-prompt,
+            .tui-banner .tui-cmd {
+                font-size: 13px;
+            }
+
+            .tui-foot {
+                flex-wrap: nowrap;
+                align-items: flex-start;
             }
         }
 
+        /* the wget variant is one character longer; keep it on one line at 360px too */
+        @media (max-width: 380px) {
+            .tui-prompt,
+            .tui-banner .tui-cmd {
+                font-size: 12.5px;
+            }
+        }
+
+        /* 44px hit areas on touch without making the card bigger */
         @media (pointer: coarse) {
-            .tui-cmd .copy-btn,
-            .tui-read {
-                min-height: 44px;
+            .tui-close::before,
+            .tui-copy::before {
+                content: '';
+                position: absolute;
+                inset: -6px;
+            }
+
+            .tui-tool button::before {
+                content: '';
+                position: absolute;
+                inset: -10px 0;
             }
         }
 
@@ -1262,19 +1399,22 @@
 
     <template id="tuiBannerTpl">
         <section class="tui-banner" aria-labelledby="tuiBannerLabel">
-            <div class="tui-banner-head">
-                <span class="tui-banner-label" id="tuiBannerLabel">Browse from your terminal</span>
-                <a class="tui-read" href="https://github.com/thereisnotime/oneline/blob/master/docs/tui" target="_blank" rel="noopener">read it first</a>
+            <div class="tui-head">
+                <span class="tui-title" id="tuiBannerLabel"><span class="tui-glyph" aria-hidden="true">&gt;_</span>Browse from your terminal</span>
+                <a class="tui-read" href="https://github.com/thereisnotime/oneline/blob/master/docs/tui" target="_blank" rel="noopener">read the script ↗</a>
             </div>
-            <p class="tui-banner-desc">An interactive catalog of these snippets with search, a preview pane and a confirm step before anything runs.</p>
-            <div class="tui-cmd">
-                <code>curl -sL oneline.sh/tui | bash</code>
-                <button type="button" class="copy-btn" aria-label="Copy curl command">Copy</button>
+            <button type="button" class="tui-close" aria-label="Dismiss terminal catalog banner" title="Dismiss">✕</button>
+            <div class="tui-bar">
+                <span class="tui-prompt" aria-hidden="true">$</span>
+                <code class="tui-cmd" tabindex="0"></code>
+                <div class="tui-tool" role="group" aria-label="Download tool">
+                    <button type="button" data-tool="curl">curl</button>
+                    <button type="button" data-tool="wget">wget</button>
+                </div>
+                <button type="button" class="tui-copy" aria-label="Copy command" title="Copy command"></button>
             </div>
-            <div class="tui-cmd">
-                <span class="tui-cmd-or">or</span>
-                <code>wget -qO- oneline.sh/tui | bash</code>
-                <button type="button" class="copy-btn" aria-label="Copy wget command">Copy</button>
+            <div class="tui-foot">
+                <p class="tui-hint">Search, preview, and nothing runs until you press y.</p>
             </div>
         </section>
     </template>
@@ -1514,13 +1654,82 @@
         }
 
         // Point people at `curl -sL oneline.sh/tui | bash` above the README content
+        const TUI_COMMANDS = {
+            curl: 'curl -sL oneline.sh/tui | bash',
+            wget: 'wget -qO- oneline.sh/tui | bash'
+        };
+        const ICON_COPY = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 3.5v-.5a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h.5"/></svg>';
+
+        function storageGet(key) {
+            try { return { ok: true, value: localStorage.getItem(key) }; } catch { return { ok: false, value: null }; }
+        }
+
+        function storageSet(key, value) {
+            try { localStorage.setItem(key, value); return true; } catch { return false; }
+        }
+
         function addTuiBanner() {
-            const tpl = document.getElementById('tuiBannerTpl');
-            const banner = tpl.content.firstElementChild.cloneNode(true);
-            banner.querySelectorAll('.tui-cmd').forEach(row => {
-                const btn = row.querySelector('.copy-btn');
-                btn.onclick = () => copyWithFeedback(btn, row.querySelector('code').textContent);
+            const dismissed = storageGet('rso-tui-banner-dismissed');
+            if (dismissed.value === '1') return;
+
+            const banner = document.getElementById('tuiBannerTpl').content.firstElementChild.cloneNode(true);
+            const cmd = banner.querySelector('.tui-cmd');
+            const bar = banner.querySelector('.tui-bar');
+            const foot = banner.querySelector('.tui-foot');
+            const toolGroup = banner.querySelector('.tui-tool');
+            const copyBtn = banner.querySelector('.tui-copy');
+            const closeBtn = banner.querySelector('.tui-close');
+
+            let tool = storageGet('rso-dl-tool').value === 'wget' ? 'wget' : 'curl';
+            const setTool = (next) => {
+                tool = next;
+                cmd.textContent = TUI_COMMANDS[tool];
+                toolGroup.querySelectorAll('button').forEach(b => {
+                    b.setAttribute('aria-pressed', String(b.dataset.tool === tool));
+                });
+            };
+            toolGroup.querySelectorAll('button').forEach(b => {
+                b.onclick = () => {
+                    setTool(b.dataset.tool);
+                    storageSet('rso-dl-tool', tool);
+                };
             });
+            setTool(tool);
+
+            copyBtn.innerHTML = ICON_COPY;
+            copyBtn.onclick = async () => {
+                const ok = await copyToClipboard(TUI_COMMANDS[tool]);
+                clearTimeout(copyBtn._resetTimer);
+                copyBtn.textContent = ok ? '✓' : '✗';
+                copyBtn.classList.toggle('copied', ok);
+                copyBtn.classList.toggle('failed', !ok);
+                copyBtn.title = ok ? 'Copied' : 'Copy failed';
+                copyBtn._resetTimer = setTimeout(() => {
+                    copyBtn.innerHTML = ICON_COPY;
+                    copyBtn.classList.remove('copied', 'failed');
+                    copyBtn.title = 'Copy command';
+                }, 1500);
+            };
+
+            // No storage means a dismiss couldn't stick, so don't offer one
+            if (dismissed.ok) {
+                closeBtn.onclick = () => {
+                    storageSet('rso-tui-banner-dismissed', '1');
+                    banner.hidden = true;
+                };
+            } else {
+                closeBtn.remove();
+            }
+
+            // On phones the toggle leaves the bar so the command fits on one line
+            const narrow = window.matchMedia('(max-width: 480px)');
+            const placeToggle = () => {
+                if (narrow.matches) foot.prepend(toolGroup);
+                else bar.insertBefore(toolGroup, copyBtn);
+            };
+            narrow.addEventListener('change', placeToggle);
+            placeToggle();
+
             document.getElementById('content').prepend(banner);
         }
 
